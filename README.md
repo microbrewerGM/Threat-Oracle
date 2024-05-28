@@ -24,8 +24,8 @@ Welcome to the Open Source Threat Modeling project! This project aims to provide
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/yourusername/threat-modeling.git
-    cd threat-modeling
+    git clone https://github.com/microbrewerGM/Threat-Oracle.git
+    cd threat-oracle
     ```
 
 2. Install the required Python packages:
@@ -48,9 +48,8 @@ Welcome to the Open Source Threat Modeling project! This project aims to provide
     ```
 
 3. Visualize the digital twin:
-    ```bash
-    python visualize.py
-    ```
+    
+    TBD - Navigate to Bloom.
 
 ## Roadmap
 
