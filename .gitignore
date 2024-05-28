@@ -1,4 +1,6 @@
+# Project specific
 .DS_store
+logs/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

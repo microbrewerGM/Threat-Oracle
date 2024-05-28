@@ -1,0 +1,2 @@
+setuptools==70.0.0
+py2neo>=2021.1.5
