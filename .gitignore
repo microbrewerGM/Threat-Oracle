@@ -1,6 +1,8 @@
 # Project specific
+.env
 .DS_store
 logs/
+.vscode
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
