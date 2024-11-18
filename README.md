@@ -71,24 +71,6 @@ By achieving these goals and objectives, Threat Oracle aims to be a valuable too
 - [ ] Integrate CWE data
 - [ ] Implement threat and risk analysis
 
-## Active Tasks
-
-1. **Base Application Structure**:
-    - Initialize project repository
-    - Set up basic directory structure and initial files
-
-2. **Digital Twin Properties Schema**:
-    - Define the schema for the digital twin properties
-    - Create initial schema in Neo4j
-
-3. **Database Connectivity**:
-    - Set up connection to Neo4j database
-    - Implement basic CRUD operations
-
-4. **Graph Visualization**:
-    - Integrate Neo4j Bloom for visualization
-    - Develop visualization tests and examples
-
 ## Contributing
 
 We welcome contributions from the community. Please read our [Contributing Guidelines](CONTRIBUTING.md) before submitting a pull request.
