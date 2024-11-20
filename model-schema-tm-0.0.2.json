@@ -1,0 +1,249 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Threat Model Schema",
+    "type": "object",
+    "properties": {
+      "schema_version": {
+        "type": "string",
+        "enum": ["tm-0.0.2"]
+      },
+      "title": {
+        "type": "string"
+      },
+      "date": {
+        "type": "string",
+        "format": "date"
+      },
+      "technical_assets": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "technology": {
+              "type": "string",
+              "enum": [
+                "unknown-technology",
+                "client-system",
+                "browser",
+                "desktop",
+                "mobile-app",
+                "devops-client",
+                "web-server",
+                "web-application",
+                "application-server",
+                "database",
+                "file-server",
+                "local-file-system",
+                "erp",
+                "cms",
+                "web-service-rest",
+                "web-service-soap",
+                "ejb",
+                "search-index",
+                "search-engine",
+                "service-registry",
+                "reverse-proxy",
+                "load-balancer",
+                "build-pipeline",
+                "sourcecode-repository",
+                "artifact-registry",
+                "code-inspection-platform",
+                "monitoring",
+                "ldap-server",
+                "container-platform",
+                "batch-processing",
+                "event-listener",
+                "identity-provider",
+                "identity-store-ldap",
+                "identity-store-database",
+                "tool",
+                "cli",
+                "task",
+                "function",
+                "gateway",
+                "iot-device",
+                "message-queue",
+                "stream-processing",
+                "service-mesh",
+                "data-lake",
+                "report-engine",
+                "ai",
+                "mail-server",
+                "vault",
+                "hsm",
+                "waf",
+                "ids",
+                "ips",
+                "scheduler",
+                "mainframe",
+                "block-storage",
+                "library"
+              ]
+            },
+            "compute": {
+              "description": "The physical type of compute.",
+              "type": "string",
+              "enum": [
+                "physical",
+                "virtual",
+                "container",
+                "serverless"
+              ]
+            },
+            "communication_links": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "target_id": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "protocol": {
+                    "type": "string",
+                    "enum": [
+                      "unknown-protocol",
+                      "http",
+                      "https",
+                      "ws",
+                      "wss",
+                      "reverse-proxy-web-protocol",
+                      "reverse-proxy-web-protocol-encrypted",
+                      "mqtt",
+                      "jdbc",
+                      "jdbc-encrypted",
+                      "odbc",
+                      "odbc-encrypted",
+                      "sql-access-protocol",
+                      "sql-access-protocol-encrypted",
+                      "nosql-access-protocol",
+                      "nosql-access-protocol-encrypted",
+                      "binary",
+                      "binary-encrypted",
+                      "text",
+                      "text-encrypted",
+                      "ssh",
+                      "ssh-tunnel",
+                      "smtp",
+                      "smtp-encrypted",
+                      "pop3",
+                      "pop3-encrypted",
+                      "imap",
+                      "imap-encrypted",
+                      "ftp",
+                      "ftps",
+                      "sftp",
+                      "scp",
+                      "ldap",
+                      "ldaps",
+                      "jms",
+                      "nfs",
+                      "smb",
+                      "smb-encrypted",
+                      "local-file-access",
+                      "nrpe",
+                      "xmpp",
+                      "iiop",
+                      "iiop-encrypted",
+                      "jrmp",
+                      "jrmp-encrypted",
+                      "in-process-library-call",
+                      "inter-process-communication",
+                      "container-spawning"
+                    ]
+                  }
+                },
+                "required": [
+                  "target_id",
+                  "protocol"
+                ]
+              }
+            }
+          },
+          "required": [
+            "id", 
+            "technology",
+            "compute"
+          ]
+        }
+      }
+    },
+    "trust_boundaries": {
+        "description": "Trust boundaries",
+        "type": "object",
+        "uniqueItems": true,
+        "additionalProperties": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "ID",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "Description",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "type": {
+                    "description": "Type",
+                    "type": "string",
+                    "enum": [
+                        "On-Premises Network",
+                        "Hosted Data Center",
+                        "Virtual Network",
+                        "Cloud Virtual Network",
+                        "Cloud Security Group",
+                        "Kubernetes Policy Namespace Isolation",
+                        "Execution Environment"
+                    ]
+                },
+                "technical_assets_inside": {
+                    "description": "Technical assets inside",
+                    "type": [
+                        "array",
+                        "null"
+                    ],
+                    "uniqueItems": true,
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "trust_boundaries_nested": {
+                    "description": "Trust boundaries nested",
+                    "type": [
+                        "array",
+                        "null"
+                    ],
+                    "uniqueItems": true,
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "id",
+                "description",
+                "type",
+                "technical_assets_inside",
+                "trust_boundaries_nested"
+            ]
+        }
+    },
+    "required": [
+      "schema_version", 
+      "title", 
+      "date", 
+      "technical_assets"
+    ],
+    "additionalProperties": false
+  }

@@ -3,142 +3,167 @@ This module provides a Streamlit application for threat modeling,
 allowing users to list and view available model files in a specified directory.
 """
 
-import os
 import streamlit as st
-import yaml  # Importing the PyYAML library
-from pyvis.network import Network
+import requests
+import plotly.graph_objects as go
+import networkx as nx
 
-def list_model_files(directory):
-    """
-    List all model files in the specified directory.
-    """
-    try:
-        files = os.listdir(directory)
-        model_files = [f for f in files if f.endswith('.yaml')]
-        return model_files
-    except OSError as e:
-        st.error(f"Error reading directory: {e}")
-        return []
-
-def get_model_metadata(file_path):
-    """
-    Function to retrieve metadata from the specified model file.
-    """
-    try:
-        with open(file_path, 'r', encoding='utf-8') as file:
-            metadata = yaml.safe_load(file)
-            if isinstance(metadata.get("technical_assets"), dict):
-                return {**metadata, "file_path": file_path}
-            else:
-                return {"error": "Technical assets data is not in the expected format."}
-    except (FileNotFoundError, yaml.YAMLError) as e:
-        return {"error": str(e)}
-
-def visualize_technical_assets(technical_assets):
-    """
-    Visualize the technical assets and their communication links using pyvis.
-    """
-    net = Network(height='600px', width='800px', directed=True)
-
-    # Create nodes for the graph
+# Function to visualize technical assets and trust boundaries
+def visualize_technical_assets(technical_assets, trust_boundaries):
+    G = nx.Graph()
+    
+    # Add nodes and edges based on technical assets and their communication links
     for asset_name, asset_data in technical_assets.items():
         asset_id = asset_data['id']
-        net.add_node(asset_id, label=asset_name)
+        G.add_node(asset_id)
 
-    # Track the number of edges between each pair of nodes
-    edge_count = {}
-
-    # Add edges after all nodes have been created
-    for asset_name, asset_data in technical_assets.items():
-        asset_id = asset_data['id']
-
-        # Check if communication_links exists and is a dictionary
         if 'communication_links' in asset_data and isinstance(asset_data['communication_links'], dict):
             for link_name, link_data in asset_data['communication_links'].items():
-                # Check if link_data is None
-                if link_data is None:
-                    print(f"Warning: link_data for '{link_name}' in '{asset_id}' is None.")
-                    continue  # Skip this link if it's None
-
                 target_id = link_data.get('target_id')
-                if target_id is None:
-                    print(f"Warning: target_id is missing for link '{link_name}' in '{asset_id}'.")
-                    continue  # Skip this link if target_id is missing
+                if target_id:
+                    G.add_edge(asset_id, target_id)
 
-                protocol = link_data.get('protocol', 'Unknown Protocol')
+    pos = nx.spring_layout(G)
 
-                # Create a unique key for the edge
-                edge_key = (asset_id, target_id)
+    edge_x = []
+    edge_y = []
+    for edge in G.edges():
+        x0, y0 = pos[edge[0]]
+        x1, y1 = pos[edge[1]]
+        edge_x.extend([x0, x1, None])
+        edge_y.extend([y0, y1, None])
 
-                # Initialize the count for this edge if it doesn't exist
-                if edge_key not in edge_count:
-                    edge_count[edge_key] = 0
+    node_x = [pos[node][0] for node in G.nodes()]
+    node_y = [pos[node][1] for node in G.nodes()]
 
-                # Get the current count and increment it
-                current_count = edge_count[edge_key]
-                edge_count[edge_key] += 1
+    node_groups = [G.degree(node) for node in G.nodes()]
 
-                # Define different styles for edges
-                color = "gray"  # Default color
-                dash = "solid"  # Default dash style
+    fig = go.Figure()
 
-                # Change styles based on the count
-                if current_count == 0:
-                    color = "red"
-                    dash = "dashed"  # Dashed line
-                elif current_count == 1:
-                    color = "blue"
-                    dash = "dotted"  # Dotted line
-                elif current_count == 2:
-                    color = "green"
-                    dash = "solid"  # Solid line
+    # Add edges
+    fig.add_trace(go.Scatter(x=edge_x, y=edge_y, mode='lines', line=dict(width=0.5, color='#888')))
 
-                # Check if the target node exists before adding the edge
-                if target_id in net.get_nodes():
-                    net.add_edge(asset_id, target_id, label=protocol, color=color, title=protocol)
-                else:
-                    print(f"Warning: Target node '{target_id}' does not exist for edge from '{asset_id}'.")
+    # Define node labels
+    node_labels = [asset_name for asset_name in technical_assets.keys()]
 
-    # Generate the graph and render it in Streamlit
-    html = net.generate_html()  # Generate HTML directly
-    st.components.v1.html(html, height=600, width=800)
+    # Add nodes with labels
+    fig.add_trace(go.Scatter(x=node_x, y=node_y, mode='markers+text',
+                             marker=dict(size=40, color=node_groups, 
+                                         colorscale='Viridis', 
+                                         line=dict(width=2, color='DarkSlateGrey')),
+                             text=node_labels[:len(G.nodes())],
+                             textposition="top center",
+                             textfont=dict(size=14)))
 
-def main():
-    """
-    Main function to run the Streamlit application for threat modeling.
-    """
-    st.title("Threat Modeling App")
+    gap = 0.5  # Gap between trust boundaries
+
+    def draw_boundary(boundary_name, boundary_data):
+        asset_ids = boundary_data.get('technical_assets_inside', [])
+        if asset_ids:
+            boundary_x = [pos[asset_id][0] for asset_id in asset_ids if asset_id in pos]
+            boundary_y = [pos[asset_id][1] for asset_id in asset_ids if asset_id in pos]
+
+            if boundary_x and boundary_y:
+                x0 = min(boundary_x) - gap
+                y0 = min(boundary_y) - gap
+                x1 = max(boundary_x) + gap
+                y1 = max(boundary_y) + gap
+
+                fig.add_shape(type="rect",
+                              x0=x0, y0=y0,
+                              x1=x1, y1=y1,
+                              line=dict(color="RoyalBlue", width=2),
+                              fillcolor="rgba(0, 0, 255, 0.1)")
+
+                fig.add_annotation(
+                    x=(x0 + x1) / 2,
+                    y=y0 - 0.1,
+                    text=f"{boundary_name} ({boundary_data['type']})",
+                    showarrow=False,
+                    font=dict(size=10, color="black"),
+                    align="center",
+                    bgcolor="rgba(255, 255, 255, 0.7)",
+                    bordercolor="black",
+                    borderwidth=1,
+                    borderpad=4
+                )
+
+    for boundary_name, boundary_data in trust_boundaries.items():
+        draw_boundary(boundary_name, boundary_data)
+
+        nested_boundaries = boundary_data.get('trust_boundaries_nested', [])
+        for nested_boundary_name in nested_boundaries:
+            nested_boundary_data = trust_boundaries.get(nested_boundary_name)
+            if nested_boundary_data:
+                draw_boundary(nested_boundary_name, nested_boundary_data)
+
+    fig.update_layout(
+        xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+        yaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+        plot_bgcolor='rgba(0, 0, 0, 0)',
+        paper_bgcolor='rgba(0, 0, 0, 0)'
+    )
+
+    st.plotly_chart(fig)
+
+# Streamlit UI
+st.title("Threat Model Visualization")
+
+# Fetch model names from the API
+response = requests.get('http://127.0.0.1:5000/api/model-names')
+model_names = response.json()
+
+# Dropdown selector for models
+model_choice = st.selectbox("Select a threat model:", options=[""] + model_names)
+
+if model_choice:
+    # Fetch data for the selected model
+    model_response = requests.get('http://127.0.0.1:5000/api/threat-models')
+    data = model_response.json()
+
+    # Display the selected model's JSON object
+    selected_model_data = data.get(model_choice.replace('.yaml', ''), {})
+    st.json(selected_model_data)
+
+    # Display metadata
+    st.header(selected_model_data.get('title', ''))
     
-    model_directory = "models"
+    # Display schema version with reduced font size
+    schema_version = selected_model_data.get('schema_version', '')
+    st.markdown(f"<h6 style='font-size: 12px;'>Schema Version: {schema_version}</h6>", unsafe_allow_html=True)
     
-    st.subheader("Available Model Files:")
-    model_files = list_model_files(model_directory)
-    
-    selected_model = st.selectbox("Select a model file:", options=[""] + model_files)
-    
-    if selected_model:
-        st.write(f"You selected: {selected_model}")
-        metadata = get_model_metadata(os.path.join(model_directory, selected_model))
+    # Display date with reduced font size
+    date = selected_model_data.get('date', '')
+    st.markdown(f"<h6 style='font-size: 12px;'>Date: {date}</h6>", unsafe_allow_html=True)
+
+    # List technical assets in a collapsible section
+    with st.expander("Technical Assets", expanded=True):
+        st.markdown("**Technical Assets:**")  # Bold text
+        technical_assets = selected_model_data.get('technical_assets', {})
+        for asset_name in technical_assets.keys():
+            st.write(f"- {asset_name}")
+
+    # List trust boundaries in a collapsible section
+    with st.expander("Trust Boundaries", expanded=True):
+        st.write("### Trust Boundaries:")
+        trust_boundaries = selected_model_data.get('trust_boundaries', {})
         
-        st.write("Metadata:", metadata)
-        
-        if "error" not in metadata:
-            st.header(metadata["title"])
-            st.write("File Path:", metadata["file_path"])
-            st.write("Schema Version:", metadata["schema_version"])
-            st.write("Date:", metadata["date"])
-            st.write("Technical Assets:")
-            
-            technical_assets = metadata.get("technical_assets", {})
-            if isinstance(technical_assets, dict):
-                st.markdown("<ul>" + "".join(f"<li>{asset}</li>" for asset in technical_assets.keys()) + "</ul>", unsafe_allow_html=True)
+        def display_trust_boundaries(boundaries, indent=0):
+            for boundary_name, boundary_data in boundaries.items():
+                st.write(f"{'  ' * indent}- {boundary_name} ({boundary_data['type']})")
                 
-                # Visualize the technical assets and communication links
-                visualize_technical_assets(technical_assets)
-            else:
-                st.error("Technical assets data is not in the expected format.")
-    else:
-        st.write("No model file selected.")
+                # List technical assets inside the boundary
+                nested_assets = boundary_data.get('technical_assets_inside', [])
+                if nested_assets:
+                    for asset in nested_assets:
+                        st.write(f"{'  ' * (indent + 1)}- {asset}")
+                
+                # List nested boundaries
+                nested_boundaries = boundary_data.get('trust_boundaries_nested', [])
+                if nested_boundaries:
+                    display_trust_boundaries({nested: boundaries[nested] for nested in nested_boundaries}, indent + 1)
 
-if __name__ == "__main__":
-    main()
+        display_trust_boundaries(trust_boundaries)
+
+    # Visualize the selected threat model
+    visualize_technical_assets(technical_assets, trust_boundaries)

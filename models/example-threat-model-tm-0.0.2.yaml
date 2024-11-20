@@ -1,0 +1,63 @@
+schema_version: tm-0.0.2 # Updated schema version
+title: Example Threat Model # Required
+date: "2024-03-31" # Required
+technical_assets: # List of technical assets as children; required
+  Web_Application: # Each asset listed and named; required
+    id: id-web-app # Required, if parent is present
+    description: A web application serving users # String of the asset description; not required
+    technology: web-application # A value from the schema for values of technology; required
+    compute: virtual # The physical type of compute
+    communication_links: # List of connections to other technical assets; required
+      API_Service_Connection: # Name of each communication, connection to another technical asset; not required
+        target_id: id-api-service # The asset id of the technical asset the communication path ends at; required if parent is present
+        description: Communication with the API service for data retrieval # String description of communication; required if parent is present
+        protocol: https # A value from the schema for values of technology; required if parent is present
+
+  Database: # Each asset listed and named; required, use as name of asset
+    id: id-database # Required, if parent is present
+    description: Main relational database for the application # String of the asset description; not required
+    technology: database # A value from the schema for values of technology; required
+    compute: physical # The physical type of compute
+    communication_links: # List of connections to other technical assets; required
+      # No outgoing communication links for this asset
+
+  API_Service: # Each asset listed and named; required, use as name of asset
+    id: id-api-service # Required, if parent is present
+    description: External API service for data processing # String of the asset description; not required
+    technology: web-service-rest # A value from the schema for values of technology; required
+    compute: serverless # The physical type of compute
+    communication_links: # List of connections to other technical assets; required
+      Database_Connection: # Name of each communication, connection to another technical asset; not required
+        target_id: id-database # The asset id of the technical asset the communication path ends at; required if parent is present
+        description: Communication with the database for data storage # String description of communication; required if parent is present
+        protocol: https # A value from the schema for values of technology; required if parent is present
+
+trust_boundaries: # New trust boundaries section
+  web_server_network: # Unique identifier for the trust boundary
+    description: Web server network containing the web application # Description of the trust boundary
+    type: Cloud Security Group # Type of trust boundary
+    technical_assets_inside: # Technical assets inside this boundary
+      - id-web-app # Web Application asset
+    trust_boundaries_nested: [] # No nested boundaries
+
+  application_services_network: # Unique identifier for the trust boundary
+    description: Application services network containing the API service # Description of the trust boundary
+    type: Cloud Security Group # Type of trust boundary
+    technical_assets_inside: # Technical assets inside this boundary
+      - id-api-service # API Service asset
+    trust_boundaries_nested: [] # No nested boundaries
+
+  isolated_cloud_virtual_network: # Unique identifier for the trust boundary
+    description: Isolated cloud virtual network containing other trust boundaries # Description of the trust boundary
+    type: Cloud Virtual Network # Type of trust boundary
+    technical_assets_inside: [] # No direct technical assets inside this boundary
+    trust_boundaries_nested: # Nested trust boundaries
+      - web_server_network # Nested trust boundary 1
+      - application_services_network # Nested trust boundary 2
+
+  internal_network: # Unique identifier for the trust boundary
+    description: Internal network containing the database # Description of the trust boundary
+    type: On-Premises Network # Type of trust boundary
+    technical_assets_inside: # Technical assets inside this boundary
+      - id-database # Database asset
+    trust_boundaries_nested: [] # No nested boundaries 
