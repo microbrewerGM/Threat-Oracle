@@ -9,6 +9,8 @@ import DataFlows from '@/pages/DataFlows';
 import DataAssets from '@/pages/DataAssets';
 import Visualization from '@/pages/Visualization';
 import Settings from '@/pages/Settings';
+import Models from '@/pages/Models';
+import Documentation from '@/pages/Documentation';
 import NotFound from '@/pages/NotFound';
 import './App.css';
 
@@ -27,6 +29,8 @@ const App: React.FC = () => {
             <Route path="/data-assets" element={<DataAssets />} />
             <Route path="/visualization" element={<Visualization />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/models" element={<Models />} />
+            <Route path="/documentation" element={<Documentation />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
