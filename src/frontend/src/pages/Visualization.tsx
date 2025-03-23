@@ -1,11 +1,26 @@
 import React from 'react';
 import SimpleGraph from '@/components/graph/SimpleGraph';
-import { getGraphNodes, getGraphEdges } from '@/store/sampleData';
+import ModelSelector from '@/components/model/ModelSelector';
+import { useModelStore } from '@/store/modelStore';
 import './Visualization.css';
 
 const Visualization: React.FC = () => {
-  const nodes = getGraphNodes();
-  const edges = getGraphEdges();
+  const { getCurrentModel } = useModelStore();
+  const currentModel = getCurrentModel();
+  
+  // Transform model data into graph nodes and edges
+  const nodes = currentModel ? currentModel.technicalAssets.map(asset => ({
+    id: asset.id,
+    name: asset.name,
+    type: asset.type
+  })) : [];
+  
+  const edges = currentModel ? currentModel.dataFlows.map(flow => ({
+    id: flow.id,
+    source: flow.source_id,
+    target: flow.target_id,
+    label: flow.protocol.toUpperCase()
+  })) : [];
 
   return (
     <div className="visualization-page">
@@ -15,8 +30,16 @@ const Visualization: React.FC = () => {
         Nodes represent technical assets and edges represent data flows between them.
       </p>
       
+      <ModelSelector />
+      
       <div className="graph-container">
-        <SimpleGraph nodes={nodes} edges={edges} />
+        {nodes.length > 0 && edges.length > 0 ? (
+          <SimpleGraph nodes={nodes} edges={edges} />
+        ) : (
+          <div className="empty-graph">
+            <p>No data available to visualize.</p>
+          </div>
+        )}
       </div>
       
       <div className="legend">

@@ -19,6 +19,17 @@
   height: 500px;
   border-radius: var(--border-radius);
   overflow: hidden;
+  background-color: white;
+}
+
+.empty-graph {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  background-color: #f9f9f9;
+  color: var(--secondary-color);
+  font-style: italic;
 }
 
 .legend {

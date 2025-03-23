@@ -1,0 +1,172 @@
+.technical-assets-page {
+  padding: 20px;
+}
+
+.technical-assets-page h1 {
+  margin-bottom: 16px;
+  color: var(--dark-color);
+}
+
+.description {
+  font-size: 1.1rem;
+  margin-bottom: 24px;
+  max-width: 800px;
+  line-height: 1.6;
+}
+
+.assets-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.empty-assets {
+  grid-column: 1 / -1;
+  background-color: white;
+  border-radius: var(--border-radius);
+  padding: 40px;
+  text-align: center;
+  color: var(--secondary-color);
+  font-style: italic;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.asset-card {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.asset-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.asset-header h2 {
+  margin: 0;
+  color: var(--primary-color);
+  font-size: 1.4rem;
+}
+
+.asset-type {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  background-color: #e9ecef;
+}
+
+.type-server {
+  background-color: #4e79a7;
+  color: white;
+}
+
+.type-application {
+  background-color: #f28e2c;
+  color: white;
+}
+
+.type-database {
+  background-color: #e15759;
+  color: white;
+}
+
+.type-container {
+  background-color: #76b7b2;
+  color: white;
+}
+
+.type-api {
+  background-color: #59a14f;
+  color: white;
+}
+
+.type-service {
+  background-color: #edc949;
+  color: black;
+}
+
+.type-network_device {
+  background-color: #af7aa1;
+  color: white;
+}
+
+.type-other {
+  background-color: #ff9da7;
+  color: black;
+}
+
+.asset-description {
+  margin-bottom: 20px;
+  color: var(--text-color);
+}
+
+.asset-details {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-label {
+  font-weight: bold;
+  font-size: 0.9rem;
+  color: var(--secondary-color);
+  margin-bottom: 4px;
+}
+
+.detail-value {
+  color: var(--text-color);
+}
+
+.criticality-low {
+  color: #28a745;
+}
+
+.criticality-medium {
+  color: #ffc107;
+}
+
+.criticality-high {
+  color: #fd7e14;
+}
+
+.criticality-critical {
+  color: #dc3545;
+  font-weight: bold;
+}
+
+.tech-tag, .tag {
+  display: inline-block;
+  padding: 2px 8px;
+  margin-right: 5px;
+  margin-bottom: 5px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  background-color: #e9ecef;
+}
+
+.tech-tag {
+  background-color: #e3f2fd;
+  color: #0d6efd;
+}
+
+.tag {
+  background-color: #f8f9fa;
+  color: #6c757d;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .assets-list {
+    grid-template-columns: 1fr;
+  }
+}
