@@ -1,0 +1,90 @@
+.simple-graph-container {
+  background-color: white;
+  border-radius: var(--border-radius);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.simple-graph {
+  display: block;
+  background-color: #f9f9f9;
+}
+
+/* Node styles */
+.node {
+  stroke: #fff;
+  stroke-width: 2px;
+  cursor: pointer;
+}
+
+.node-server {
+  fill: #4e79a7;
+}
+
+.node-application {
+  fill: #f28e2c;
+}
+
+.node-database {
+  fill: #e15759;
+}
+
+.node-container {
+  fill: #76b7b2;
+}
+
+.node-api {
+  fill: #59a14f;
+}
+
+.node-service {
+  fill: #edc949;
+}
+
+.node-network_device {
+  fill: #af7aa1;
+}
+
+.node-other {
+  fill: #ff9da7;
+}
+
+/* Trust boundary node styles */
+.node-network_segment {
+  fill: #9c755f;
+}
+
+.node-security_zone {
+  fill: #bab0ab;
+}
+
+.node-organizational_boundary {
+  fill: #d3d3d3;
+}
+
+.node-physical_boundary {
+  fill: #e6e6e6;
+}
+
+/* Link styles */
+.link {
+  stroke: #999;
+  stroke-opacity: 0.6;
+  stroke-width: 1.5px;
+}
+
+/* Label styles */
+.node-label {
+  font-size: 12px;
+  pointer-events: none;
+  user-select: none;
+}
+
+.edge-label {
+  font-size: 10px;
+  text-anchor: middle;
+  pointer-events: none;
+  user-select: none;
+  fill: #666;
+  background-color: rgba(255, 255, 255, 0.8);
+}

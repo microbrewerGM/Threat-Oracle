@@ -1,64 +1,96 @@
-# Contributing to Open Source Threat Modeling
+# Contributing to Threat Oracle
 
-Thank you for your interest in contributing to the Open Source Threat Modeling project! We appreciate your help in making this project better.
+Thank you for your interest in contributing to Threat Oracle! This document provides guidelines and instructions for contributing to this project.
+
+## Code of Conduct
+
+By participating in this project, you agree to abide by our Code of Conduct. Please be respectful and considerate of others.
 
 ## How to Contribute
 
 ### Reporting Bugs
 
-If you find a bug in the project, please open an issue on GitHub with the following information:
+If you find a bug, please create an issue with the following information:
 
-- A clear and descriptive title.
-- A detailed description of the problem.
-- Steps to reproduce the issue.
-- Any relevant error messages or screenshots.
+- A clear, descriptive title
+- Steps to reproduce the bug
+- Expected behavior
+- Actual behavior
+- Screenshots if applicable
+- Environment information (OS, browser, etc.)
 
-### Suggesting Enhancements
+### Suggesting Features
 
-We welcome suggestions for new features and improvements. Please open an issue with the following details:
+We welcome feature suggestions! Please create an issue with:
 
-- A clear and descriptive title.
-- A detailed description of the enhancement.
-- Any relevant examples or use cases.
+- A clear, descriptive title
+- Detailed description of the proposed feature
+- Any relevant examples or mockups
+- Explanation of why this feature would be useful
 
-### Submitting Pull Requests
+### Pull Requests
 
-If you would like to contribute code, please follow these steps:
+1. Fork the repository
+2. Create a new branch from `main`
+3. Make your changes
+4. Run tests to ensure they pass
+5. Update documentation if necessary
+6. Submit a pull request
 
-1. Fork the repository and create your branch from `main`.
-2. Ensure your code follows the project's coding standards and passes all tests.
-3. Include clear and descriptive commit messages.
-4. Submit a pull request to the `main` branch with a detailed description of your changes.
+### Pull Request Process
 
-### Coding Standards
+1. Ensure your code follows the project's coding standards
+2. Update the README.md or documentation with details of changes if applicable
+3. Update the CHANGELOG.md with details of changes
+4. The pull request will be merged once it has been reviewed and approved
 
-Please ensure your code meets the following standards:
+## Development Workflow
 
-- Follows [PEP 8](https://www.python.org/dev/peps/pep-0008/) for Python code.
-- Includes comments and documentation where necessary.
-- Has clear and descriptive variable and function names.
-- Includes tests for new features or bug fixes.
+1. Pick an issue to work on or create a new one
+2. Create a branch with a descriptive name (e.g., `feature/add-graph-visualization`)
+3. Make your changes in small, logical commits
+4. Write or update tests as necessary
+5. Ensure all tests pass
+6. Submit a pull request
 
-### Testing
+## Coding Standards
 
-Before submitting a pull request, ensure that your code passes all existing tests and that you have added tests for any new functionality.
+### General
 
-To run the tests:
+- Follow the existing code style
+- Write clear, descriptive commit messages
+- Keep code modular and reusable
+- Document your code
 
-```bash
-pytest
-```
+### Python
 
-### Code of Conduct
+- Follow PEP 8 style guide
+- Use docstrings for functions, classes, and modules
+- Use type hints where appropriate
+- Write unit tests for new functionality
 
-We expect all contributors to adhere to the project's [Code of Conduct](CODE_OF_CONDUCT.md). Please read this document to understand the expectations for behavior within the community.
+### JavaScript/TypeScript
 
-### Getting Help
+- Follow the project's ESLint configuration
+- Use JSDoc comments for functions and classes
+- Write unit tests for new functionality
+- Use TypeScript types/interfaces where appropriate
 
-If you need help or have questions, feel free to open an issue on GitHub or contact the project maintainers.
+## Testing
 
-## Thank You
+- Write unit tests for all new code
+- Ensure all tests pass before submitting a pull request
+- Include integration tests for new features where appropriate
 
-Thank you for your contributions and for helping to improve the Open Source Threat Modeling project!
+## Documentation
 
----
+- Update documentation for any changes to APIs or functionality
+- Use clear, concise language
+- Include examples where appropriate
+- Keep documentation up-to-date with code changes
+
+## Questions?
+
+If you have any questions about contributing, please open an issue or contact the project maintainers.
+
+Thank you for contributing to Threat Oracle!

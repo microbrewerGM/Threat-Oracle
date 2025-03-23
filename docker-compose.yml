@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./src/frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    environment:
+      - REACT_APP_API_URL=http://localhost:8000
+    networks:
+      - threat-oracle-network
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    ports:
+      - "8000:8000"
+    depends_on:
+      - neo4j
+    environment:
+      - DATABASE_URL=neo4j://neo4j:7687
+      - DATABASE_USER=neo4j
+      - DATABASE_PASSWORD=password
+      - LOG_LEVEL=INFO
+    networks:
+      - threat-oracle-network
+    restart: unless-stopped
+    volumes:
+      - ./src:/app/src
+      - backend-data:/app/data
+
+  neo4j:
+    image: neo4j:5.9.0
+    ports:
+      - "7474:7474"  # HTTP
+      - "7687:7687"  # Bolt
+    environment:
+      - NEO4J_AUTH=neo4j/password
+      - NEO4J_dbms_memory_pagecache_size=1G
+      - NEO4J_dbms_memory_heap_initial__size=1G
+      - NEO4J_dbms_memory_heap_max__size=2G
+    volumes:
+      - neo4j-data:/data
+      - neo4j-logs:/logs
+      - neo4j-import:/import
+      - neo4j-plugins:/plugins
+    networks:
+      - threat-oracle-network
+    restart: unless-stopped
+
+networks:
+  threat-oracle-network:
+    driver: bridge
+
+volumes:
+  neo4j-data:
+  neo4j-logs:
+  neo4j-import:
+  neo4j-plugins:
+  backend-data:

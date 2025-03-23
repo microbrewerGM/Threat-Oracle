@@ -74,6 +74,8 @@ Threat Oracle is in early development. Currently implemented features:
 
 - **Schema Definitions**: JSON Schema definitions for technical assets, trust boundaries, and data flows
 - **Schema Validator**: Utility for validating objects against these schemas
+- **Simple Web Interface**: React-based frontend with basic visualization capabilities
+- **Graph Visualization**: Interactive graph visualization of nodes and edges using D3.js
 - **Example Usage**: Demo script showing schema validation in action
 
 ## Getting Started
@@ -81,7 +83,8 @@ Threat Oracle is in early development. Currently implemented features:
 ### Prerequisites
 
 - Python 3.9+
-- Node.js 16+
+- Node.js 18+
+- Conda (optional, for conda environment)
 
 ### Installation
 
@@ -107,13 +110,31 @@ Threat Oracle is in early development. Currently implemented features:
 ### Running Tests
 
 ```bash
+# Backend tests
 python -m pytest
+
+# Frontend tests
+cd src/frontend
+npm test
 ```
 
-### Running the Demo
+### Running the Application
 
 ```bash
-python examples/schema_validator_demo.py
+# Run the frontend in development mode
+cd src/frontend
+npm install
+npm run dev
+
+# Or use the conda environment script
+./scripts/run_frontend.sh
+```
+
+### Running with Docker
+
+```bash
+# Build and run with Docker Compose
+docker-compose up
 ```
 
 ## Development Workflow

@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to the Threat Oracle project will be documented in this file.
+All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+
+- Simple web interface with React and TypeScript
+- Basic visualization of threat model components
+- Navigation between different views
+- Sample data for demonstration purposes
+- Docker and Conda environment support
 
 - Initial project vision
 - README.md with enhanced project description
