@@ -1,0 +1,46 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Trust Boundary",
+  "description": "Schema for a trust boundary node in the threat model graph",
+  "type": "object",
+  "required": ["id", "name", "type"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for the trust boundary"
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-readable name of the trust boundary"
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed description of the trust boundary"
+    },
+    "type": {
+      "type": "string",
+      "enum": ["network_segment", "security_zone", "organizational_boundary", "physical_boundary", "other"],
+      "description": "Type of trust boundary"
+    },
+    "security_level": {
+      "type": "string",
+      "enum": ["public", "dmz", "internal", "restricted", "highly_restricted"],
+      "description": "Security level of the trust boundary"
+    },
+    "owner": {
+      "type": "string",
+      "description": "Owner or responsible party for the trust boundary"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tags for categorizing the trust boundary"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional metadata for the trust boundary"
+    }
+  }
+}

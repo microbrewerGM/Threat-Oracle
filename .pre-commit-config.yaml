@@ -1,0 +1,76 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+      - id: check-added-large-files
+      - id: check-merge-conflict
+      - id: detect-private-key
+      - id: check-case-conflict
+
+  - repo: https://github.com/psf/black
+    rev: 23.3.0
+    hooks:
+      - id: black
+        language_version: python3
+
+  - repo: https://github.com/charliermarsh/ruff-pre-commit
+    rev: v0.0.262
+    hooks:
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.3.0
+    hooks:
+      - id: mypy
+        additional_dependencies: [types-requests, types-PyYAML]
+
+  - repo: https://github.com/pre-commit/mirrors-eslint
+    rev: v8.40.0
+    hooks:
+      - id: eslint
+        files: \.(js|ts|tsx)$
+        types: [file]
+        additional_dependencies:
+          - eslint@8.40.0
+          - eslint-plugin-react@7.32.2
+          - eslint-plugin-react-hooks@4.6.0
+          - eslint-plugin-import@2.27.5
+          - eslint-config-prettier@8.8.0
+          - typescript@5.0.4
+          - '@typescript-eslint/eslint-plugin@5.59.6'
+          - '@typescript-eslint/parser@5.59.6'
+
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v3.0.0-alpha.9-for-vscode
+    hooks:
+      - id: prettier
+        types_or: [javascript, jsx, ts, tsx, json, css]
+
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.35.0
+    hooks:
+      - id: markdownlint
+        args: ["--config", ".markdownlint.json"]
+
+  - repo: local
+    hooks:
+      - id: update-changelog
+        name: Update Changelog
+        entry: python scripts/update_changelog.py
+        language: python
+        pass_filenames: false
+        always_run: true
+        stages: [commit]
+
+      - id: run-tests
+        name: Run Tests
+        entry: python -m pytest
+        language: python
+        pass_filenames: false
+        always_run: true
+        stages: [push]

@@ -1,10 +1,12 @@
 # Developer and LLM Interaction Log
 
-This document records significant interactions between developers and LLM assistants (like Cline) during the development of Threat Oracle. It serves as a record of key decisions, brainstorming sessions, and problem-solving approaches.
+This document records significant interactions between developers and LLM assistants (like Cline) during the development
+of Threat Oracle. It serves as a record of key decisions, brainstorming sessions, and problem-solving approaches.
 
 ## Format
 
 Each entry should include:
+
 - **Date**: When the interaction occurred
 - **Participants**: Who was involved (developer names, LLM assistant name)
 - **Topic**: Brief description of what was discussed
@@ -14,6 +16,88 @@ Each entry should include:
 
 ## Interactions
 
+### 2025-03-22: Applying Markdown Guidelines to Documentation
+
+**Participants**: Aaron Smith, Cline
+
+**Topic**: Applying Markdown guidelines to existing documentation files
+
+**Key Points**:
+
+- Identified Markdown linting issues in documentation files using markdownlint
+- Fixed formatting issues in README.md, CHANGELOG.md, INTERACTION_LOG.md, GIT_WORKFLOW.md, and src/schema/README.md
+- Addressed trailing spaces, line length issues, and other formatting inconsistencies
+- Ensured all documentation follows the project's Markdown guidelines
+
+**Outcome**:
+
+- Updated documentation files to comply with Markdown guidelines
+- Committed changes to the feature branch
+- Verified all files pass markdownlint checks
+
+**Follow-up Actions**:
+
+- Apply Markdown guidelines to remaining documentation files
+- Consider automating Markdown linting in the CI/CD pipeline
+- Update documentation as the project evolves
+
+### 2025-03-22: Documentation Standards and Markdown Guidelines
+
+**Participants**: Aaron Smith, Cline
+
+**Topic**: Establishing documentation standards and Markdown guidelines
+
+**Key Points**:
+
+- Discussed the importance of consistent documentation formatting
+- Identified the need for Markdown linting to ensure consistency
+- Created comprehensive guidelines for writing Markdown documents
+- Added configuration for markdownlint to enforce standards
+- Updated project documentation to reference the new guidelines
+
+**Outcome**:
+
+- Created MARKDOWN_GUIDELINES.md with best practices for formatting documentation
+- Added .markdownlint.json configuration for consistent Markdown formatting
+- Updated README.md to reference the new documentation
+- Updated CHANGELOG.md to reflect the changes
+
+**Follow-up Actions**:
+
+- Apply Markdown guidelines to all existing documentation
+- Set up automated Markdown linting in CI/CD pipeline
+- Consider adding a pre-commit hook for Markdown linting
+
+### 2025-03-22: Schema Implementation and Git Workflow Enhancement
+
+**Participants**: Aaron Smith, Cline
+
+**Topic**: Implementing basic schema definitions and enhancing git workflow
+
+**Key Points**:
+
+- Implemented JSON schema definitions for core graph model components:
+  - Technical assets (servers, applications, databases)
+  - Trust boundaries (network segments, security zones)
+  - Data flows between technical assets
+- Created a schema validator module with comprehensive test suite
+- Developed a demo script to showcase schema validation
+- Updated git workflow to include mandatory user approval step before pushing code
+
+**Outcome**:
+
+- Created schema definitions in JSON Schema format
+- Implemented validator module with 94% test coverage
+- Added example script demonstrating schema validation
+- Updated GIT_WORKFLOW.md to include mandatory user approval step
+- Updated project documentation to reflect changes
+
+**Follow-up Actions**:
+
+- Implement graph data structure using these schemas
+- Create a simple web interface for visualizing the graph
+- Develop risk detection rules based on these schemas
+
 ### 2025-03-22: Architecture and Design Planning
 
 **Participants**: Aaron Smith, Cline
@@ -21,6 +105,7 @@ Each entry should include:
 **Topic**: Creating a comprehensive software architecture and design document
 
 **Key Points**:
+
 - Defined a microservices architecture approach
 - Outlined component architecture for frontend, backend, and schema service
 - Detailed the graph data model with nodes and edges
@@ -29,10 +114,12 @@ Each entry should include:
 - Addressed security, performance, and monitoring considerations
 
 **Outcome**:
+
 - Created ARCHITECTURE.md with detailed software architecture and design
 - Updated CHANGELOG.md to reflect the new document
 
 **Follow-up Actions**:
+
 - Review architecture document for alignment with project goals
 - Begin implementing the core components based on the architecture
 - Set up the initial development environment
@@ -44,6 +131,7 @@ Each entry should include:
 **Topic**: Refining the project vision and planning initial development approach
 
 **Key Points**:
+
 - Discussed the need for a more accessible threat modeling tool
 - Identified key differentiators from existing tools:
   - Visual-first, schema-backed, graph-based approach
@@ -55,12 +143,14 @@ Each entry should include:
 - Discussed graph structure with core entity types and relationships
 
 **Outcome**:
+
 - Enhanced README.md with clearer project vision
 - Created DEVELOPMENT_PLAN.md with incremental approach to feature implementation
 - Set up initial project structure with best practices in mind
 - Established .gitignore, CHANGELOG.md, and INTERACTION_LOG.md
 
 **Follow-up Actions**:
+
 - Set up basic project structure
 - Implement core schema interface
 - Create initial test cases

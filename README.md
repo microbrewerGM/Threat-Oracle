@@ -2,9 +2,14 @@
 
 ## Introduction
 
-Threat modeling is a critical security practice that helps identify, communicate, and understand threats and mitigations within a system. However, traditional threat modeling requires significant expertise, is often manual, and lacks visual representation that makes complex systems understandable.
+Threat modeling is a critical security practice that helps identify, communicate, and understand threats and mitigations
+within a system. However, traditional threat modeling requires significant expertise, is often manual, and lacks visual
+representation that makes complex systems understandable.
 
-Threat Oracle aims to revolutionize this process by providing a visual-first, schema-backed, graph-based threat modeling tool that makes security accessible to everyone. By creating a digital twin of your applications and infrastructure, Threat Oracle enables you to visualize, analyze, and mitigate security risks without requiring deep expertise in threat modeling methodologies.
+Threat Oracle aims to revolutionize this process by providing a visual-first, schema-backed, graph-based threat modeling
+tool that makes security accessible to everyone. By creating a digital twin of your applications and infrastructure,
+Threat Oracle enables you to visualize, analyze, and mitigate security risks without requiring deep expertise in threat
+modeling methodologies.
 
 ## The Problem
 
@@ -30,7 +35,8 @@ Threat Oracle addresses these challenges by:
 ## Features
 
 - **Visual Digital Twin**: Create a comprehensive visual representation of your applications and infrastructure as a graph.
-- **Flexible Graph Schema**: Model technical assets, trust boundaries, data flows, actors, and security controls with customizable properties.
+- **Flexible Graph Schema**: Model technical assets, trust boundaries, data flows, actors, and security controls with
+  customizable properties.
 - **Automated Risk Detection**: Define and apply graph-based rules to automatically identify security risks and vulnerabilities.
 - **Modern Web Interface**: Interact with your models through a beautiful, intuitive interface built with modern web technologies.
 - **Database Flexibility**: Support for Neo4j, Bloom, GraphQL, and Aurora graph databases depending on your operational environment.
@@ -38,62 +44,87 @@ Threat Oracle addresses these challenges by:
 ## Target Audience
 
 Initially, Threat Oracle is designed for:
+
 - Security architects
 - Software architects
 - DevSecOps engineers
 
 As the tool evolves with more AI assistance and improved usability, we aim to expand to:
+
 - Business analysts
 - Product managers
 - Business stakeholders
 
-## Graph Structure
+## Project Documentation
 
-Threat Oracle's core strength lies in its graph-based representation of systems. The graph consists of:
+Threat Oracle maintains comprehensive documentation to guide development and usage:
 
-### Core Entity Types (Nodes)
+- [**Architecture**](ARCHITECTURE.md): Detailed software architecture and design
+- [**Development Plan**](DEVELOPMENT_PLAN.md): Incremental approach to feature implementation
+- [**Git Workflow**](GIT_WORKFLOW.md): Git workflow and best practices
+- [**Contributing Guidelines**](CONTRIBUTING.md): How to contribute to the project
+- [**Markdown Guidelines**](MARKDOWN_GUIDELINES.md): Best practices for formatting documentation
+- [**Changelog**](CHANGELOG.md): Record of all notable changes
+- [**Interaction Log**](INTERACTION_LOG.md): Record of developer and LLM interactions
+- [**Original Vision**](threat_oracle_vision.md): Initial project vision
 
-1. **Technical Assets**: Systems, applications, servers, containers, databases, APIs
-2. **Trust Boundaries**: Network segments, security zones, organizational boundaries
-3. **Data Assets**: Information types processed or stored
-4. **Actors/Personas**: Users, roles, external entities interacting with the system
-5. **Security Controls**: Implemented safeguards and countermeasures
+## Current State
 
-### Key Relationships (Edges)
+Threat Oracle is in early development. Currently implemented features:
 
-1. **Data Flows**: How data moves between technical assets
-2. **Access Relationships**: How actors interact with technical assets
-3. **Trust Relationships**: How entities cross trust boundaries
-4. **Dependency Relationships**: How technical assets depend on each other
-5. **Protection Relationships**: How security controls protect assets
-
-## Roadmap
-
-### Phase 1: Foundation
-- Define the core graph schema
-- Implement the basic web interface
-- Create visualization capabilities
-- Establish database integration
-
-### Phase 2: Enhancement
-- Develop automated risk detection rules
-- Implement basic code repository scanning
-- Add collaboration features
-- Improve visualization capabilities
-
-### Phase 3: AI Integration
-- Add LLM assistance for model creation
-- Implement voice query capabilities
-- Enhance automated model generation from code
-- Develop advanced risk detection algorithms
+- **Schema Definitions**: JSON Schema definitions for technical assets, trust boundaries, and data flows
+- **Schema Validator**: Utility for validating objects against these schemas
+- **Example Usage**: Demo script showing schema validation in action
 
 ## Getting Started
 
-*Coming soon*
+### Prerequisites
+
+- Python 3.9+
+- Node.js 16+
+
+### Installation
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/microbrewerGM/Threat-Oracle.git
+   cd Threat-Oracle
+   ```
+
+2. Install Python dependencies:
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. Install pre-commit hooks:
+
+   ```bash
+   pre-commit install
+   ```
+
+### Running Tests
+
+```bash
+python -m pytest
+```
+
+### Running the Demo
+
+```bash
+python examples/schema_validator_demo.py
+```
+
+## Development Workflow
+
+We follow a feature-branch workflow with mandatory user approval before pushing code.
+See [Git Workflow](GIT_WORKFLOW.md) for details.
 
 ## Contributing
 
-We welcome contributions from the community. Please read our [Contributing Guidelines](CONTRIBUTING.md) before submitting a pull request.
+We welcome contributions from the community. Please read our
+[Contributing Guidelines](CONTRIBUTING.md) before submitting a pull request.
 
 ## License
 
