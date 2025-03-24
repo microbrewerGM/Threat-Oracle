@@ -92,6 +92,48 @@ def wait_for_ci_checks(pr_number):
 
 def approve_pull_request(pr_number):
     """Approve the pull request."""
+    print(f"Checking if PR #{pr_number} can be approved...")
+    
+    # Check if the PR was created by the current user
+    result = subprocess.run(
+        ["gh", "pr", "view", pr_number, "--json", "author"],
+        capture_output=True,
+        text=True,
+    )
+    
+    if result.returncode != 0:
+        print(f"Error checking PR author: {result.stderr}")
+        return False
+    
+    try:
+        pr_data = json.loads(result.stdout)
+        pr_author = pr_data.get("author", {}).get("login", "")
+        
+        # Get current GitHub user
+        user_result = subprocess.run(
+            ["gh", "api", "user", "--jq", ".login"],
+            capture_output=True,
+            text=True,
+        )
+        current_user = user_result.stdout.strip()
+        
+        if pr_author == current_user:
+            print("You cannot approve your own pull request.")
+            print("Please ask another team member to review and approve the PR.")
+            print(f"PR URL: https://github.com/$(gh repo view --json owner,name -q '.owner.login+\"/\"+.name')/pull/{pr_number}")
+            
+            # Ask if the user wants to continue without approval
+            response = input("Do you want to continue without approval? (y/n): ")
+            if response.lower() != 'y':
+                return False
+            
+            print("Continuing without approval...")
+            return True
+    except json.JSONDecodeError:
+        print("Error parsing PR data.")
+        return False
+    
+    # If we get here, the PR can be approved by the current user
     print(f"Approving PR #{pr_number}...")
     result = subprocess.run(
         ["gh", "pr", "review", pr_number, "--approve"],
@@ -108,6 +150,43 @@ def approve_pull_request(pr_number):
 
 def merge_pull_request(pr_number):
     """Merge the pull request."""
+    print(f"Checking if PR #{pr_number} can be merged...")
+    
+    # Check PR status
+    result = subprocess.run(
+        ["gh", "pr", "view", pr_number, "--json", "mergeable,reviewDecision"],
+        capture_output=True,
+        text=True,
+    )
+    
+    if result.returncode != 0:
+        print(f"Error checking PR status: {result.stderr}")
+        return False
+    
+    try:
+        pr_data = json.loads(result.stdout)
+        mergeable = pr_data.get("mergeable", False)
+        review_decision = pr_data.get("reviewDecision", "")
+        
+        if not mergeable:
+            print("PR is not mergeable. There might be conflicts that need to be resolved.")
+            return False
+        
+        if review_decision == "CHANGES_REQUESTED":
+            print("Changes have been requested on this PR. Please address the feedback before merging.")
+            return False
+        
+        if review_decision == "REVIEW_REQUIRED":
+            print("This PR requires review before it can be merged.")
+            
+            # Ask if the user wants to continue without required reviews
+            response = input("Do you want to try merging anyway? (y/n): ")
+            if response.lower() != 'y':
+                return False
+    except json.JSONDecodeError:
+        print("Error parsing PR data.")
+        return False
+    
     print(f"Merging PR #{pr_number}...")
     result = subprocess.run(
         ["gh", "pr", "merge", pr_number, "--squash"],
@@ -117,6 +196,13 @@ def merge_pull_request(pr_number):
     
     if result.returncode != 0:
         print(f"Error merging pull request: {result.stderr}")
+        print("This could be due to branch protection rules requiring approvals or passing CI checks.")
+        
+        # Ask if the user wants to open the PR in the browser
+        response = input("Do you want to open the PR in your browser to check the status? (y/n): ")
+        if response.lower() == 'y':
+            subprocess.run(["gh", "pr", "view", pr_number, "--web"], check=False)
+        
         return False
     
     print("Pull request merged!")
