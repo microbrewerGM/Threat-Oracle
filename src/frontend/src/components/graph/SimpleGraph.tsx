@@ -1,6 +1,7 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import './SimpleGraph.css';
+import AssetDetailPopup from './AssetDetailPopup';
 
 interface Node {
   id: string;
@@ -29,6 +30,65 @@ const SimpleGraph: React.FC<SimpleGraphProps> = ({
   height = 600,
 }) => {
   const svgRef = useRef<SVGSVGElement>(null);
+  const [selectedNode, setSelectedNode] = useState<Node | null>(null);
+  const [popupPosition, setPopupPosition] = useState<{ x: number; y: number } | null>(null);
+  
+  // Determine asset type based on node type
+  const getAssetType = (nodeType: string): 'technical' | 'data' | 'trust' => {
+    if (nodeType.includes('server') || 
+        nodeType.includes('application') || 
+        nodeType.includes('database') || 
+        nodeType.includes('container') || 
+        nodeType.includes('api') || 
+        nodeType.includes('service') || 
+        nodeType.includes('network_device')) {
+      return 'technical';
+    } else if (nodeType.includes('network_segment') || 
+               nodeType.includes('security_zone') || 
+               nodeType.includes('organizational_boundary') || 
+               nodeType.includes('physical_boundary')) {
+      return 'trust';
+    } else {
+      return 'technical'; // Default to technical for now
+    }
+  };
+  
+  const handleNodeClick = (event: MouseEvent, node: Node) => {
+    event.stopPropagation();
+    setSelectedNode(node);
+    setPopupPosition({ x: event.clientX, y: event.clientY });
+  };
+  
+  const handleClosePopup = () => {
+    setSelectedNode(null);
+    setPopupPosition(null);
+  };
+  
+  const handleDrillDown = () => {
+    if (selectedNode) {
+      // Navigate to the appropriate page based on the node type
+      const assetType = getAssetType(selectedNode.type);
+      let url = '';
+      
+      switch (assetType) {
+        case 'technical':
+          url = `/technical-assets?id=${selectedNode.id}`;
+          break;
+        case 'data':
+          url = `/data-assets?id=${selectedNode.id}`;
+          break;
+        case 'trust':
+          url = `/trust-boundaries?id=${selectedNode.id}`;
+          break;
+      }
+      
+      // For now, just log the URL - in a real app, we would use a router to navigate
+      console.log(`Navigating to: ${url}`);
+      
+      // Close the popup
+      handleClosePopup();
+    }
+  };
 
   useEffect(() => {
     if (!svgRef.current || nodes.length === 0) return;
@@ -84,6 +144,9 @@ const SimpleGraph: React.FC<SimpleGraphProps> = ({
       .append('circle')
       .attr('class', (d) => `node node-${d.type}`)
       .attr('r', 10)
+      .on('click', function(event, d) {
+        handleNodeClick(event, d);
+      })
       .call(
         d3
           .drag<SVGCircleElement, any>()
@@ -152,6 +215,16 @@ const SimpleGraph: React.FC<SimpleGraphProps> = ({
   return (
     <div className="simple-graph-container">
       <svg ref={svgRef} width={width} height={height} className="simple-graph" />
+      
+      {selectedNode && popupPosition && (
+        <AssetDetailPopup
+          assetId={selectedNode.id}
+          assetType={getAssetType(selectedNode.type)}
+          position={popupPosition}
+          onClose={handleClosePopup}
+          onDrillDown={handleDrillDown}
+        />
+      )}
     </div>
   );
 };
