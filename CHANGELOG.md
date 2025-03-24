@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Navigation between different views
 - Sample data for demonstration purposes
 - Docker and Conda environment support
+- Planned enhancement for visualization with card-like popups and drilldown functionality
 
 - Initial project vision
 - README.md with enhanced project description

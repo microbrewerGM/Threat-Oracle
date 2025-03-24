@@ -16,6 +16,29 @@ Each entry should include:
 
 ## Interactions
 
+### 2025-03-23: Enhanced Visualization Feature Request
+
+**Participants**: Aaron Smith, Cline
+
+**Topic**: User request for enhanced visualization features
+
+**Key Points**:
+- User requested enhanced info popups on the visualization to include pertinent asset information
+- Suggested card-like visual popups with sections listing important asset information
+- Requested drilldown functionality to access detailed asset data from the popup
+- Proposed using a small font double chevron symbol as a visual indicator for drilldown
+- Emphasized consistent styling across all asset types
+
+**Outcome**:
+- Added new Increment 2.5: Enhanced Visualization to the development plan
+- Enhanced existing Increment 2.4: Interactive Elements with additional tasks
+- Documented specific requirements for the visualization enhancements
+
+**Follow-up Actions**:
+- Implement the enhanced visualization features in future development
+- Consider creating mockups for the card-like popups
+- Research best practices for interactive graph visualizations
+
 ### 2025-03-23: Data Asset Schema Implementation
 
 **Participants**: Aaron Smith, Cline
