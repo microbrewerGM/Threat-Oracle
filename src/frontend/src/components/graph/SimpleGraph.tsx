@@ -1,7 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
+import { useNavigate } from 'react-router-dom';
 import './SimpleGraph.css';
 import AssetDetailPopup from './AssetDetailPopup';
+import EdgeDetailPopup from './EdgeDetailPopup';
 
 interface Node {
   id: string;
@@ -30,7 +32,9 @@ const SimpleGraph: React.FC<SimpleGraphProps> = ({
   height = 600,
 }) => {
   const svgRef = useRef<SVGSVGElement>(null);
+  const navigate = useNavigate();
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
+  const [selectedEdge, setSelectedEdge] = useState<Edge | null>(null);
   const [popupPosition, setPopupPosition] = useState<{ x: number; y: number } | null>(null);
   
   // Determine asset type based on node type
@@ -55,37 +59,49 @@ const SimpleGraph: React.FC<SimpleGraphProps> = ({
   
   const handleNodeClick = (event: MouseEvent, node: Node) => {
     event.stopPropagation();
+    setSelectedEdge(null);
     setSelectedNode(node);
+    setPopupPosition({ x: event.clientX, y: event.clientY });
+  };
+  
+  const handleEdgeClick = (event: MouseEvent, edge: Edge) => {
+    event.stopPropagation();
+    setSelectedNode(null);
+    setSelectedEdge(edge);
     setPopupPosition({ x: event.clientX, y: event.clientY });
   };
   
   const handleClosePopup = () => {
     setSelectedNode(null);
+    setSelectedEdge(null);
     setPopupPosition(null);
   };
   
-  const handleDrillDown = () => {
+  const handleNodeDrillDown = () => {
     if (selectedNode) {
       // Navigate to the appropriate page based on the node type
       const assetType = getAssetType(selectedNode.type);
-      let url = '';
       
       switch (assetType) {
         case 'technical':
-          url = `/technical-assets?id=${selectedNode.id}`;
+          navigate(`/technical-assets?id=${selectedNode.id}`);
           break;
         case 'data':
-          url = `/data-assets?id=${selectedNode.id}`;
+          navigate(`/data-assets?id=${selectedNode.id}`);
           break;
         case 'trust':
-          url = `/trust-boundaries?id=${selectedNode.id}`;
+          navigate(`/trust-boundaries?id=${selectedNode.id}`);
           break;
       }
       
-      // For now, just log the URL - in a real app, we would use a router to navigate
-      console.log(`Navigating to: ${url}`);
-      
       // Close the popup
+      handleClosePopup();
+    }
+  };
+  
+  const handleEdgeDrillDown = () => {
+    if (selectedEdge) {
+      navigate(`/data-flows?id=${selectedEdge.id}`);
       handleClosePopup();
     }
   };
@@ -121,7 +137,10 @@ const SimpleGraph: React.FC<SimpleGraphProps> = ({
       .data(edges)
       .enter()
       .append('line')
-      .attr('class', 'link');
+      .attr('class', 'link')
+      .on('click', function(event, d) {
+        handleEdgeClick(event, d);
+      });
 
     // Create edge labels
     const edgeLabels = svg
@@ -132,7 +151,10 @@ const SimpleGraph: React.FC<SimpleGraphProps> = ({
       .enter()
       .append('text')
       .attr('class', 'edge-label')
-      .text((d) => d.label);
+      .text((d) => d.label)
+      .on('click', function(event, d) {
+        handleEdgeClick(event, d);
+      });
 
     // Create the nodes
     const node = svg
@@ -222,7 +244,16 @@ const SimpleGraph: React.FC<SimpleGraphProps> = ({
           assetType={getAssetType(selectedNode.type)}
           position={popupPosition}
           onClose={handleClosePopup}
-          onDrillDown={handleDrillDown}
+          onDrillDown={handleNodeDrillDown}
+        />
+      )}
+      
+      {selectedEdge && popupPosition && (
+        <EdgeDetailPopup
+          edgeId={selectedEdge.id}
+          position={popupPosition}
+          onClose={handleClosePopup}
+          onDrillDown={handleEdgeDrillDown}
         />
       )}
     </div>
