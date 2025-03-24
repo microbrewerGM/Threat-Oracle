@@ -111,7 +111,11 @@ Add the technical asset node type to the schema with basic properties.
    git push -u origin feature/your-feature-name
    ```
 
-6. **Create a Pull Request**
+6. **Complete the PR Process**
+
+   You can either manually follow steps 6a-9a or use our automated script (6b):
+
+   ### 6a. **Create a Pull Request Manually**
 
    Create a PR on GitHub with the following information:
 
@@ -120,17 +124,17 @@ Add the technical asset node type to the schema with basic properties.
    - Any relevant issue numbers
    - Steps to test the changes
 
-7. **Code Review**
+   ### 7a. **Code Review**
 
    - At least one team member must review and approve the PR
    - Address any feedback from the review
    - Make sure all CI checks pass
 
-8. **Merge the PR**
+   ### 8a. **Merge the PR**
 
    Once the PR is approved and all checks pass, merge the PR using the "Squash and merge" option to keep the history clean.
 
-9. **Delete the Feature Branch**
+   ### 9a. **Delete the Feature Branch**
 
    After the PR is merged, delete the feature branch:
 
@@ -138,6 +142,34 @@ Add the technical asset node type to the schema with basic properties.
    git checkout main
    git pull
    git branch -d feature/your-feature-name
+   ```
+
+   ### 6b. **OR Use the Automated Workflow Script**
+
+   We provide a script to automate the PR creation, review, merge, and cleanup process:
+
+   ```bash
+   python scripts/complete_feature_workflow.py
+   ```
+
+   This script will:
+   - Create a PR with a title and description you provide
+   - Wait for CI checks to complete
+   - Approve the PR
+   - Merge the PR using the squash option
+   - Switch to the main branch and pull the latest changes
+   - Delete the local feature branch
+
+   You can also provide the PR title and body as command-line arguments:
+
+   ```bash
+   python scripts/complete_feature_workflow.py --title "Your PR title" --body "Your PR description"
+   ```
+
+   To skip waiting for CI checks (not recommended):
+
+   ```bash
+   python scripts/complete_feature_workflow.py --skip-ci
    ```
 
 ## Pre-commit and Pre-push Hooks
