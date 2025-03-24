@@ -3,9 +3,11 @@ import {
   technicalAssets as initialTechnicalAssets, 
   trustBoundaries as initialTrustBoundaries,
   dataFlows as initialDataFlows,
+  dataAssets as initialDataAssets,
   TechnicalAsset,
   TrustBoundary,
-  DataFlow
+  DataFlow,
+  DataAsset
 } from './sampleData';
 
 export interface ThreatModel {
@@ -18,7 +20,7 @@ export interface ThreatModel {
   technicalAssets: TechnicalAsset[];
   trustBoundaries: TrustBoundary[];
   dataFlows: DataFlow[];
-  // Will add dataAssets in the future
+  dataAssets: DataAsset[];
 }
 
 interface ModelState {
@@ -44,6 +46,11 @@ interface ModelState {
   addDataFlow: (flow: Omit<DataFlow, 'id'>) => void;
   updateDataFlow: (id: string, updates: Partial<DataFlow>) => void;
   deleteDataFlow: (id: string) => void;
+  
+  // Data Assets
+  addDataAsset: (asset: Omit<DataAsset, 'id'>) => void;
+  updateDataAsset: (id: string, updates: Partial<DataAsset>) => void;
+  deleteDataAsset: (id: string) => void;
 }
 
 // Create a default model with sample data
@@ -56,7 +63,8 @@ const defaultModel: ThreatModel = {
   updated: new Date().toISOString(),
   technicalAssets: initialTechnicalAssets,
   trustBoundaries: initialTrustBoundaries,
-  dataFlows: initialDataFlows
+  dataFlows: initialDataFlows,
+  dataAssets: initialDataAssets
 };
 
 // Create the store
@@ -229,6 +237,47 @@ export const useModelStore = create<ModelState>((set, get) => ({
     
     updateModel(currentModel.id, {
       dataFlows: currentModel.dataFlows.filter(flow => flow.id !== id),
+      updated: new Date().toISOString()
+    });
+  },
+  
+  // Data Assets
+  addDataAsset: (asset) => {
+    const { getCurrentModel, updateModel } = get();
+    const currentModel = getCurrentModel();
+    if (!currentModel) return;
+    
+    const newAsset: DataAsset = {
+      ...asset,
+      id: `da-${Date.now()}`
+    };
+    
+    updateModel(currentModel.id, {
+      dataAssets: [...currentModel.dataAssets, newAsset],
+      updated: new Date().toISOString()
+    });
+  },
+  
+  updateDataAsset: (id, updates) => {
+    const { getCurrentModel, updateModel } = get();
+    const currentModel = getCurrentModel();
+    if (!currentModel) return;
+    
+    updateModel(currentModel.id, {
+      dataAssets: currentModel.dataAssets.map(asset => 
+        asset.id === id ? { ...asset, ...updates } : asset
+      ),
+      updated: new Date().toISOString()
+    });
+  },
+  
+  deleteDataAsset: (id) => {
+    const { getCurrentModel, updateModel } = get();
+    const currentModel = getCurrentModel();
+    if (!currentModel) return;
+    
+    updateModel(currentModel.id, {
+      dataAssets: currentModel.dataAssets.filter(asset => asset.id !== id),
       updated: new Date().toISOString()
     });
   }

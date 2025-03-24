@@ -55,12 +55,12 @@ We will follow these principles:
 - [x] Create tests for relationship validation
 - [x] Document relationship schema
 
-### Increment 1.4: Data Asset Nodes (Pending)
+### Increment 1.4: Data Asset Nodes (Completed)
 
-- [ ] Define schema for data asset nodes
-- [ ] Implement validation for data asset properties
-- [ ] Create tests for data asset validation
-- [ ] Document data asset schema
+- [x] Define schema for data asset nodes
+- [x] Implement validation for data asset properties
+- [x] Create tests for data asset validation
+- [x] Document data asset schema
 
 ## Phase 2: Basic Visualization (Current)
 

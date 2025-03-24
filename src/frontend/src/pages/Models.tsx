@@ -25,7 +25,8 @@ const Models: React.FC = () => {
       version: '0.1.0',
       technicalAssets: [],
       trustBoundaries: [],
-      dataFlows: []
+      dataFlows: [],
+      dataAssets: []
     });
 
     setNewModelName('');
@@ -72,7 +73,8 @@ const Models: React.FC = () => {
         version: modelData.version,
         technicalAssets: modelData.technicalAssets || [],
         trustBoundaries: modelData.trustBoundaries || [],
-        dataFlows: modelData.dataFlows || []
+        dataFlows: modelData.dataFlows || [],
+        dataAssets: modelData.dataAssets || []
       });
       
       setImportText('');
@@ -200,7 +202,11 @@ const Models: React.FC = () => {
             <div className="model-assets-col">
               <div className="asset-count">
                 <span className="count">{model.technicalAssets.length}</span>
-                <span className="label">Assets</span>
+                <span className="label">Tech Assets</span>
+              </div>
+              <div className="asset-count">
+                <span className="count">{model.dataAssets.length}</span>
+                <span className="label">Data Assets</span>
               </div>
               <div className="asset-count">
                 <span className="count">{model.trustBoundaries.length}</span>

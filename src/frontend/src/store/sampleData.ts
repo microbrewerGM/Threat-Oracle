@@ -1,5 +1,27 @@
 // Sample data for demonstration purposes
 
+export interface DataAsset {
+  id: string;
+  name: string;
+  description?: string;
+  type: 'pii' | 'pfi' | 'phi' | 'intellectual_property' | 'authentication_data' | 'configuration' | 'logs' | 'business_data' | 'operational_data' | 'other';
+  medium: 'digital' | 'physical' | 'hybrid';
+  classification: 'public' | 'internal' | 'confidential' | 'restricted' | 'secret' | 'top_secret';
+  format?: string;
+  volume?: string;
+  owner?: string;
+  retention_period?: string;
+  regulatory_requirements?: string[];
+  encryption_requirements?: 'none' | 'in_transit' | 'at_rest' | 'both' | 'end_to_end';
+  integrity_requirements?: 'low' | 'medium' | 'high' | 'critical';
+  availability_requirements?: 'low' | 'medium' | 'high' | 'critical';
+  stored_in?: string[];
+  processed_by?: string[];
+  transmitted_in?: string[];
+  tags?: string[];
+  metadata?: Record<string, any>;
+}
+
 export interface TechnicalAsset {
   id: string;
   name: string;
@@ -120,6 +142,75 @@ export const trustBoundaries: TrustBoundary[] = [
   }
 ];
 
+// Sample data assets
+export const dataAssets: DataAsset[] = [
+  {
+    id: 'da-001',
+    name: 'Customer Records',
+    description: 'Customer personal information including names, addresses, and contact details',
+    type: 'pii',
+    medium: 'digital',
+    classification: 'confidential',
+    format: 'JSON',
+    volume: '10GB',
+    owner: 'Data Management Team',
+    retention_period: '7 years',
+    regulatory_requirements: ['GDPR', 'CCPA'],
+    encryption_requirements: 'both',
+    integrity_requirements: 'high',
+    availability_requirements: 'medium',
+    stored_in: ['ta-003'],
+    processed_by: ['ta-002'],
+    transmitted_in: ['df-002'],
+    tags: ['customer', 'personal']
+  },
+  {
+    id: 'da-002',
+    name: 'Authentication Credentials',
+    description: 'User authentication credentials and session tokens',
+    type: 'authentication_data',
+    medium: 'digital',
+    classification: 'restricted',
+    format: 'Encrypted Database Records',
+    owner: 'Security Team',
+    encryption_requirements: 'both',
+    integrity_requirements: 'critical',
+    availability_requirements: 'high',
+    stored_in: ['ta-004'],
+    processed_by: ['ta-004'],
+    transmitted_in: ['df-003'],
+    tags: ['security', 'credentials']
+  },
+  {
+    id: 'da-003',
+    name: 'System Configuration',
+    description: 'Application and system configuration settings',
+    type: 'configuration',
+    medium: 'digital',
+    classification: 'internal',
+    format: 'YAML/JSON',
+    owner: 'Operations Team',
+    encryption_requirements: 'at_rest',
+    integrity_requirements: 'high',
+    availability_requirements: 'high',
+    stored_in: ['ta-001', 'ta-002'],
+    tags: ['configuration', 'settings']
+  },
+  {
+    id: 'da-004',
+    name: 'Printed Reports',
+    description: 'Physical printed reports containing business analytics',
+    type: 'business_data',
+    medium: 'physical',
+    classification: 'confidential',
+    owner: 'Business Intelligence Team',
+    retention_period: '5 years',
+    integrity_requirements: 'medium',
+    availability_requirements: 'low',
+    tags: ['reports', 'physical', 'analytics']
+  }
+];
+
 // Sample data flows
 export const dataFlows: DataFlow[] = [
   {
@@ -132,6 +223,7 @@ export const dataFlows: DataFlow[] = [
     port: 443,
     is_encrypted: true,
     authentication_method: 'token',
+    data_assets: ['da-003'],
     crosses_trust_boundary: true,
     trust_boundary_id: 'tb-001',
     tags: ['api', 'encrypted']
@@ -146,6 +238,7 @@ export const dataFlows: DataFlow[] = [
     port: 5432,
     is_encrypted: true,
     authentication_method: 'certificate',
+    data_assets: ['da-001'],
     crosses_trust_boundary: true,
     trust_boundary_id: 'tb-003',
     tags: ['data', 'encrypted']
@@ -160,6 +253,7 @@ export const dataFlows: DataFlow[] = [
     port: 8443,
     is_encrypted: true,
     authentication_method: 'certificate',
+    data_assets: ['da-002'],
     crosses_trust_boundary: false,
     tags: ['auth', 'encrypted']
   }
