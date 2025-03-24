@@ -35,6 +35,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Refined development plan with smaller, more manageable increments and time estimates
+- Reorganized features into smaller sub-increments with 1-3 day timeframes
+- Added new increment for layout and styling enhancements
 - Renamed original README.md to threat_oracle_vision.md
 - Restructured project to start fresh implementation
 - Updated git workflow to include mandatory user approval step
