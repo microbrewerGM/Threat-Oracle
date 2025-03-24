@@ -15,7 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Navigation between different views
 - Sample data for demonstration purposes
 - Docker and Conda environment support
-- Planned enhancement for visualization with card-like popups and drilldown functionality
+- Enhanced visualization with card-like popups for assets and data flows
+- Added drilldown functionality to navigate to detailed views
+- Implemented edge popup functionality to show data flow information
 
 - Initial project vision
 - README.md with enhanced project description
