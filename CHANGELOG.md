@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Neo4j integration with core graph data structure for backend
+- FastAPI endpoints for graph operations (nodes, edges, queries)
+- Backend repository pattern for database operations
+- Graph models with serialization/deserialization support
+- Transaction management and connection pooling for Neo4j
 - Data asset schema definition for representing various types of information assets
 - Simple web interface with React and TypeScript
 - Basic visualization of threat model components

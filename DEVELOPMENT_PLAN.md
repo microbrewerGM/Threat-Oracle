@@ -64,12 +64,42 @@ We will follow these principles:
 
 ## Phase 2: Basic Visualization (Current)
 
-### Increment 2.1: Graph Data Structure (In Progress)
+### Increment 2.1: Graph Data Structure and Neo4j Integration
 
-- [ ] Implement core graph data structure
-- [ ] Create methods for adding/removing nodes and edges
-- [ ] Implement basic graph traversal
-- [ ] Create tests for graph operations
+#### Increment 2.1.1: Core Data Models (1-2 days) ✓
+- [x] Create base Node and Edge classes with required properties
+- [x] Implement Graph class for managing collections of nodes and edges
+- [x] Add methods for adding/removing nodes and edges
+- [x] Implement basic graph traversal functionality
+- [x] Add serialization/deserialization support for database operations
+
+#### Increment 2.1.2: Neo4j Database Client (1-2 days) ✓
+- [x] Implement Neo4j client with connection pooling
+- [x] Create database configuration and settings module
+- [x] Add transaction management and query execution
+- [x] Implement error handling and connection recovery
+- [x] Set up connection management lifecycle (init/close)
+
+#### Increment 2.1.3: Graph Repository Layer (1-2 days) ✓
+- [x] Create repository pattern for graph operations
+- [x] Implement CRUD operations for nodes
+- [x] Implement edge creation between nodes
+- [x] Add methods for retrieving entire graph structures
+- [x] Handle data conversion between Neo4j and application models
+
+#### Increment 2.1.4: API Integration (1-2 days)
+- [x] Set up FastAPI endpoints for graph operations
+- [x] Implement routes for node and edge manipulation
+- [x] Add error handling and validation
+- [x] Configure CORS and API versioning
+- [ ] Create API tests
+
+#### Increment 2.1.5: Docker Orchestration (1 day)
+- [x] Configure Neo4j in docker-compose
+- [ ] Set up proper volume mounts for data persistence
+- [ ] Configure environment variables for connections
+- [ ] Add database initialization script
+- [ ] Test full containerized setup
 
 ### Increment 2.2: Simple Web Interface (Completed)
 
