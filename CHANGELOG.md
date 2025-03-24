@@ -39,6 +39,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Restructured project to start fresh implementation
 - Updated git workflow to include mandatory user approval step
 
+### Security
+
+- Updated frontend dependencies to address esbuild vulnerability (CVE-2023-45133)
+- Updated vite, vite-node, vitest, and related packages to latest secure versions
+- Updated backend Python dependencies to latest versions, including:
+  - fastapi from 0.104.1 to 0.115.12
+  - uvicorn from 0.23.2 to 0.34.0
+  - pydantic from 2.4.2 to 2.10.6
+  - neo4j from 5.14.0 to 5.28.1
+  - httpx from 0.25.0 to 0.28.1
+  - Added cryptography 44.0.2
+- Updated dev dependencies including black, ruff, mypy, and pre-commit
+
 ### Removed
 
 - Moved old code to old_code/ directories for reference
