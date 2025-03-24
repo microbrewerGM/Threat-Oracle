@@ -9,11 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Data asset schema definition for representing various types of information assets
 - Simple web interface with React and TypeScript
 - Basic visualization of threat model components
 - Navigation between different views
 - Sample data for demonstration purposes
 - Docker and Conda environment support
+- Enhanced visualization with card-like popups for assets and data flows
+- Added drilldown functionality to navigate to detailed views
+- Implemented edge popup functionality to show data flow information
 
 - Initial project vision
 - README.md with enhanced project description

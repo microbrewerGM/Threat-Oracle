@@ -70,7 +70,13 @@
 .link {
   stroke: #999;
   stroke-opacity: 0.6;
-  stroke-width: 1.5px;
+  stroke-width: 2px;
+  cursor: pointer;
+}
+
+.link:hover {
+  stroke-opacity: 1;
+  stroke-width: 3px;
 }
 
 /* Label styles */
@@ -83,8 +89,13 @@
 .edge-label {
   font-size: 10px;
   text-anchor: middle;
-  pointer-events: none;
   user-select: none;
   fill: #666;
   background-color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+}
+
+.edge-label:hover {
+  fill: #333;
+  font-weight: bold;
 }

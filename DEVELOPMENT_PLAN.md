@@ -55,12 +55,12 @@ We will follow these principles:
 - [x] Create tests for relationship validation
 - [x] Document relationship schema
 
-### Increment 1.4: Data Asset Nodes (Pending)
+### Increment 1.4: Data Asset Nodes (Completed)
 
-- [ ] Define schema for data asset nodes
-- [ ] Implement validation for data asset properties
-- [ ] Create tests for data asset validation
-- [ ] Document data asset schema
+- [x] Define schema for data asset nodes
+- [x] Implement validation for data asset properties
+- [x] Create tests for data asset validation
+- [x] Document data asset schema
 
 ## Phase 2: Basic Visualization (Current)
 
@@ -90,7 +90,18 @@ We will follow these principles:
 - [ ] Add ability to select nodes and edges
 - [ ] Implement zooming and panning
 - [ ] Add node/edge details panel
+- [ ] Implement card-like visual popups with sections for asset information
+- [ ] Add drilldown functionality with double chevron symbol for detailed asset view
 - [ ] Create tests for interactive features
+
+### Increment 2.5: Enhanced Visualization (User Requested)
+
+- [ ] Enhance info popups to display pertinent asset information in card-like format
+- [ ] Implement sectioned cards with categorized asset information
+- [ ] Add drilldown capability to access detailed asset data from popup
+- [ ] Include visual indicators (double chevron symbol) for drilldown functionality
+- [ ] Ensure consistent styling across all asset types (technical, data, trust boundaries)
+- [ ] Create tests for enhanced visualization features
 
 ## Phase 3: Model Creation and Editing (Weeks 5-6)
 

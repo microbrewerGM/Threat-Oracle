@@ -1,6 +1,9 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
+import { useNavigate } from 'react-router-dom';
 import './SimpleGraph.css';
+import AssetDetailPopup from './AssetDetailPopup';
+import EdgeDetailPopup from './EdgeDetailPopup';
 
 interface Node {
   id: string;
@@ -29,6 +32,79 @@ const SimpleGraph: React.FC<SimpleGraphProps> = ({
   height = 600,
 }) => {
   const svgRef = useRef<SVGSVGElement>(null);
+  const navigate = useNavigate();
+  const [selectedNode, setSelectedNode] = useState<Node | null>(null);
+  const [selectedEdge, setSelectedEdge] = useState<Edge | null>(null);
+  const [popupPosition, setPopupPosition] = useState<{ x: number; y: number } | null>(null);
+  
+  // Determine asset type based on node type
+  const getAssetType = (nodeType: string): 'technical' | 'data' | 'trust' => {
+    if (nodeType.includes('server') || 
+        nodeType.includes('application') || 
+        nodeType.includes('database') || 
+        nodeType.includes('container') || 
+        nodeType.includes('api') || 
+        nodeType.includes('service') || 
+        nodeType.includes('network_device')) {
+      return 'technical';
+    } else if (nodeType.includes('network_segment') || 
+               nodeType.includes('security_zone') || 
+               nodeType.includes('organizational_boundary') || 
+               nodeType.includes('physical_boundary')) {
+      return 'trust';
+    } else {
+      return 'technical'; // Default to technical for now
+    }
+  };
+  
+  const handleNodeClick = (event: MouseEvent, node: Node) => {
+    event.stopPropagation();
+    setSelectedEdge(null);
+    setSelectedNode(node);
+    setPopupPosition({ x: event.clientX, y: event.clientY });
+  };
+  
+  const handleEdgeClick = (event: MouseEvent, edge: Edge) => {
+    event.stopPropagation();
+    setSelectedNode(null);
+    setSelectedEdge(edge);
+    setPopupPosition({ x: event.clientX, y: event.clientY });
+  };
+  
+  const handleClosePopup = () => {
+    setSelectedNode(null);
+    setSelectedEdge(null);
+    setPopupPosition(null);
+  };
+  
+  const handleNodeDrillDown = () => {
+    if (selectedNode) {
+      // Navigate to the appropriate page based on the node type
+      const assetType = getAssetType(selectedNode.type);
+      
+      switch (assetType) {
+        case 'technical':
+          navigate(`/technical-assets?id=${selectedNode.id}`);
+          break;
+        case 'data':
+          navigate(`/data-assets?id=${selectedNode.id}`);
+          break;
+        case 'trust':
+          navigate(`/trust-boundaries?id=${selectedNode.id}`);
+          break;
+      }
+      
+      // Close the popup
+      handleClosePopup();
+    }
+  };
+  
+  const handleEdgeDrillDown = () => {
+    if (selectedEdge) {
+      navigate(`/data-flows?id=${selectedEdge.id}`);
+      handleClosePopup();
+    }
+  };
 
   useEffect(() => {
     if (!svgRef.current || nodes.length === 0) return;
@@ -61,7 +137,10 @@ const SimpleGraph: React.FC<SimpleGraphProps> = ({
       .data(edges)
       .enter()
       .append('line')
-      .attr('class', 'link');
+      .attr('class', 'link')
+      .on('click', function(event, d) {
+        handleEdgeClick(event, d);
+      });
 
     // Create edge labels
     const edgeLabels = svg
@@ -72,7 +151,10 @@ const SimpleGraph: React.FC<SimpleGraphProps> = ({
       .enter()
       .append('text')
       .attr('class', 'edge-label')
-      .text((d) => d.label);
+      .text((d) => d.label)
+      .on('click', function(event, d) {
+        handleEdgeClick(event, d);
+      });
 
     // Create the nodes
     const node = svg
@@ -84,6 +166,9 @@ const SimpleGraph: React.FC<SimpleGraphProps> = ({
       .append('circle')
       .attr('class', (d) => `node node-${d.type}`)
       .attr('r', 10)
+      .on('click', function(event, d) {
+        handleNodeClick(event, d);
+      })
       .call(
         d3
           .drag<SVGCircleElement, any>()
@@ -152,6 +237,25 @@ const SimpleGraph: React.FC<SimpleGraphProps> = ({
   return (
     <div className="simple-graph-container">
       <svg ref={svgRef} width={width} height={height} className="simple-graph" />
+      
+      {selectedNode && popupPosition && (
+        <AssetDetailPopup
+          assetId={selectedNode.id}
+          assetType={getAssetType(selectedNode.type)}
+          position={popupPosition}
+          onClose={handleClosePopup}
+          onDrillDown={handleNodeDrillDown}
+        />
+      )}
+      
+      {selectedEdge && popupPosition && (
+        <EdgeDetailPopup
+          edgeId={selectedEdge.id}
+          position={popupPosition}
+          onClose={handleClosePopup}
+          onDrillDown={handleEdgeDrillDown}
+        />
+      )}
     </div>
   );
 };

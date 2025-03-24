@@ -74,3 +74,11 @@ repos:
         pass_filenames: false
         always_run: true
         stages: [push]
+        
+      - id: check-user-approval
+        name: Check User Approval
+        entry: python scripts/check_user_approval.py
+        language: python
+        pass_filenames: false
+        always_run: true
+        stages: [push]

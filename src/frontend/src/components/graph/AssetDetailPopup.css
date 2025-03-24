@@ -1,0 +1,152 @@
+.asset-detail-popup {
+  position: absolute;
+  background-color: white;
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  width: 350px;
+  max-height: 500px;
+  overflow-y: auto;
+  z-index: 1000;
+  border: 1px solid var(--border-color);
+  transform: translate(-50%, -100%);
+  margin-top: -15px;
+}
+
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--light-color);
+  border-top-left-radius: var(--border-radius);
+  border-top-right-radius: var(--border-radius);
+}
+
+.popup-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--dark-color);
+}
+
+.popup-header .close-button {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: var(--text-secondary-color);
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.popup-header .close-button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: var(--text-color);
+}
+
+.popup-content {
+  padding: 16px;
+}
+
+.popup-section {
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.popup-section:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.popup-section h4 {
+  margin: 0 0 8px 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary-color);
+}
+
+.info-row {
+  display: flex;
+  margin-bottom: 4px;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.info-label {
+  font-weight: 500;
+  width: 100px;
+  color: var(--text-secondary-color);
+}
+
+.info-value {
+  flex: 1;
+}
+
+.related-list {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 0.9rem;
+}
+
+.related-list li {
+  margin-bottom: 4px;
+}
+
+.tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.tag {
+  background-color: var(--light-color);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 2px 8px;
+  font-size: 0.8rem;
+}
+
+.popup-footer {
+  padding: 12px 16px;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.drilldown-button {
+  background-color: transparent;
+  border: none;
+  color: var(--primary-color);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: var(--border-radius);
+}
+
+.drilldown-button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.chevron {
+  font-size: 0.8rem;
+  margin-left: 4px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .asset-detail-popup {
+    width: 300px;
+    max-height: 400px;
+  }
+}

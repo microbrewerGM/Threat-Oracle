@@ -1,0 +1,117 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Data Asset",
+  "description": "Schema for a data asset node in the threat model graph",
+  "type": "object",
+  "required": ["id", "name", "type", "medium", "classification"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for the data asset"
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-readable name of the data asset"
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed description of the data asset"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "pii", 
+        "pfi", 
+        "phi", 
+        "intellectual_property", 
+        "authentication_data", 
+        "configuration", 
+        "logs", 
+        "business_data", 
+        "operational_data", 
+        "other"
+      ],
+      "description": "Type of data contained in the asset"
+    },
+    "medium": {
+      "type": "string",
+      "enum": ["digital", "physical", "hybrid"],
+      "description": "Physical form of the data asset"
+    },
+    "classification": {
+      "type": "string",
+      "enum": ["public", "internal", "confidential", "restricted", "secret", "top_secret"],
+      "description": "Confidentiality classification of the data"
+    },
+    "format": {
+      "type": "string",
+      "description": "Format or structure of the data (e.g., JSON, XML, CSV, PDF, plaintext)"
+    },
+    "volume": {
+      "type": "string",
+      "description": "Approximate size or volume of the data"
+    },
+    "owner": {
+      "type": "string",
+      "description": "Owner or responsible party for the data asset"
+    },
+    "retention_period": {
+      "type": "string",
+      "description": "How long the data should be retained"
+    },
+    "regulatory_requirements": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Regulatory frameworks that apply to this data (e.g., GDPR, HIPAA, PCI-DSS)"
+    },
+    "encryption_requirements": {
+      "type": "string",
+      "enum": ["none", "in_transit", "at_rest", "both", "end_to_end"],
+      "description": "Encryption requirements for the data"
+    },
+    "integrity_requirements": {
+      "type": "string",
+      "enum": ["low", "medium", "high", "critical"],
+      "description": "Importance of data integrity"
+    },
+    "availability_requirements": {
+      "type": "string",
+      "enum": ["low", "medium", "high", "critical"],
+      "description": "Importance of data availability"
+    },
+    "stored_in": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "IDs of technical assets where this data is stored"
+    },
+    "processed_by": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "IDs of technical assets that process this data"
+    },
+    "transmitted_in": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "IDs of data flows that transmit this data"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tags for categorizing the data asset"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional metadata for the data asset"
+    }
+  }
+}
