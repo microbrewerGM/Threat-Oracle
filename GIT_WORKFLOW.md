@@ -140,15 +140,16 @@ Add the technical asset node type to the schema with basic properties.
    git branch -d feature/your-feature-name
    ```
 
-## Pre-commit Hooks
+## Pre-commit and Pre-push Hooks
 
-We use pre-commit hooks to ensure code quality and consistency. These hooks run automatically when you commit changes.
+We use pre-commit and pre-push hooks to ensure code quality, consistency, and adherence to our development workflow. These hooks run automatically when you commit or push changes.
 
-To install the pre-commit hooks:
+To install the hooks:
 
 ```bash
 pip install pre-commit
 pre-commit install
+pre-commit install --hook-type pre-push
 ```
 
 The pre-commit hooks will:
@@ -160,6 +161,12 @@ The pre-commit hooks will:
 - Run type checking (mypy)
 - Update the changelog
 
+The pre-push hooks will:
+
+- Run all tests to ensure they pass
+- Check for user approval in the INTERACTION_LOG.md file
+- Prevent pushing if any checks fail
+
 ## Continuous Integration
 
 All PRs trigger CI checks that:
@@ -169,8 +176,9 @@ All PRs trigger CI checks that:
 3. Run linters
 4. Perform type checking
 5. Check for security vulnerabilities
+6. Verify user approval in the INTERACTION_LOG.md file
 
-PRs cannot be merged until all CI checks pass.
+PRs cannot be merged until all CI checks pass. This ensures that all features have been demonstrated to and approved by the user before they are merged into the main branch.
 
 ## Release Process
 
