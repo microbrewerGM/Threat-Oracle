@@ -80,22 +80,45 @@ We will follow these principles:
 
 ### Increment 2.3: Basic Visualization
 
-- [ ] Integrate basic graph visualization library
-- [ ] Implement node rendering
-- [ ] Implement edge rendering
-- [ ] Add tests for visualization components
+#### Increment 2.3.1: Graph Library Integration (1-2 days)
+- [ ] Select and integrate a graph visualization library (D3.js, vis.js, etc.)
+- [ ] Create a basic wrapper component for the library
+- [ ] Implement basic graph rendering with placeholder nodes
+- [ ] Add tests for the wrapper component
+
+#### Increment 2.3.2: Basic Node Visualization (2-3 days)
+- [ ] Implement technical asset node rendering with basic styling
+- [ ] Add visual distinction between different node types
+- [ ] Implement basic labeling for nodes
+- [ ] Add tests for node rendering
+
+#### Increment 2.3.3: Basic Edge Visualization (1-2 days)
+- [ ] Implement data flow edge rendering with directional indicators
+- [ ] Add visual styling for edges
+- [ ] Implement basic labeling for edges
+- [ ] Add tests for edge rendering
 
 ### Increment 2.4: Interactive Elements
 
-- [ ] Add ability to select nodes and edges
-- [ ] Implement zooming and panning
-- [ ] Add node/edge details panel
-- [ ] Implement card-like visual popups with sections for asset information
-- [ ] Add drilldown functionality with double chevron symbol for detailed asset view
-- [ ] Create tests for interactive features
+#### Increment 2.4.1: Basic Interaction Handlers (2-3 days)
+- [ ] Implement zoom and pan functionality
+- [ ] Add node/edge selection capability
+- [ ] Implement hover effects
+- [ ] Add tests for interaction handlers
+
+#### Increment 2.4.2: Asset Information Display (2-3 days)
+- [ ] Create a simple sidebar for displaying selected node/edge information
+- [ ] Implement data binding between selection and information display
+- [ ] Add basic formatting for different asset types
+- [ ] Add tests for information display
+
+#### Increment 2.4.3: Enhanced Popup Implementation (2-3 days)
+- [ ] Create card-like popup components for nodes
+- [ ] Implement sectioned information display
+- [ ] Add drilldown functionality with visual indicators (double chevron symbol)
+- [ ] Add tests for popup components
 
 ### Increment 2.5: Enhanced Visualization (User Requested)
-
 - [ ] Enhance info popups to display pertinent asset information in card-like format
 - [ ] Implement sectioned cards with categorized asset information
 - [ ] Add drilldown capability to access detailed asset data from popup
@@ -103,65 +126,183 @@ We will follow these principles:
 - [ ] Ensure consistent styling across all asset types (technical, data, trust boundaries)
 - [ ] Create tests for enhanced visualization features
 
+### Increment 2.6: Layout and Styling
+
+#### Increment 2.6.1: Auto-Layout Functionality (2-3 days)
+- [ ] Implement force-directed layout algorithm
+- [ ] Add manual node positioning capability
+- [ ] Implement layout persistence
+- [ ] Add tests for layout functionality
+
+#### Increment 2.6.2: Visual Styling Enhancements (1-2 days)
+- [ ] Implement consistent color scheme for different asset types
+- [ ] Add visual indicators for risk levels or security status
+- [ ] Implement customizable node/edge appearance
+- [ ] Add tests for styling components
+
 ## Phase 3: Model Creation and Editing (Weeks 5-6)
 
 ### Increment 3.1: Model Creation
 
-- [ ] Implement model creation interface
-- [ ] Add ability to create new nodes
-- [ ] Add ability to create new edges
-- [ ] Create tests for model creation
+#### Increment 3.1.1: Node Creation (2-3 days)
+- [ ] Implement UI for adding new technical asset nodes
+- [ ] Create form validation for required fields
+- [ ] Add capability to position new nodes on the graph
+- [ ] Add tests for node creation
+
+#### Increment 3.1.2: Edge Creation (2-3 days)
+- [ ] Implement UI for adding data flows between nodes
+- [ ] Create source/target selection interface
+- [ ] Add form validation for relationship properties
+- [ ] Add tests for edge creation
+
+#### Increment 3.1.3: Trust Boundary Creation (2-3 days)
+- [ ] Implement UI for defining trust boundaries
+- [ ] Create capability to group nodes within boundaries
+- [ ] Add styling for boundary visualization
+- [ ] Add tests for boundary creation
 
 ### Increment 3.2: Model Editing
 
-- [ ] Implement node editing
-- [ ] Implement edge editing
-- [ ] Add property editing interface
-- [ ] Create tests for model editing
+#### Increment 3.2.1: Property Editing Interface (2-3 days)
+- [ ] Create reusable property editing components
+- [ ] Implement form validation for different property types
+- [ ] Add support for specialized property editors (e.g., enum dropdowns)
+- [ ] Add tests for property editing components
+
+#### Increment 3.2.2: Node Editing (2-3 days)
+- [ ] Implement technical asset editing interface
+- [ ] Add data asset editing interface
+- [ ] Create trust boundary editing interface
+- [ ] Add tests for node editing
+
+#### Increment 3.2.3: Edge Editing (1-2 days)
+- [ ] Implement data flow relationship editing
+- [ ] Add support for changing source/target nodes
+- [ ] Create validation for relationship constraints
+- [ ] Add tests for edge editing
 
 ### Increment 3.3: Model Import/Export
 
-- [ ] Implement model export to JSON
-- [ ] Implement model import from JSON
+#### Increment 3.3.1: Model Export (1-2 days)
+- [ ] Implement export to JSON functionality
+- [ ] Add option to export selected components or entire model
+- [ ] Create export format validation
+- [ ] Add tests for export functionality
+
+#### Increment 3.3.2: Model Import (2-3 days)
+- [ ] Implement import from JSON interface
 - [ ] Add validation for imported models
-- [ ] Create tests for import/export
+- [ ] Create conflict resolution for duplicates
+- [ ] Add tests for import functionality
+
+#### Increment 3.3.3: Import/Export Extensions (1-2 days)
+- [ ] Add support for CSV import/export for tabular data
+- [ ] Implement template-based exports
+- [ ] Create documentation for import/export formats
+- [ ] Add tests for extended import/export features
 
 ### Increment 3.4: Model Versioning
 
-- [ ] Implement model versioning
-- [ ] Add ability to view model history
-- [ ] Implement model comparison
-- [ ] Create tests for versioning features
+#### Increment 3.4.1: Version Tracking (2-3 days)
+- [ ] Implement model versioning mechanism
+- [ ] Create version metadata storage
+- [ ] Add user interface for version management
+- [ ] Add tests for version tracking
+
+#### Increment 3.4.2: History Viewing (1-2 days)
+- [ ] Implement model history browser
+- [ ] Add ability to view model at specific versions
+- [ ] Create version comparison visualization
+- [ ] Add tests for history viewing
+
+#### Increment 3.4.3: Collaborative Features (2-3 days)
+- [ ] Add user attribution for changes
+- [ ] Implement change comments/annotations
+- [ ] Create basic review workflow
+- [ ] Add tests for collaborative features
 
 ## Phase 4: Database Integration (Weeks 7-8)
 
 ### Increment 4.1: Neo4j Integration
 
-- [ ] Set up Neo4j connection
-- [ ] Implement model persistence
-- [ ] Add model retrieval
-- [ ] Create tests for Neo4j integration
+#### Increment 4.1.1: Database Connection Setup (1-2 days)
+- [ ] Set up Neo4j connection configuration
+- [ ] Create database connection management classes
+- [ ] Implement connection pooling
+- [ ] Add tests for database connectivity
+
+#### Increment 4.1.2: Model Persistence (2-3 days)
+- [ ] Implement graph model to Neo4j mapping
+- [ ] Create CRUD operations for nodes
+- [ ] Implement CRUD operations for relationships
+- [ ] Add tests for persistence operations
+
+#### Increment 4.1.3: Model Retrieval (2-3 days)
+- [ ] Implement model loading from database
+- [ ] Create efficient query patterns for graph traversal
+- [ ] Add caching mechanisms for frequently accessed data
+- [ ] Add tests for model retrieval
 
 ### Increment 4.2: Query Interface
 
-- [ ] Implement basic query interface
-- [ ] Add predefined queries
-- [ ] Create query builder
-- [ ] Add tests for query functionality
+#### Increment 4.2.1: Basic Query Building (2-3 days)
+- [ ] Create query builder interface for graph pattern matching
+- [ ] Implement node and relationship filtering
+- [ ] Add property-based search capabilities
+- [ ] Add tests for query building
+
+#### Increment 4.2.2: Predefined Queries (1-2 days)
+- [ ] Implement common threat model queries
+- [ ] Create parameterized query templates
+- [ ] Add query result formatting
+- [ ] Add tests for predefined queries
+
+#### Increment 4.2.3: Advanced Query Features (2-3 days)
+- [ ] Implement path finding and graph traversal queries
+- [ ] Add aggregation and analytics queries
+- [ ] Create visualization-specific query optimizations
+- [ ] Add tests for advanced query features
 
 ### Increment 4.3: GraphQL API
 
-- [ ] Define GraphQL schema
-- [ ] Implement GraphQL resolvers
-- [ ] Create GraphQL endpoints
-- [ ] Add tests for GraphQL API
+#### Increment 4.3.1: GraphQL Schema Definition (1-2 days)
+- [ ] Define GraphQL types for nodes and relationships
+- [ ] Create GraphQL queries and mutations
+- [ ] Implement schema stitching for complex operations
+- [ ] Add tests for schema validation
+
+#### Increment 4.3.2: GraphQL Resolvers (2-3 days)
+- [ ] Implement resolvers for queries
+- [ ] Create resolvers for mutations
+- [ ] Add authentication and authorization in resolvers
+- [ ] Add tests for resolvers
+
+#### Increment 4.3.3: GraphQL API Endpoints (1-2 days)
+- [ ] Create API endpoints for GraphQL
+- [ ] Implement GraphQL Playground for testing
+- [ ] Add documentation for API usage
+- [ ] Add tests for API endpoints
 
 ### Increment 4.4: Database Abstraction
 
-- [ ] Create database abstraction layer
-- [ ] Add support for multiple database types
-- [ ] Implement database switching
-- [ ] Create tests for database abstraction
+#### Increment 4.4.1: Abstraction Layer Design (1-2 days)
+- [ ] Design database abstraction interfaces
+- [ ] Create adapter pattern for different database types
+- [ ] Implement factory methods for database connections
+- [ ] Add tests for abstraction design
+
+#### Increment 4.4.2: Multiple Database Support (2-3 days)
+- [ ] Add support for Neo4j
+- [ ] Implement adapter for SQL databases
+- [ ] Create adapter for in-memory graph (for testing)
+- [ ] Add tests for multiple database types
+
+#### Increment 4.4.3: Database Switching (1-2 days)
+- [ ] Implement runtime database switching
+- [ ] Create database migration utilities
+- [ ] Add configuration for database selection
+- [ ] Add tests for database switching
 
 ## Implementing Best Practices
 
