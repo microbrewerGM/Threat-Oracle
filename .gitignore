@@ -110,3 +110,8 @@ Thumbs.db
 old_code/
 old_code2/
 old_code3/
+
+# Threat data (large files)
+data/*.xml
+data/*.json
+data/*.zip
