@@ -1,34 +1,19 @@
 """Phase 1: AuraDB connection tests."""
 import os
-import subprocess
-import json
 import pytest
 from neo4j import GraphDatabase
 
 
 def get_aura_creds():
-    """Fetch AuraDB credentials from Bitwarden Secrets Manager."""
-    token_cmd = "cat ~/.openclaw/openclaw.json | jq -r '.env.BWS_ACCESS_TOKEN'"
-    token = subprocess.check_output(token_cmd, shell=True).decode().strip()
+    """Get AuraDB credentials from environment variables."""
+    uri = os.environ.get("NEO4J_URI")
+    user = os.environ.get("NEO4J_USERNAME", "neo4j")
+    password = os.environ.get("NEO4J_PASSWORD")
     
-    env = os.environ.copy()
-    env["BWS_ACCESS_TOKEN"] = token
+    if not uri or not password:
+        pytest.skip("NEO4J_URI and NEO4J_PASSWORD env vars required")
     
-    # Get URI
-    result = subprocess.check_output(
-        ["bws", "secret", "get", "1fb91baf-e4f8-493b-8bbc-b3f20051d3bb", "-o", "json"],
-        env=env
-    )
-    uri = json.loads(result)["value"]
-    
-    # Get password
-    result = subprocess.check_output(
-        ["bws", "secret", "get", "e75daef7-2d2a-4ebf-aa93-b3f20051d400", "-o", "json"],
-        env=env
-    )
-    password = json.loads(result)["value"]
-    
-    return uri, "neo4j", password
+    return uri, user, password
 
 
 @pytest.fixture(scope="module")

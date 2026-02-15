@@ -115,3 +115,6 @@ old_code3/
 data/*.xml
 data/*.json
 data/*.zip
+
+.env.dev
+.venv/
