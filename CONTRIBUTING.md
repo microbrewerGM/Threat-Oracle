@@ -1,96 +1,108 @@
 # Contributing to Threat Oracle
 
-Thank you for your interest in contributing to Threat Oracle! This document provides guidelines and instructions for contributing to this project.
+**Team**: Purple Morty (💜), PhenomSec Morty (🔒), HomeNet Morty (🏠)
+**Channel**: #threat-oracle (Slack) — all coordination happens here
+**Repo**: microbrewerGM/threat-oracle-internal
 
-## Code of Conduct
+---
 
-By participating in this project, you agree to abide by our Code of Conduct. Please be respectful and considerate of others.
+## Task Pickup Workflow
 
-## How to Contribute
+1. **Check the board**: `gh issue list --repo microbrewerGM/threat-oracle-internal --state open`
+2. **Claim an issue**: Assign yourself and announce in #threat-oracle
+3. **One active issue max** per Morty (per Aaron's rule) — finish or hand off before picking up the next
+4. **Work in priority order**: P0-critical → P1-high → P2-medium
+5. **Sprint order matters**: mvp-1 → mvp-2 → mvp-3 → mvp-4 (don't skip ahead unless unblocked work exists)
+6. **When done**: Push your branch, open a PR, request review from another Morty, post in #threat-oracle
+7. **Blocked?** Post the blocker in #threat-oracle immediately. If it needs Aaron, tag him as an alert.
 
-### Reporting Bugs
+## Commit Conventions
 
-If you find a bug, please create an issue with the following information:
+Format: `<type>(<scope>): <description>`
 
-- A clear, descriptive title
-- Steps to reproduce the bug
-- Expected behavior
-- Actual behavior
-- Screenshots if applicable
-- Environment information (OS, browser, etc.)
+**Types:**
+- `feat` — new feature or capability
+- `fix` — bug fix
+- `docs` — documentation only
+- `test` — adding or updating tests
+- `refactor` — code change that doesn't fix a bug or add a feature
+- `chore` — tooling, CI, dependencies
 
-### Suggesting Features
+**Scopes:** `graph`, `api`, `infra`, `analysis`, `frontend`, `docs`
 
-We welcome feature suggestions! Please create an issue with:
+**Examples:**
+```
+feat(graph): add CWE node importer with MITRE mappings
+fix(api): handle missing repo URL in fetcher endpoint
+docs(docs): update schema with CAPEC relationship types
+test(analysis): add coverage for LLM pipeline edge cases
+```
 
-- A clear, descriptive title
-- Detailed description of the proposed feature
-- Any relevant examples or mockups
-- Explanation of why this feature would be useful
+Keep commits atomic — one logical change per commit.
 
-### Pull Requests
+## Directory Ownership
 
-1. Fork the repository
-2. Create a new branch from `main`
-3. Make your changes
-4. Run tests to ensure they pass
-5. Update documentation if necessary
-6. Submit a pull request
+| Directory | Owner | Purpose |
+|-----------|-------|---------|
+| `importers/` | Purple Morty | Graph data importers (CWE, ATT&CK, CAPEC, repos) |
+| `analysis/` | Purple Morty | LLM analysis pipeline, threat mapping |
+| `api/` | PSM | FastAPI endpoints, Lambda handlers |
+| `infra/` | HomeNet Morty | AWS CDK/CloudFormation, S3, CloudFront, Cognito |
+| `frontend/` | Unassigned | Next.js app (mvp-3) |
+| `tests/` | Shared | All Morties write tests for their code |
+| `docs/` | Shared | Schema docs, architecture, runbooks |
+| `scripts/` | Shared | Utility scripts, CI helpers |
 
-### Pull Request Process
+**Cross-ownership edits**: If you need to change files in another Morty's directory, open a PR and request their review. Don't merge without approval.
 
-1. Ensure your code follows the project's coding standards
-2. Update the README.md or documentation with details of changes if applicable
-3. Update the CHANGELOG.md with details of changes
-4. The pull request will be merged once it has been reviewed and approved
+## Issue Labels
 
-## Development Workflow
+### Assignment
+- `morty:purple` — assigned to Purple Morty
+- `morty:psm` — assigned to PhenomSec Morty
+- `morty:homenet` — assigned to HomeNet Morty
+- `morty:unassigned` — available to claim
 
-1. Pick an issue to work on or create a new one
-2. Create a branch with a descriptive name (e.g., `feature/add-graph-visualization`)
-3. Make your changes in small, logical commits
-4. Write or update tests as necessary
-5. Ensure all tests pass
-6. Submit a pull request
+### Priority
+- `P0-critical` — do this now, blocks others
+- `P1-high` — core MVP work
+- `P2-medium` — important but not blocking
 
-## Coding Standards
+### Type
+- `type:infra` — AWS infrastructure
+- `type:backend` — API/Lambda
+- `type:frontend` — Next.js UI
+- `type:graph` — Neo4j schema, Cypher, importers
+- `type:analysis` — LLM pipeline, threat mapping
+- `type:docs` — documentation
 
-### General
+### Sprint
+- `sprint:mvp-1` — infrastructure foundation
+- `sprint:mvp-2` — analysis pipeline
+- `sprint:mvp-3` — frontend + visualization
+- `sprint:mvp-4` — polish, auth, catalog
 
-- Follow the existing code style
-- Write clear, descriptive commit messages
-- Keep code modular and reusable
-- Document your code
+## How to Break Down Tasks
 
-### Python
+When an issue is too big (>1 day of work), break it down:
 
-- Follow PEP 8 style guide
-- Use docstrings for functions, classes, and modules
-- Use type hints where appropriate
-- Write unit tests for new functionality
+1. Create sub-issues with clear acceptance criteria
+2. Link them to the parent with "Part of #XX" in the description
+3. Each sub-issue should be completable independently
+4. Each sub-issue should have a test that proves it works
 
-### JavaScript/TypeScript
+**Good breakdown example:**
+- ❌ "Build the AWS importer" (too big)
+- ✅ "#1: S3 bucket for frontend hosting" → "#2: CloudFront distribution" → "#3: Cognito user pool" (sequential, testable)
 
-- Follow the project's ESLint configuration
-- Use JSDoc comments for functions and classes
-- Write unit tests for new functionality
-- Use TypeScript types/interfaces where appropriate
+## Channel Rules (from Aaron)
 
-## Testing
+1. **Acknowledge all messages** — check in periodically even without notifications
+2. **No DMs** — everything visible to all in #threat-oracle
+3. **Flat messages only** — no threads, post directly to channel
+4. **Raise blockers immediately** — tag Aaron if it needs him
+5. **Respect each other's boundaries and security protocols**
 
-- Write unit tests for all new code
-- Ensure all tests pass before submitting a pull request
-- Include integration tests for new features where appropriate
+---
 
-## Documentation
-
-- Update documentation for any changes to APIs or functionality
-- Use clear, concise language
-- Include examples where appropriate
-- Keep documentation up-to-date with code changes
-
-## Questions?
-
-If you have any questions about contributing, please open an issue or contact the project maintainers.
-
-Thank you for contributing to Threat Oracle!
+*Last updated: 2026-02-16 by Purple Morty*
