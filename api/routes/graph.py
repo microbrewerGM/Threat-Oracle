@@ -5,11 +5,12 @@ from fastapi import APIRouter, Depends, Query
 from neo4j import Session
 
 from api.dependencies import get_neo4j_session
+from api.models import GraphStatsResponse, NodeDetailResponse, NodeListResponse, SearchResponse
 
 router = APIRouter(prefix="/api/v1/graph", tags=["graph"])
 
 
-@router.get("/stats")
+@router.get("/stats", response_model=GraphStatsResponse)
 def graph_stats(session: Session = Depends(get_neo4j_session)):
     """Get graph statistics: node counts by label, total relationships."""
     label_result = session.run("CALL db.labels() YIELD label RETURN label")
@@ -47,7 +48,7 @@ def graph_stats(session: Session = Depends(get_neo4j_session)):
     }
 
 
-@router.get("/nodes")
+@router.get("/nodes", response_model=NodeListResponse)
 def list_nodes(
     label: Optional[str] = Query(None, description="Filter by node label (e.g., CWE, Technique, CAPEC)"),
     search: Optional[str] = Query(None, description="Search node names"),
@@ -83,7 +84,7 @@ def list_nodes(
     return {"nodes": nodes, "skip": skip, "limit": limit}
 
 
-@router.get("/nodes/{node_id}")
+@router.get("/nodes/{node_id}", response_model=NodeDetailResponse)
 def get_node(
     node_id: str,
     session: Session = Depends(get_neo4j_session),
@@ -126,7 +127,7 @@ def get_node(
     }
 
 
-@router.get("/search")
+@router.get("/search", response_model=SearchResponse)
 def search_graph(
     q: str = Query(..., min_length=2, description="Search query"),
     limit: int = Query(20, ge=1, le=100),

@@ -6,6 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from neo4j import Driver
 
 from api.dependencies import get_neo4j_driver
+from api.models import ImportResponse
 
 router = APIRouter(prefix="/api/v1/import", tags=["import"])
 
@@ -18,7 +19,7 @@ class ImportSource(str, Enum):
     capec = "capec"
 
 
-@router.post("/trigger/{source}")
+@router.post("/trigger/{source}", response_model=ImportResponse)
 def trigger_import(
     source: ImportSource,
     driver: Driver = Depends(get_neo4j_driver),
