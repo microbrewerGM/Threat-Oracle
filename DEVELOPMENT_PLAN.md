@@ -73,6 +73,8 @@ This document outlines the development approach for Threat Oracle, organized int
 ### 3.2: Frontend API Integration (In Progress)
 
 - [x] API client service (`services/api.ts`)
+- [x] Pydantic response models with OpenAPI documentation
+- [x] Shared test fixtures (conftest.py)
 - [ ] Wire Zustand store actions to API calls
 - [ ] Loading states and error handling
 - [ ] Offline detection
@@ -87,13 +89,14 @@ This document outlines the development approach for Threat Oracle, organized int
 
 ## Phase 4: Frontend Visualization (Planned)
 
-### 4.1: Knowledge Graph Explorer
+### 4.1: Knowledge Graph Explorer (Completed)
 
-- [ ] Search bar with graph search API
-- [ ] Results list with node type badges
-- [ ] Node detail view with relationships
-- [ ] Graph statistics panel
-- [ ] Filter by node label
+- [x] Search bar with graph search API
+- [x] Results list with node type badges
+- [x] Node detail view with relationships
+- [x] Graph statistics panel
+- [x] Filter by node label
+- [x] Sidebar navigation link
 
 ### 4.2: Enhanced Graph Visualization
 
