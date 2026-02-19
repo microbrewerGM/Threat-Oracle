@@ -118,3 +118,8 @@ data/*.zip
 
 .env.dev
 .venv/
+
+# Claude Code personal config (hooks, local settings)
+.claude/*.local.md
+.claude/*.local.json
+CLAUDE.local.md
