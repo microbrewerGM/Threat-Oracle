@@ -79,13 +79,13 @@ This document outlines the development approach for Threat Oracle, organized int
 - [ ] Loading states and error handling
 - [ ] Offline detection
 
-### 3.3: Model CRUD Endpoints (In Progress)
+### 3.3: Model CRUD Endpoints (Completed)
 
 - [x] Threat model create/read/update/delete
 - [x] Technical asset CRUD within a model
-- [ ] Trust boundary CRUD within a model
-- [ ] Data flow CRUD within a model
-- [ ] Data asset CRUD within a model
+- [x] Trust boundary CRUD within a model
+- [x] Data flow CRUD within a model
+- [x] Data asset CRUD within a model
 
 ## Phase 4: Frontend Visualization (Planned)
 
@@ -155,9 +155,9 @@ This document outlines the development approach for Threat Oracle, organized int
 | API health | 3 | Passing |
 | API graph routes | 5 | Passing |
 | API import routes | 7 | Passing |
-| API model routes | 10 | Passing |
+| API model routes | 16 | Passing |
 | Frontend: KnowledgeGraph | 8 | Passing (vitest) |
-| **Total** | **76** | **54 backend in CI, 74 with Neo4j, 8 frontend** |
+| **Total** | **82** | **60 backend in CI, 80 with Neo4j, 8 frontend** |
 
 ## Running Tests
 

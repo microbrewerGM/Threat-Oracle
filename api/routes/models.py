@@ -217,3 +217,178 @@ def delete_technical_asset(
     if record["deleted"] == 0:
         raise HTTPException(status_code=404, detail="Asset not found")
     return {"status": "deleted", "asset_id": asset_id}
+
+
+# --- Trust Boundary CRUD within a model ---
+
+
+@router.post("/{model_id}/boundaries")
+def add_trust_boundary(
+    model_id: str,
+    body: dict,
+    session: Session = Depends(get_neo4j_session),
+):
+    """Add a trust boundary to a threat model."""
+    boundary_id = f"tb-{uuid4().hex[:12]}"
+    result = session.run(
+        """
+        MATCH (m:ThreatModel {model_id: $model_id})
+        CREATE (tb:TrustBoundary {
+            boundary_id: $boundary_id,
+            name: $name,
+            type: $type,
+            description: $description
+        })
+        CREATE (m)-[:HAS_BOUNDARY]->(tb)
+        RETURN tb
+        """,
+        model_id=model_id,
+        boundary_id=boundary_id,
+        name=body.get("name", ""),
+        type=body.get("type", "network"),
+        description=body.get("description", ""),
+    )
+    record = result.single()
+    if not record:
+        raise HTTPException(status_code=404, detail=f"Model {model_id} not found")
+    return dict(record["tb"])
+
+
+@router.delete("/{model_id}/boundaries/{boundary_id}")
+def delete_trust_boundary(
+    model_id: str,
+    boundary_id: str,
+    session: Session = Depends(get_neo4j_session),
+):
+    """Remove a trust boundary from a threat model."""
+    result = session.run(
+        """
+        MATCH (m:ThreatModel {model_id: $model_id})-[:HAS_BOUNDARY]->(tb:TrustBoundary {boundary_id: $boundary_id})
+        DETACH DELETE tb
+        RETURN count(tb) AS deleted
+        """,
+        model_id=model_id,
+        boundary_id=boundary_id,
+    )
+    record = result.single()
+    if record["deleted"] == 0:
+        raise HTTPException(status_code=404, detail="Boundary not found")
+    return {"status": "deleted", "boundary_id": boundary_id}
+
+
+# --- Data Flow CRUD within a model ---
+
+
+@router.post("/{model_id}/flows")
+def add_data_flow(
+    model_id: str,
+    body: dict,
+    session: Session = Depends(get_neo4j_session),
+):
+    """Add a data flow to a threat model."""
+    flow_id = f"df-{uuid4().hex[:12]}"
+    result = session.run(
+        """
+        MATCH (m:ThreatModel {model_id: $model_id})
+        CREATE (df:DataFlow {
+            flow_id: $flow_id,
+            name: $name,
+            source: $source,
+            target: $target,
+            protocol: $protocol,
+            description: $description
+        })
+        CREATE (m)-[:HAS_FLOW]->(df)
+        RETURN df
+        """,
+        model_id=model_id,
+        flow_id=flow_id,
+        name=body.get("name", ""),
+        source=body.get("source", ""),
+        target=body.get("target", ""),
+        protocol=body.get("protocol", ""),
+        description=body.get("description", ""),
+    )
+    record = result.single()
+    if not record:
+        raise HTTPException(status_code=404, detail=f"Model {model_id} not found")
+    return dict(record["df"])
+
+
+@router.delete("/{model_id}/flows/{flow_id}")
+def delete_data_flow(
+    model_id: str,
+    flow_id: str,
+    session: Session = Depends(get_neo4j_session),
+):
+    """Remove a data flow from a threat model."""
+    result = session.run(
+        """
+        MATCH (m:ThreatModel {model_id: $model_id})-[:HAS_FLOW]->(df:DataFlow {flow_id: $flow_id})
+        DETACH DELETE df
+        RETURN count(df) AS deleted
+        """,
+        model_id=model_id,
+        flow_id=flow_id,
+    )
+    record = result.single()
+    if record["deleted"] == 0:
+        raise HTTPException(status_code=404, detail="Flow not found")
+    return {"status": "deleted", "flow_id": flow_id}
+
+
+# --- Data Asset CRUD within a model ---
+
+
+@router.post("/{model_id}/data-assets")
+def add_data_asset(
+    model_id: str,
+    body: dict,
+    session: Session = Depends(get_neo4j_session),
+):
+    """Add a data asset to a threat model."""
+    data_asset_id = f"da-{uuid4().hex[:12]}"
+    result = session.run(
+        """
+        MATCH (m:ThreatModel {model_id: $model_id})
+        CREATE (da:DataAsset {
+            data_asset_id: $data_asset_id,
+            name: $name,
+            classification: $classification,
+            description: $description
+        })
+        CREATE (m)-[:HAS_DATA_ASSET]->(da)
+        RETURN da
+        """,
+        model_id=model_id,
+        data_asset_id=data_asset_id,
+        name=body.get("name", ""),
+        classification=body.get("classification", "internal"),
+        description=body.get("description", ""),
+    )
+    record = result.single()
+    if not record:
+        raise HTTPException(status_code=404, detail=f"Model {model_id} not found")
+    return dict(record["da"])
+
+
+@router.delete("/{model_id}/data-assets/{data_asset_id}")
+def delete_data_asset(
+    model_id: str,
+    data_asset_id: str,
+    session: Session = Depends(get_neo4j_session),
+):
+    """Remove a data asset from a threat model."""
+    result = session.run(
+        """
+        MATCH (m:ThreatModel {model_id: $model_id})-[:HAS_DATA_ASSET]->(da:DataAsset {data_asset_id: $data_asset_id})
+        DETACH DELETE da
+        RETURN count(da) AS deleted
+        """,
+        model_id=model_id,
+        data_asset_id=data_asset_id,
+    )
+    record = result.single()
+    if record["deleted"] == 0:
+        raise HTTPException(status_code=404, detail="Data asset not found")
+    return {"status": "deleted", "data_asset_id": data_asset_id}

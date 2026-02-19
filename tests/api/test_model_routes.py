@@ -163,3 +163,87 @@ def test_delete_technical_asset(client, mock_neo4j_session):
 
     assert response.status_code == 200
     assert response.json()["status"] == "deleted"
+
+
+# --- Trust boundary CRUD ---
+
+
+def test_add_trust_boundary(client, mock_neo4j_session):
+    """POST /api/v1/models/{id}/boundaries creates a trust boundary."""
+    mock_neo4j_session.run.return_value = _make_mock_result([
+        {"tb": {"boundary_id": "tb-abc", "name": "DMZ", "type": "network"}}
+    ])
+
+    response = client.post(
+        "/api/v1/models/model-1/boundaries",
+        json={"name": "DMZ", "type": "network"},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["name"] == "DMZ"
+
+
+def test_delete_trust_boundary(client, mock_neo4j_session):
+    """DELETE /api/v1/models/{id}/boundaries/{id} removes the boundary."""
+    mock_neo4j_session.run.return_value = _make_mock_result([{"deleted": 1}])
+
+    response = client.delete("/api/v1/models/model-1/boundaries/tb-abc")
+
+    assert response.status_code == 200
+    assert response.json()["status"] == "deleted"
+
+
+# --- Data flow CRUD ---
+
+
+def test_add_data_flow(client, mock_neo4j_session):
+    """POST /api/v1/models/{id}/flows creates a data flow."""
+    mock_neo4j_session.run.return_value = _make_mock_result([
+        {"df": {"flow_id": "df-abc", "name": "API Call", "source": "client", "target": "server"}}
+    ])
+
+    response = client.post(
+        "/api/v1/models/model-1/flows",
+        json={"name": "API Call", "source": "client", "target": "server", "protocol": "HTTPS"},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["name"] == "API Call"
+
+
+def test_delete_data_flow(client, mock_neo4j_session):
+    """DELETE /api/v1/models/{id}/flows/{id} removes the flow."""
+    mock_neo4j_session.run.return_value = _make_mock_result([{"deleted": 1}])
+
+    response = client.delete("/api/v1/models/model-1/flows/df-abc")
+
+    assert response.status_code == 200
+    assert response.json()["status"] == "deleted"
+
+
+# --- Data asset CRUD ---
+
+
+def test_add_data_asset(client, mock_neo4j_session):
+    """POST /api/v1/models/{id}/data-assets creates a data asset."""
+    mock_neo4j_session.run.return_value = _make_mock_result([
+        {"da": {"data_asset_id": "da-abc", "name": "User PII", "classification": "confidential"}}
+    ])
+
+    response = client.post(
+        "/api/v1/models/model-1/data-assets",
+        json={"name": "User PII", "classification": "confidential"},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["name"] == "User PII"
+
+
+def test_delete_data_asset(client, mock_neo4j_session):
+    """DELETE /api/v1/models/{id}/data-assets/{id} removes the data asset."""
+    mock_neo4j_session.run.return_value = _make_mock_result([{"deleted": 1}])
+
+    response = client.delete("/api/v1/models/model-1/data-assets/da-abc")
+
+    assert response.status_code == 200
+    assert response.json()["status"] == "deleted"
