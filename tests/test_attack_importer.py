@@ -63,6 +63,7 @@ class TestATTACKParser:
         assert len(t1059.tactics) > 0, "T1059 should have tactics"
 
 
+@pytest.mark.neo4j
 @pytest.mark.skipif(not HAVE_DB, reason="NEO4J env vars required")
 @pytest.mark.skipif(not HAVE_DATA, reason="ATT&CK JSON not downloaded")
 class TestATTACKImport:

@@ -16,3 +16,47 @@ services:
     command: bash
     stdin_open: true
     tty: true
+
+  tests:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - .:/app
+      - ./data:/app/data
+    environment:
+      - NEO4J_URI=${NEO4J_URI}
+      - NEO4J_USERNAME=${NEO4J_USERNAME:-neo4j}
+      - NEO4J_PASSWORD=${NEO4J_PASSWORD}
+    working_dir: /app
+    command: python -m pytest -m "not neo4j" -v
+
+  tests-all:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - .:/app
+      - ./data:/app/data
+    environment:
+      - NEO4J_URI=${NEO4J_URI}
+      - NEO4J_USERNAME=${NEO4J_USERNAME:-neo4j}
+      - NEO4J_PASSWORD=${NEO4J_PASSWORD}
+    working_dir: /app
+    command: python -m pytest -v
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - .:/app
+      - ./data:/app/data
+    environment:
+      - NEO4J_URI=${NEO4J_URI}
+      - NEO4J_USERNAME=${NEO4J_USERNAME:-neo4j}
+      - NEO4J_PASSWORD=${NEO4J_PASSWORD}
+    working_dir: /app
+    ports:
+      - "8000:8000"
+    command: python -m uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload

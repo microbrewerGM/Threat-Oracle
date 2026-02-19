@@ -69,6 +69,7 @@ def get_driver():
 HAVE_DB = os.environ.get("NEO4J_URI") is not None
 
 
+@pytest.mark.neo4j
 @pytest.mark.skipif(not HAVE_DB, reason="NEO4J env vars required")
 @pytest.mark.skipif(not HAVE_DATA, reason="CWE XML not downloaded")
 class TestCWEImport:
