@@ -154,7 +154,9 @@ This document outlines the development approach for Threat Oracle, organized int
 | Neo4j connection | 4 | Passing (requires DB) |
 | API health | 3 | Passing |
 | API graph routes | 5 | Passing |
-| **Total** | **51** | **37 in CI, 51 with Neo4j** |
+| API import routes | 7 | Passing |
+| Frontend: KnowledgeGraph | 8 | Passing (vitest) |
+| **Total** | **66** | **44 backend in CI, 64 with Neo4j, 8 frontend** |
 
 ## Running Tests
 

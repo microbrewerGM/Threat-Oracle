@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.config import settings
-from api.routes import health, graph, imports
+from api.routes import health, graph, imports, models
 from src.db import close_driver
 
 
@@ -28,6 +28,10 @@ tags_metadata = [
     {
         "name": "import",
         "description": "Trigger imports of security knowledge bases into the Neo4j graph.",
+    },
+    {
+        "name": "models",
+        "description": "Create, read, update, and delete threat models with their assets.",
     },
 ]
 
@@ -62,6 +66,7 @@ def create_app() -> FastAPI:
     app.include_router(health.router)
     app.include_router(graph.router)
     app.include_router(imports.router)
+    app.include_router(models.router)
 
     return app
 
