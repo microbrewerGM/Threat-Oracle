@@ -123,3 +123,7 @@ data/*.zip
 .claude/*.local.md
 .claude/*.local.json
 CLAUDE.local.md
+
+# Beads task tracking (ephemeral)
+.beads/
+.mcp.json

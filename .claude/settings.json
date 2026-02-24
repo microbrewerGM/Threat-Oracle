@@ -1,53 +1,81 @@
 {
-  "permissions": {
-    "allow": [
-      "Bash(git status *)",
-      "Bash(git status)",
-      "Bash(git diff *)",
-      "Bash(git diff)",
-      "Bash(git log *)",
-      "Bash(git branch *)",
-      "Bash(git branch)",
-      "Bash(git show *)",
-      "Bash(git fetch *)",
-      "Bash(git checkout *)",
-      "Bash(git add *)",
-      "Bash(git commit *)",
-      "Bash(git merge-base *)",
-      "Bash(git stash *)",
-
-      "Bash(gh pr list *)",
-      "Bash(gh pr view *)",
-      "Bash(gh pr diff *)",
-      "Bash(gh pr create *)",
-      "Bash(gh pr review *)",
-      "Bash(gh pr checks *)",
-      "Bash(gh issue *)",
-      "Bash(gh repo *)",
-      "Bash(gh api *)",
-
-      "Bash(docker compose *)",
-      "Bash(docker ps *)",
-      "Bash(docker logs *)",
-
-      "Bash(python -m pytest *)",
-      "Bash(python *)",
-      "Bash(pytest *)",
-      "Bash(pip install *)",
-      "Bash(pip list *)",
-      "Bash(pip show *)",
-
-      "Bash(ls *)",
-      "Bash(ls)",
-      "Bash(mkdir *)",
-      "Bash(wc *)"
+  "hooks": {
+    "PreToolUse": [
+      {
+        "hooks": [
+          {"type": "command", "command": ".claude/hooks/block-orchestrator-tools.sh"}
+        ]
+      },
+      {
+        "matcher": "Task",
+        "hooks": [
+          {"type": "command", "command": ".claude/hooks/enforce-bead-for-supervisor.sh"},
+          {"type": "command", "command": ".claude/hooks/enforce-sequential-dispatch.sh"},
+          {"type": "command", "command": ".claude/hooks/remind-inprogress.sh"},
+          {"type": "command", "command": ".claude/hooks/inject-discipline-reminder.sh"}
+        ]
+      },
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {"type": "command", "command": ".claude/hooks/enforce-branch-before-edit.sh"}
+        ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {"type": "command", "command": ".claude/hooks/enforce-branch-before-edit.sh"}
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {"type": "command", "command": ".claude/hooks/validate-epic-close.sh"}
+        ]
+      }
     ],
-    "deny": [
-      "Bash(rm -rf *)",
-      "Bash(git push --force *)",
-      "Bash(git reset --hard *)",
-      "Read(.env)",
-      "Read(.env.*)"
+    "PostToolUse": [
+      {
+        "matcher": "Task",
+        "hooks": [
+          {"type": "command", "command": ".claude/hooks/enforce-concise-response.sh"},
+          {"type": "command", "command": ".claude/hooks/log-dispatch-prompt.sh", "timeout": 10}
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {"type": "command", "command": ".claude/hooks/memory-capture.sh", "timeout": 10}
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {"type": "command", "command": ".claude/hooks/validate-completion.sh"}
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {"type": "command", "command": ".claude/hooks/session-start.sh"}
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {"type": "command", "command": ".claude/hooks/clarify-vague-request.sh"}
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {"type": "command", "command": ".claude/hooks/nudge-claude-md-update.sh"}
+        ]
+      }
     ]
   }
 }
