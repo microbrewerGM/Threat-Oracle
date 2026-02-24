@@ -163,7 +163,69 @@ export const threatOracleAPI = {
     apiFetch<{ status: string; model_id: string }>(`${API_BASE}/models/${encodeURIComponent(modelId)}`, {
       method: 'DELETE',
     }),
+
+  // Analysis
+  triggerAnalysis: (modelId: string, tier: string, llmHeaders: Record<string, string>) =>
+    apiFetch<AnalysisJobResponse>(`${API_BASE}/models/${encodeURIComponent(modelId)}/analyze`, {
+      method: 'POST',
+      body: JSON.stringify({ tier }),
+      headers: llmHeaders,
+    }),
+
+  getAnalysisStatus: (modelId: string, jobId: string) =>
+    apiFetch<AnalysisStatusResponse>(`${API_BASE}/models/${encodeURIComponent(modelId)}/analyze/${encodeURIComponent(jobId)}`),
+
+  listThreats: (modelId: string) =>
+    apiFetch<ThreatsListResponse>(`${API_BASE}/models/${encodeURIComponent(modelId)}/threats`),
 };
+
+// Analysis interfaces
+interface AnalysisJobResponse {
+  job_id: string;
+  model_id: string;
+  status: string;
+  message: string;
+}
+
+interface AnalysisStatusResponse {
+  job_id: string;
+  model_id: string;
+  tier: string;
+  status: string;
+  progress_pct: number;
+  current_phase: number | null;
+  units_completed: number;
+  units_total: number;
+  threats_found: number;
+  error: string | null;
+  started_at: string | null;
+  completed_at: string | null;
+}
+
+interface ThreatItem {
+  threat_id: string;
+  title: string;
+  stride_category: string;
+  severity: string;
+  likelihood: string;
+  risk_score: number;
+  attack_vector: string;
+  description: string;
+  remediation: string;
+  confidence: number;
+  cwe_ids: string[];
+  capec_ids: string[];
+  attack_technique_ids: string[];
+  affected_assets: string[];
+  analysis_tier: string;
+  job_id: string;
+}
+
+interface ThreatsListResponse {
+  model_id: string;
+  threats: ThreatItem[];
+  total: number;
+}
 
 export type {
   GraphNode,
@@ -176,4 +238,8 @@ export type {
   ModelNode,
   ModelDetailResponse,
   ModelsListResponse,
+  AnalysisJobResponse,
+  AnalysisStatusResponse,
+  ThreatItem,
+  ThreatsListResponse,
 };

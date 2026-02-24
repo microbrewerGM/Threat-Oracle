@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useModelStore, ThreatModel } from '@/store/modelStore';
+import { useLLMKeyStore } from '@/store/llmKeyStore';
+import { threatOracleAPI } from '@/services/api';
+import ThreatsPanel from '@/components/ThreatsPanel';
 import './Models.css';
 
 const Models: React.FC = () => {
@@ -20,6 +23,18 @@ const Models: React.FC = () => {
   const [editDescription, setEditDescription] = useState('');
   const [editVersion, setEditVersion] = useState('');
   const [editRepoUrl, setEditRepoUrl] = useState('');
+
+  const { hasAnyKey, getHeaders } = useLLMKeyStore();
+  const [showAnalyzeModal, setShowAnalyzeModal] = useState(false);
+  const [analyzingModelId, setAnalyzingModelId] = useState<string | null>(null);
+  const [selectedTier, setSelectedTier] = useState('tier_1');
+  const [analysisJobId, setAnalysisJobId] = useState<string | null>(null);
+  const [analysisProgress, setAnalysisProgress] = useState<number>(0);
+  const [analysisStatus, setAnalysisStatus] = useState<string>('');
+  const [analysisError, setAnalysisError] = useState<string>('');
+  const [threats, setThreats] = useState<any[]>([]);
+  const [showThreats, setShowThreats] = useState(false);
+  const [threatsModelId, setThreatsModelId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchModels();
@@ -125,6 +140,60 @@ const Models: React.FC = () => {
     });
     setShowEditForm(false);
     setEditingModel(null);
+  };
+
+  const handleAnalyze = (modelId: string) => {
+    setAnalyzingModelId(modelId);
+    setSelectedTier('tier_1');
+    setAnalysisError('');
+    setAnalysisJobId(null);
+    setAnalysisProgress(0);
+    setAnalysisStatus('');
+    setShowAnalyzeModal(true);
+  };
+
+  const startAnalysis = async () => {
+    if (!analyzingModelId) return;
+    setAnalysisError('');
+
+    try {
+      const headers = getHeaders();
+      const resp = await threatOracleAPI.triggerAnalysis(analyzingModelId, selectedTier, headers);
+      setAnalysisJobId(resp.job_id);
+      setAnalysisStatus('pending');
+
+      // Start polling
+      const pollInterval = setInterval(async () => {
+        try {
+          const status = await threatOracleAPI.getAnalysisStatus(analyzingModelId, resp.job_id);
+          setAnalysisProgress(status.progress_pct);
+          setAnalysisStatus(status.status);
+
+          if (status.status === 'completed' || status.status === 'failed') {
+            clearInterval(pollInterval);
+            if (status.status === 'failed') {
+              setAnalysisError(status.error || 'Analysis failed');
+            }
+          }
+        } catch (err) {
+          clearInterval(pollInterval);
+          setAnalysisError(err instanceof Error ? err.message : 'Failed to check status');
+        }
+      }, 2000);
+    } catch (err) {
+      setAnalysisError(err instanceof Error ? err.message : 'Failed to start analysis');
+    }
+  };
+
+  const handleViewThreats = async (modelId: string) => {
+    try {
+      const resp = await threatOracleAPI.listThreats(modelId);
+      setThreats(resp.threats);
+      setThreatsModelId(modelId);
+      setShowThreats(true);
+    } catch (err) {
+      console.error('Failed to load threats:', err);
+    }
   };
 
   const dismissError = () => {
@@ -314,6 +383,92 @@ const Models: React.FC = () => {
         </div>
       )}
 
+      {showAnalyzeModal && analyzingModelId && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <div className="modal-header">
+              <h2>Analyze Model</h2>
+              <button className="close-button" onClick={() => setShowAnalyzeModal(false)}>×</button>
+            </div>
+            <div className="analyze-content">
+              {!analysisJobId ? (
+                <>
+                  <div className="form-group">
+                    <label htmlFor="tier-select">Analysis Tier:</label>
+                    <select
+                      id="tier-select"
+                      value={selectedTier}
+                      onChange={(e) => setSelectedTier(e.target.value)}
+                      className="tier-select"
+                    >
+                      <option value="tier_0">Tier 0 — Heuristics (Free, no API key needed)</option>
+                      <option value="tier_1">Tier 1 — Fast LLM (Groq/Gemini Flash/Ollama)</option>
+                      <option value="tier_2">Tier 2 — Deep Analysis (Claude/GPT-4o/Gemini Pro)</option>
+                    </select>
+                  </div>
+                  {selectedTier !== 'tier_0' && !hasAnyKey() && (
+                    <div className="warning-message">
+                      No API keys configured. Go to Settings to add LLM API keys for Tier 1/2 analysis.
+                    </div>
+                  )}
+                  {analysisError && <div className="error-message">{analysisError}</div>}
+                  <div className="form-actions">
+                    <button type="button" onClick={() => setShowAnalyzeModal(false)}>Cancel</button>
+                    <button
+                      onClick={startAnalysis}
+                      disabled={selectedTier !== 'tier_0' && !hasAnyKey()}
+                    >
+                      Start Analysis
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <div className="analysis-progress">
+                  <div className="progress-info">
+                    <span>Status: {analysisStatus}</span>
+                    <span>{analysisProgress}%</span>
+                  </div>
+                  <div className="progress-bar-container">
+                    <div
+                      className="progress-bar-fill"
+                      style={{ width: `${analysisProgress}%` }}
+                    />
+                  </div>
+                  {analysisError && <div className="error-message">{analysisError}</div>}
+                  {analysisStatus === 'completed' && (
+                    <div className="form-actions">
+                      <button onClick={() => {
+                        setShowAnalyzeModal(false);
+                        handleViewThreats(analyzingModelId);
+                      }}>
+                        View Threats
+                      </button>
+                    </div>
+                  )}
+                  {analysisStatus === 'failed' && (
+                    <div className="form-actions">
+                      <button onClick={() => setShowAnalyzeModal(false)}>Close</button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showThreats && threatsModelId && (
+        <div className="modal-overlay">
+          <div className="modal modal-wide">
+            <div className="modal-header">
+              <h2>Threat Analysis Results</h2>
+              <button className="close-button" onClick={() => setShowThreats(false)}>×</button>
+            </div>
+            <ThreatsPanel threats={threats} />
+          </div>
+        </div>
+      )}
+
       <div className="models-list">
         <div className="models-list-header">
           <div className="model-name-col">Name</div>
@@ -354,6 +509,15 @@ const Models: React.FC = () => {
               </div>
             </div>
             <div className="model-actions-col">
+              <button
+                className="action-button analyze-button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleAnalyze(model.id);
+                }}
+              >
+                Analyze
+              </button>
               <button
                 className="action-button edit-button"
                 onClick={(e) => {

@@ -128,6 +128,28 @@ input:checked + .toggle-slider:before {
   margin-top: 20px;
 }
 
+.key-input {
+  width: 100%;
+  max-width: 300px;
+  padding: 8px 12px;
+  border: 1px solid var(--border-color, #374151);
+  border-radius: 6px;
+  background: var(--input-bg, #1f2937);
+  color: var(--text-primary, #f3f4f6);
+  font-family: monospace;
+  font-size: 0.9rem;
+}
+
+.key-input::placeholder {
+  color: var(--text-muted, #6b7280);
+}
+
+.section-description {
+  color: var(--text-secondary, #9ca3af);
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .setting-item {
