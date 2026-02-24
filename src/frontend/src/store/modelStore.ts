@@ -14,6 +14,8 @@ export interface ThreatModel {
   id: string;
   name: string;
   description?: string;
+  repoUrl?: string;
+  analysisMetadata?: { analyzedAt: string; languages: Record<string, number> };
   version: string;
   created: string;
   updated: string;

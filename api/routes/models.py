@@ -24,6 +24,7 @@ def create_model(
             name: $name,
             description: $description,
             version: $version,
+            repo_url: $repo_url,
             created: datetime(),
             updated: datetime()
         })
@@ -33,6 +34,7 @@ def create_model(
         name=body.get("name", "Untitled Model"),
         description=body.get("description", ""),
         version=body.get("version", "0.1.0"),
+        repo_url=body.get("repo_url", ""),
     )
     record = result.single()
     node = dict(record["m"])
@@ -116,7 +118,7 @@ def update_model(
 ):
     """Update a threat model's properties."""
     # Build SET clause dynamically from allowed fields
-    allowed = {"name", "description", "version"}
+    allowed = {"name", "description", "version", "repo_url"}
     updates = {k: v for k, v in body.items() if k in allowed}
     if not updates:
         raise HTTPException(status_code=400, detail="No valid fields to update")

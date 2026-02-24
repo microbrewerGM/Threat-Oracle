@@ -43,6 +43,7 @@ describe('Models Page', () => {
   
   const mockSetCurrentModel = vi.fn();
   const mockAddModel = vi.fn();
+  const mockUpdateModel = vi.fn();
   const mockDeleteModel = vi.fn();
   
   beforeEach(() => {
@@ -51,6 +52,7 @@ describe('Models Page', () => {
       currentModelId: 'model-1',
       setCurrentModel: mockSetCurrentModel,
       addModel: mockAddModel,
+      updateModel: mockUpdateModel,
       deleteModel: mockDeleteModel
     });
     
@@ -122,15 +124,53 @@ describe('Models Page', () => {
   
   it('deletes a model when the delete button is clicked', () => {
     render(<Models />);
-    
+
     // Find all delete buttons and click the first one
     const deleteButtons = screen.getAllByText('Delete');
     fireEvent.click(deleteButtons[0]);
-    
+
     // Check if window.confirm was called
     expect(window.confirm).toHaveBeenCalled();
-    
+
     // Check if deleteModel was called with the correct model ID
     expect(mockDeleteModel).toHaveBeenCalledWith('model-1');
+  });
+
+  it('opens edit modal with pre-populated fields when Edit button is clicked', () => {
+    render(<Models />);
+
+    const editButtons = screen.getAllByText('Edit');
+    fireEvent.click(editButtons[0]);
+
+    expect(screen.getByText('Edit Model')).toBeInTheDocument();
+    expect(screen.getByLabelText('Name:')).toHaveValue('Test Model 1');
+    expect(screen.getByLabelText('Description:')).toHaveValue('Test description 1');
+    expect(screen.getByLabelText('Version:')).toHaveValue('1.0.0');
+  });
+
+  it('submitting edit form calls updateModel with correct args', () => {
+    render(<Models />);
+
+    const editButtons = screen.getAllByText('Edit');
+    fireEvent.click(editButtons[0]);
+
+    fireEvent.change(screen.getByLabelText('Name:'), { target: { value: 'Updated Name' } });
+    fireEvent.click(screen.getByText('Save'));
+
+    expect(mockUpdateModel).toHaveBeenCalledWith('model-1', {
+      name: 'Updated Name',
+      description: 'Test description 1',
+      version: '1.0.0',
+      repoUrl: undefined,
+    });
+  });
+
+  it('edit modal contains repo URL field', () => {
+    render(<Models />);
+
+    const editButtons = screen.getAllByText('Edit');
+    fireEvent.click(editButtons[0]);
+
+    expect(screen.getByLabelText('Repo URL:')).toBeInTheDocument();
   });
 });

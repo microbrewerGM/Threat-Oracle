@@ -60,6 +60,57 @@
   background-color: #138496;
 }
 
+.edit-button {
+  background-color: var(--secondary-color);
+  color: white;
+  border: none;
+  font-size: 0.85rem;
+  padding: 4px 10px;
+  margin-right: 5px;
+}
+
+.edit-button:hover {
+  background-color: #5a6268;
+}
+
+.repo-url-link {
+  font-size: 0.85rem;
+  color: var(--info-color);
+  margin-top: 4px;
+  word-break: break-all;
+}
+
+.repo-url-link a {
+  color: var(--info-color);
+  text-decoration: none;
+}
+
+.repo-url-link a:hover {
+  text-decoration: underline;
+}
+
+.analysis-metadata {
+  margin-top: 8px;
+  padding: 8px;
+  background-color: #f8f9fa;
+  border-radius: var(--border-radius);
+  font-size: 0.85rem;
+}
+
+.analysis-metadata .languages {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.analysis-metadata .language-tag {
+  background-color: #e9ecef;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 0.8rem;
+}
+
 .delete-button {
   background-color: var(--danger-color);
   color: white;

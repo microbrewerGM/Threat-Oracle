@@ -3,13 +3,19 @@ import { useModelStore, ThreatModel } from '@/store/modelStore';
 import './Models.css';
 
 const Models: React.FC = () => {
-  const { models, currentModelId, setCurrentModel, addModel, deleteModel } = useModelStore();
+  const { models, currentModelId, setCurrentModel, addModel, updateModel, deleteModel } = useModelStore();
   const [showNewModelForm, setShowNewModelForm] = useState(false);
   const [newModelName, setNewModelName] = useState('');
   const [newModelDescription, setNewModelDescription] = useState('');
   const [importText, setImportText] = useState('');
   const [showImportForm, setShowImportForm] = useState(false);
   const [importError, setImportError] = useState('');
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [editingModel, setEditingModel] = useState<ThreatModel | null>(null);
+  const [editName, setEditName] = useState('');
+  const [editDescription, setEditDescription] = useState('');
+  const [editVersion, setEditVersion] = useState('');
+  const [editRepoUrl, setEditRepoUrl] = useState('');
 
   const handleSelectModel = (id: string) => {
     setCurrentModel(id);
@@ -87,6 +93,28 @@ const Models: React.FC = () => {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+  };
+
+  const handleEditModel = (model: ThreatModel) => {
+    setEditingModel(model);
+    setEditName(model.name);
+    setEditDescription(model.description || '');
+    setEditVersion(model.version);
+    setEditRepoUrl(model.repoUrl || '');
+    setShowEditForm(true);
+  };
+
+  const handleUpdateModel = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingModel) return;
+    updateModel(editingModel.id, {
+      name: editName,
+      description: editDescription,
+      version: editVersion,
+      repoUrl: editRepoUrl || undefined,
+    });
+    setShowEditForm(false);
+    setEditingModel(null);
   };
 
   return (
@@ -177,7 +205,77 @@ const Models: React.FC = () => {
           </div>
         </div>
       )}
-      
+
+      {showEditForm && editingModel && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <div className="modal-header">
+              <h2>Edit Model</h2>
+              <button className="close-button" onClick={() => setShowEditForm(false)}>×</button>
+            </div>
+            <form onSubmit={handleUpdateModel}>
+              <div className="form-group">
+                <label htmlFor="edit-name">Name:</label>
+                <input
+                  id="edit-name"
+                  type="text"
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="edit-description">Description:</label>
+                <textarea
+                  id="edit-description"
+                  value={editDescription}
+                  onChange={(e) => setEditDescription(e.target.value)}
+                  rows={4}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="edit-version">Version:</label>
+                <input
+                  id="edit-version"
+                  type="text"
+                  value={editVersion}
+                  onChange={(e) => setEditVersion(e.target.value)}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="edit-repo-url">Repo URL:</label>
+                <input
+                  id="edit-repo-url"
+                  type="url"
+                  value={editRepoUrl}
+                  onChange={(e) => setEditRepoUrl(e.target.value)}
+                  placeholder="https://github.com/owner/repo"
+                />
+                {editRepoUrl && (
+                  <div className="repo-url-link">
+                    <a href={editRepoUrl} target="_blank" rel="noopener noreferrer">{editRepoUrl}</a>
+                  </div>
+                )}
+              </div>
+              {editingModel.analysisMetadata && (
+                <div className="analysis-metadata">
+                  <div>Analyzed: {new Date(editingModel.analysisMetadata.analyzedAt).toLocaleDateString()}</div>
+                  <div className="languages">
+                    {Object.entries(editingModel.analysisMetadata.languages).map(([lang, pct]) => (
+                      <span key={lang} className="language-tag">{lang}: {pct}%</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              <div className="form-actions">
+                <button type="button" onClick={() => setShowEditForm(false)}>Cancel</button>
+                <button type="submit">Save</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       <div className="models-list">
         <div className="models-list-header">
           <div className="model-name-col">Name</div>
@@ -218,7 +316,16 @@ const Models: React.FC = () => {
               </div>
             </div>
             <div className="model-actions-col">
-              <button 
+              <button
+                className="action-button edit-button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleEditModel(model);
+                }}
+              >
+                Edit
+              </button>
+              <button
                 className="action-button export-button"
                 onClick={(e) => {
                   e.stopPropagation();
