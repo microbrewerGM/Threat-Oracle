@@ -7,12 +7,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl jq && \
     rm -rf /var/lib/apt/lists/*
 
+# Create non-root user
+RUN addgroup --system app && \
+    adduser --system --group app
+
 # Python deps
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install --no-cache-dir jsonschema langchain-neo4j langchain-community
 
 ENV PYTHONPATH=/app
+
+USER app
 
 # Source mounted as volume
 CMD ["bash"]

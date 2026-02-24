@@ -32,6 +32,15 @@ def parse_github_url(url: str) -> tuple[str, str]:
     raise ValueError(f"Cannot parse GitHub URL: {url}")
 
 
+_SAFE_NAME_PATTERN = re.compile(r'^[a-zA-Z0-9._-]+$')
+
+
+def _validate_github_names(owner: str, repo: str) -> None:
+    """Validate owner and repo contain only safe characters."""
+    if not _SAFE_NAME_PATTERN.match(owner) or not _SAFE_NAME_PATTERN.match(repo):
+        raise ValueError(f"Invalid GitHub owner or repo name: {owner}/{repo}")
+
+
 def _detect_technical_assets(
     tree_paths: list[str], languages: dict[str, int]
 ) -> list[dict[str, Any]]:
@@ -361,10 +370,13 @@ def analyze_repo(repo_url: str) -> dict[str, Any]:
         Dict with technical_assets, data_assets, trust_boundaries, data_flows, metadata.
     """
     owner, repo = parse_github_url(repo_url)
+    _validate_github_names(owner, repo)
     base = f"https://api.github.com/repos/{owner}/{repo}"
 
     with httpx.Client(
-        timeout=30, headers={"Accept": "application/vnd.github.v3+json"}
+        timeout=30,
+        follow_redirects=False,
+        headers={"Accept": "application/vnd.github.v3+json"},
     ) as client:
         # Repo metadata
         resp = client.get(base)

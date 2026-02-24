@@ -15,6 +15,16 @@ class Settings(BaseSettings):
 
     cors_origins: list[str] = ["http://localhost:5173", "http://localhost:3000"]
 
+    # API key for import/admin endpoints (set via THREAT_ORACLE_API_KEY env var)
+    threat_oracle_api_key: str = ""
+
+    # Rate limiting
+    rate_limit_default: str = "60/minute"
+    rate_limit_import: str = "5/minute"
+
+    # Request size limit in bytes (default 1MB)
+    max_request_size: int = 1_048_576
+
     model_config = {"env_file": ".env.dev", "env_file_encoding": "utf-8"}
 
 

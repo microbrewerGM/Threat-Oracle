@@ -1,19 +1,27 @@
 """Threat model CRUD endpoints."""
-from typing import Optional
 from uuid import uuid4
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from neo4j import Session
 
-from api.dependencies import get_neo4j_session
+from api.dependencies import get_neo4j_session, require_api_key
+from api.models import (
+    CreateAssetRequest,
+    CreateBoundaryRequest,
+    CreateDataAssetRequest,
+    CreateFlowRequest,
+    CreateModelRequest,
+    UpdateModelRequest,
+)
 
 router = APIRouter(prefix="/api/v1/models", tags=["models"])
 
 
 @router.post("")
 def create_model(
-    body: dict,
+    body: CreateModelRequest,
     session: Session = Depends(get_neo4j_session),
+    _auth: str = Depends(require_api_key),
 ):
     """Create a new threat model."""
     model_id = f"model-{uuid4().hex[:12]}"
@@ -31,10 +39,10 @@ def create_model(
         RETURN m, m.model_id AS model_id
         """,
         model_id=model_id,
-        name=body.get("name", "Untitled Model"),
-        description=body.get("description", ""),
-        version=body.get("version", "0.1.0"),
-        repo_url=body.get("repo_url", ""),
+        name=body.name,
+        description=body.description,
+        version=body.version,
+        repo_url=body.repo_url,
     )
     record = result.single()
     node = dict(record["m"])
@@ -113,24 +121,30 @@ def get_model(
 @router.put("/{model_id}")
 def update_model(
     model_id: str,
-    body: dict,
+    body: UpdateModelRequest,
     session: Session = Depends(get_neo4j_session),
+    _auth: str = Depends(require_api_key),
 ):
     """Update a threat model's properties."""
-    # Build SET clause dynamically from allowed fields
-    allowed = {"name", "description", "version", "repo_url"}
-    updates = {k: v for k, v in body.items() if k in allowed}
+    updates = body.model_dump(exclude_none=True)
     if not updates:
         raise HTTPException(status_code=400, detail="No valid fields to update")
 
-    set_parts = [f"m.{k} = ${k}" for k in updates]
-    set_parts.append("m.updated = datetime()")
-    set_clause = ", ".join(set_parts)
-
     result = session.run(
-        f"MATCH (m:ThreatModel {{model_id: $model_id}}) SET {set_clause} RETURN m",
+        """
+        MATCH (m:ThreatModel {model_id: $model_id})
+        SET m.name = COALESCE($name, m.name),
+            m.description = COALESCE($description, m.description),
+            m.version = COALESCE($version, m.version),
+            m.repo_url = COALESCE($repo_url, m.repo_url),
+            m.updated = datetime()
+        RETURN m
+        """,
         model_id=model_id,
-        **updates,
+        name=updates.get("name"),
+        description=updates.get("description"),
+        version=updates.get("version"),
+        repo_url=updates.get("repo_url"),
     )
     record = result.single()
     if not record:
@@ -147,6 +161,7 @@ def update_model(
 def delete_model(
     model_id: str,
     session: Session = Depends(get_neo4j_session),
+    _auth: str = Depends(require_api_key),
 ):
     """Delete a threat model and all its related nodes."""
     result = session.run(
@@ -170,8 +185,9 @@ def delete_model(
 @router.post("/{model_id}/assets")
 def add_technical_asset(
     model_id: str,
-    body: dict,
+    body: CreateAssetRequest,
     session: Session = Depends(get_neo4j_session),
+    _auth: str = Depends(require_api_key),
 ):
     """Add a technical asset to a threat model."""
     asset_id = f"ta-{uuid4().hex[:12]}"
@@ -189,9 +205,9 @@ def add_technical_asset(
         """,
         model_id=model_id,
         asset_id=asset_id,
-        name=body.get("name", ""),
-        type=body.get("type", "process"),
-        description=body.get("description", ""),
+        name=body.name,
+        type=body.type,
+        description=body.description,
     )
     record = result.single()
     if not record:
@@ -204,6 +220,7 @@ def delete_technical_asset(
     model_id: str,
     asset_id: str,
     session: Session = Depends(get_neo4j_session),
+    _auth: str = Depends(require_api_key),
 ):
     """Remove a technical asset from a threat model."""
     result = session.run(
@@ -227,8 +244,9 @@ def delete_technical_asset(
 @router.post("/{model_id}/boundaries")
 def add_trust_boundary(
     model_id: str,
-    body: dict,
+    body: CreateBoundaryRequest,
     session: Session = Depends(get_neo4j_session),
+    _auth: str = Depends(require_api_key),
 ):
     """Add a trust boundary to a threat model."""
     boundary_id = f"tb-{uuid4().hex[:12]}"
@@ -246,9 +264,9 @@ def add_trust_boundary(
         """,
         model_id=model_id,
         boundary_id=boundary_id,
-        name=body.get("name", ""),
-        type=body.get("type", "network"),
-        description=body.get("description", ""),
+        name=body.name,
+        type=body.type,
+        description=body.description,
     )
     record = result.single()
     if not record:
@@ -261,6 +279,7 @@ def delete_trust_boundary(
     model_id: str,
     boundary_id: str,
     session: Session = Depends(get_neo4j_session),
+    _auth: str = Depends(require_api_key),
 ):
     """Remove a trust boundary from a threat model."""
     result = session.run(
@@ -284,8 +303,9 @@ def delete_trust_boundary(
 @router.post("/{model_id}/flows")
 def add_data_flow(
     model_id: str,
-    body: dict,
+    body: CreateFlowRequest,
     session: Session = Depends(get_neo4j_session),
+    _auth: str = Depends(require_api_key),
 ):
     """Add a data flow to a threat model."""
     flow_id = f"df-{uuid4().hex[:12]}"
@@ -305,11 +325,11 @@ def add_data_flow(
         """,
         model_id=model_id,
         flow_id=flow_id,
-        name=body.get("name", ""),
-        source=body.get("source", ""),
-        target=body.get("target", ""),
-        protocol=body.get("protocol", ""),
-        description=body.get("description", ""),
+        name=body.name,
+        source=body.source,
+        target=body.target,
+        protocol=body.protocol,
+        description=body.description,
     )
     record = result.single()
     if not record:
@@ -322,6 +342,7 @@ def delete_data_flow(
     model_id: str,
     flow_id: str,
     session: Session = Depends(get_neo4j_session),
+    _auth: str = Depends(require_api_key),
 ):
     """Remove a data flow from a threat model."""
     result = session.run(
@@ -345,8 +366,9 @@ def delete_data_flow(
 @router.post("/{model_id}/data-assets")
 def add_data_asset(
     model_id: str,
-    body: dict,
+    body: CreateDataAssetRequest,
     session: Session = Depends(get_neo4j_session),
+    _auth: str = Depends(require_api_key),
 ):
     """Add a data asset to a threat model."""
     data_asset_id = f"da-{uuid4().hex[:12]}"
@@ -364,9 +386,9 @@ def add_data_asset(
         """,
         model_id=model_id,
         data_asset_id=data_asset_id,
-        name=body.get("name", ""),
-        classification=body.get("classification", "internal"),
-        description=body.get("description", ""),
+        name=body.name,
+        classification=body.classification,
+        description=body.description,
     )
     record = result.single()
     if not record:
@@ -379,6 +401,7 @@ def delete_data_asset(
     model_id: str,
     data_asset_id: str,
     session: Session = Depends(get_neo4j_session),
+    _auth: str = Depends(require_api_key),
 ):
     """Remove a data asset from a threat model."""
     result = session.run(

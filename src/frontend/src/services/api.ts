@@ -61,13 +61,20 @@ interface HealthResponse {
 
 async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
   const response = await fetch(path, {
-    headers: { 'Content-Type': 'application/json' },
+    credentials: 'same-origin',
     ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Requested-With': 'XMLHttpRequest',
+      ...options?.headers,
+    },
   });
 
   if (!response.ok) {
-    const errorBody = await response.text();
-    throw new Error(`API error ${response.status}: ${errorBody}`);
+    const userMessage = response.status >= 500
+      ? 'An internal error occurred. Please try again later.'
+      : `Request failed (${response.status})`;
+    throw new Error(userMessage);
   }
 
   return response.json();

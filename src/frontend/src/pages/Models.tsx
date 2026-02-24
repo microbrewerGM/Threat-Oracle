@@ -53,7 +53,8 @@ const Models: React.FC = () => {
     
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${model.name.replace(/\s+/g, '-').toLowerCase()}-v${model.version}.json`;
+    const safeName = model.name.replace(/[^a-zA-Z0-9-_]/g, '-').replace(/-+/g, '-').slice(0, 100).toLowerCase();
+    a.download = `${safeName}-v${model.version}.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -65,24 +66,30 @@ const Models: React.FC = () => {
     setImportError('');
     
     try {
+      if (importText.length > 1_048_576) {
+        setImportError('Import too large. Maximum size: 1MB');
+        return;
+      }
+
       const modelData = JSON.parse(importText);
-      
+
       // Basic validation
       if (!modelData.name || !modelData.version) {
         setImportError('Invalid model format: missing required fields');
         return;
       }
-      
+
+      // Strict allowlist extraction — prevents prototype pollution
       addModel({
-        name: modelData.name,
-        description: modelData.description || '',
-        version: modelData.version,
-        technicalAssets: modelData.technicalAssets || [],
-        trustBoundaries: modelData.trustBoundaries || [],
-        dataFlows: modelData.dataFlows || [],
-        dataAssets: modelData.dataAssets || []
+        name: String(modelData.name).slice(0, 255),
+        description: String(modelData.description || '').slice(0, 5000),
+        version: String(modelData.version).slice(0, 50),
+        technicalAssets: Array.isArray(modelData.technicalAssets) ? modelData.technicalAssets : [],
+        trustBoundaries: Array.isArray(modelData.trustBoundaries) ? modelData.trustBoundaries : [],
+        dataFlows: Array.isArray(modelData.dataFlows) ? modelData.dataFlows : [],
+        dataAssets: Array.isArray(modelData.dataAssets) ? modelData.dataAssets : []
       });
-      
+
       setImportText('');
       setShowImportForm(false);
     } catch (error) {
@@ -155,6 +162,7 @@ const Models: React.FC = () => {
                   value={newModelName}
                   onChange={(e) => setNewModelName(e.target.value)}
                   placeholder="Enter model name"
+                  maxLength={255}
                   required
                 />
               </div>
@@ -165,6 +173,7 @@ const Models: React.FC = () => {
                   value={newModelDescription}
                   onChange={(e) => setNewModelDescription(e.target.value)}
                   placeholder="Enter model description"
+                  maxLength={5000}
                   rows={4}
                 />
               </div>
@@ -192,6 +201,7 @@ const Models: React.FC = () => {
                   value={importText}
                   onChange={(e) => setImportText(e.target.value)}
                   placeholder="Paste model JSON here"
+                  maxLength={1048576}
                   rows={10}
                   required
                 />
@@ -221,6 +231,7 @@ const Models: React.FC = () => {
                   type="text"
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
+                  maxLength={255}
                   required
                 />
               </div>
@@ -230,6 +241,7 @@ const Models: React.FC = () => {
                   id="edit-description"
                   value={editDescription}
                   onChange={(e) => setEditDescription(e.target.value)}
+                  maxLength={5000}
                   rows={4}
                 />
               </div>
@@ -240,6 +252,7 @@ const Models: React.FC = () => {
                   type="text"
                   value={editVersion}
                   onChange={(e) => setEditVersion(e.target.value)}
+                  maxLength={50}
                 />
               </div>
               <div className="form-group">
@@ -250,12 +263,21 @@ const Models: React.FC = () => {
                   value={editRepoUrl}
                   onChange={(e) => setEditRepoUrl(e.target.value)}
                   placeholder="https://github.com/owner/repo"
+                  maxLength={500}
                 />
-                {editRepoUrl && (
-                  <div className="repo-url-link">
-                    <a href={editRepoUrl} target="_blank" rel="noopener noreferrer">{editRepoUrl}</a>
-                  </div>
-                )}
+                {editRepoUrl && (() => {
+                  try {
+                    const protocol = new URL(editRepoUrl).protocol;
+                    if (protocol === 'http:' || protocol === 'https:') {
+                      return (
+                        <div className="repo-url-link">
+                          <a href={editRepoUrl} target="_blank" rel="noopener noreferrer">{editRepoUrl}</a>
+                        </div>
+                      );
+                    }
+                  } catch { /* invalid URL, don't render link */ }
+                  return null;
+                })()}
               </div>
               {editingModel.analysisMetadata && (
                 <div className="analysis-metadata">

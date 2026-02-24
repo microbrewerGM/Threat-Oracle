@@ -1,9 +1,11 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import ModelSelector from '@/components/model/ModelSelector';
 import { useModelStore } from '@/store/modelStore';
 import './Dashboard.css';
 
 const Dashboard: React.FC = () => {
+  const navigate = useNavigate();
   const { getCurrentModel } = useModelStore();
   const currentModel = getCurrentModel();
   
@@ -21,7 +23,7 @@ const Dashboard: React.FC = () => {
           <h2>Technical Assets</h2>
           <p>Manage your technical assets such as servers, applications, databases, and more.</p>
           <div className="card-footer">
-            <button onClick={() => window.location.href = '/technical-assets'}>View Assets</button>
+            <button onClick={() => navigate('/technical-assets')}>View Assets</button>
           </div>
         </div>
 
@@ -29,7 +31,7 @@ const Dashboard: React.FC = () => {
           <h2>Trust Boundaries</h2>
           <p>Define and manage trust boundaries such as network segments, security zones, and organizational boundaries.</p>
           <div className="card-footer">
-            <button onClick={() => window.location.href = '/trust-boundaries'}>View Boundaries</button>
+            <button onClick={() => navigate('/trust-boundaries')}>View Boundaries</button>
           </div>
         </div>
 
@@ -37,7 +39,7 @@ const Dashboard: React.FC = () => {
           <h2>Data Flows</h2>
           <p>Map data flows between technical assets to understand how information moves through your system.</p>
           <div className="card-footer">
-            <button onClick={() => window.location.href = '/data-flows'}>View Flows</button>
+            <button onClick={() => navigate('/data-flows')}>View Flows</button>
           </div>
         </div>
 
@@ -45,7 +47,7 @@ const Dashboard: React.FC = () => {
           <h2>Visualization</h2>
           <p>Visualize your threat model as an interactive graph to identify potential security issues.</p>
           <div className="card-footer">
-            <button onClick={() => window.location.href = '/visualization'}>View Graph</button>
+            <button onClick={() => navigate('/visualization')}>View Graph</button>
           </div>
         </div>
       </div>

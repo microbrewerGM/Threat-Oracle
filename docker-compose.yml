@@ -6,7 +6,7 @@ services:
       context: ./src/frontend
       dockerfile: Dockerfile
     ports:
-      - "3000:80"
+      - "3000:8080"
     depends_on:
       - backend
     environment:
@@ -26,7 +26,7 @@ services:
     environment:
       - DATABASE_URL=neo4j://neo4j:7687
       - DATABASE_USER=neo4j
-      - DATABASE_PASSWORD=password
+      - DATABASE_PASSWORD=${NEO4J_PASSWORD:?Set NEO4J_PASSWORD in .env}
       - LOG_LEVEL=INFO
     networks:
       - threat-oracle-network
@@ -38,10 +38,10 @@ services:
   neo4j:
     image: neo4j:5.9.0
     ports:
-      - "7474:7474"  # HTTP
-      - "7687:7687"  # Bolt
+      - "127.0.0.1:7474:7474"  # HTTP — localhost only
+      - "127.0.0.1:7687:7687"  # Bolt — localhost only
     environment:
-      - NEO4J_AUTH=neo4j/password
+      - NEO4J_AUTH=neo4j/${NEO4J_PASSWORD:?Set NEO4J_PASSWORD in .env}
       - NEO4J_dbms_memory_pagecache_size=1G
       - NEO4J_dbms_memory_heap_initial__size=1G
       - NEO4J_dbms_memory_heap_max__size=2G

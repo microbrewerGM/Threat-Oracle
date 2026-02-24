@@ -83,7 +83,7 @@ export const useModelStore = create<ModelState>((set, get) => ({
   addModel: (model) => {
     const newModel: ThreatModel = {
       ...model,
-      id: `model-${Date.now()}`,
+      id: crypto.randomUUID(),
       created: new Date().toISOString(),
       updated: new Date().toISOString()
     };
@@ -95,10 +95,11 @@ export const useModelStore = create<ModelState>((set, get) => ({
   },
   
   updateModel: (id, updates) => {
+    const { id: _id, created: _created, ...safeUpdates } = updates;
     set(state => ({
-      models: state.models.map(model => 
-        model.id === id 
-          ? { ...model, ...updates, updated: new Date().toISOString() } 
+      models: state.models.map(model =>
+        model.id === id
+          ? { ...model, ...safeUpdates, updated: new Date().toISOString() }
           : model
       )
     }));
@@ -128,7 +129,7 @@ export const useModelStore = create<ModelState>((set, get) => ({
     
     const newAsset: TechnicalAsset = {
       ...asset,
-      id: `ta-${Date.now()}`
+      id: crypto.randomUUID()
     };
     
     updateModel(currentModel.id, {
@@ -169,7 +170,7 @@ export const useModelStore = create<ModelState>((set, get) => ({
     
     const newBoundary: TrustBoundary = {
       ...boundary,
-      id: `tb-${Date.now()}`
+      id: crypto.randomUUID()
     };
     
     updateModel(currentModel.id, {
@@ -210,7 +211,7 @@ export const useModelStore = create<ModelState>((set, get) => ({
     
     const newFlow: DataFlow = {
       ...flow,
-      id: `df-${Date.now()}`
+      id: crypto.randomUUID()
     };
     
     updateModel(currentModel.id, {
@@ -251,7 +252,7 @@ export const useModelStore = create<ModelState>((set, get) => ({
     
     const newAsset: DataAsset = {
       ...asset,
-      id: `da-${Date.now()}`
+      id: crypto.randomUUID()
     };
     
     updateModel(currentModel.id, {
