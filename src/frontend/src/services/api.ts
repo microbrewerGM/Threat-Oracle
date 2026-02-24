@@ -80,6 +80,30 @@ async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
   return response.json();
 }
 
+interface ModelNode {
+  model_id: string;
+  name: string;
+  description: string;
+  version: string;
+  repo_url: string;
+  created: string;
+  updated: string;
+}
+
+interface ModelDetailResponse {
+  model: ModelNode;
+  technical_assets: Array<Record<string, unknown>>;
+  trust_boundaries: Array<Record<string, unknown>>;
+  data_flows: Array<Record<string, unknown>>;
+  data_assets: Array<Record<string, unknown>>;
+}
+
+interface ModelsListResponse {
+  models: ModelNode[];
+  skip: number;
+  limit: number;
+}
+
 export const threatOracleAPI = {
   // Health
   health: () => apiFetch<HealthResponse>('/health'),
@@ -110,6 +134,35 @@ export const threatOracleAPI = {
   // Import triggers
   triggerImport: (source: 'cwe' | 'attack' | 'capec') =>
     apiFetch<ImportResponse>(`${API_BASE}/import/trigger/${source}`, { method: 'POST' }),
+
+  // Models CRUD
+  listModels: (params?: { skip?: number; limit?: number }) => {
+    const searchParams = new URLSearchParams();
+    if (params?.skip !== undefined) searchParams.set('skip', String(params.skip));
+    if (params?.limit !== undefined) searchParams.set('limit', String(params.limit));
+    const qs = searchParams.toString();
+    return apiFetch<ModelsListResponse>(`${API_BASE}/models${qs ? `?${qs}` : ''}`);
+  },
+
+  getModel: (modelId: string) =>
+    apiFetch<ModelDetailResponse>(`${API_BASE}/models/${encodeURIComponent(modelId)}`),
+
+  createModel: (data: { name: string; description?: string; version?: string; repo_url?: string }) =>
+    apiFetch<ModelNode>(`${API_BASE}/models`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  updateModel: (modelId: string, data: { name?: string; description?: string; version?: string; repo_url?: string }) =>
+    apiFetch<ModelNode>(`${API_BASE}/models/${encodeURIComponent(modelId)}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+
+  deleteModel: (modelId: string) =>
+    apiFetch<{ status: string; model_id: string }>(`${API_BASE}/models/${encodeURIComponent(modelId)}`, {
+      method: 'DELETE',
+    }),
 };
 
 export type {
@@ -120,4 +173,7 @@ export type {
   SearchResponse,
   ImportResponse,
   HealthResponse,
+  ModelNode,
+  ModelDetailResponse,
+  ModelsListResponse,
 };

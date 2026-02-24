@@ -6,7 +6,7 @@ import { useModelStore } from '@/store/modelStore';
 
 // Mock the store
 vi.mock('@/store/modelStore', () => ({
-  useModelStore: vi.fn()
+  useModelStore: Object.assign(vi.fn(), { setState: vi.fn() })
 }));
 
 // Mock window.confirm
@@ -40,88 +40,89 @@ describe('Models Page', () => {
       dataAssets: []
     }
   ];
-  
+
   const mockSetCurrentModel = vi.fn();
   const mockAddModel = vi.fn();
-  const mockUpdateModel = vi.fn();
-  const mockDeleteModel = vi.fn();
-  
+  const mockFetchModels = vi.fn();
+  const mockCreateModelAsync = vi.fn();
+  const mockUpdateModelAsync = vi.fn();
+  const mockDeleteModelAsync = vi.fn();
+
   beforeEach(() => {
     (useModelStore as any).mockReturnValue({
       models: mockModels,
       currentModelId: 'model-1',
+      loading: false,
+      error: null,
       setCurrentModel: mockSetCurrentModel,
       addModel: mockAddModel,
-      updateModel: mockUpdateModel,
-      deleteModel: mockDeleteModel
+      fetchModels: mockFetchModels,
+      createModelAsync: mockCreateModelAsync,
+      updateModelAsync: mockUpdateModelAsync,
+      deleteModelAsync: mockDeleteModelAsync,
     });
-    
+
     // Reset mocks
     vi.clearAllMocks();
     (window.confirm as any).mockReturnValue(true);
   });
-  
+
   afterAll(() => {
     window.confirm = originalConfirm;
   });
-  
+
   it('renders the models list', () => {
     render(<Models />);
-    
+
     // Check if the page title is rendered
     expect(screen.getByText('Threat Models')).toBeInTheDocument();
-    
+
     // Check if both models are rendered
     expect(screen.getByText('Test Model 1')).toBeInTheDocument();
     expect(screen.getByText('Test Model 2')).toBeInTheDocument();
   });
-  
+
   it('selects a model when clicked', () => {
     render(<Models />);
-    
+
     // Click on the second model
     fireEvent.click(screen.getByText('Test Model 2'));
-    
+
     // Check if setCurrentModel was called with the correct model ID
     expect(mockSetCurrentModel).toHaveBeenCalledWith('model-2');
   });
-  
+
   it('opens the create model form when the create button is clicked', () => {
     render(<Models />);
-    
+
     // Click on the create button
     fireEvent.click(screen.getByText('Create New Model'));
-    
+
     // Check if the form is displayed
     expect(screen.getByText('Create New Model', { selector: 'h2' })).toBeInTheDocument();
     expect(screen.getByLabelText('Model Name:')).toBeInTheDocument();
   });
-  
+
   it('creates a new model when the form is submitted', () => {
     render(<Models />);
-    
+
     // Click on the create button
     fireEvent.click(screen.getByText('Create New Model'));
-    
+
     // Fill in the form
     fireEvent.change(screen.getByLabelText('Model Name:'), { target: { value: 'New Test Model' } });
     fireEvent.change(screen.getByLabelText('Description:'), { target: { value: 'New test description' } });
-    
+
     // Submit the form
     fireEvent.click(screen.getByText('Create', { selector: 'button[type="submit"]' }));
-    
-    // Check if addModel was called with the correct parameters
-    expect(mockAddModel).toHaveBeenCalledWith({
+
+    // Check if createModelAsync was called with the correct parameters
+    expect(mockCreateModelAsync).toHaveBeenCalledWith({
       name: 'New Test Model',
       description: 'New test description',
-      version: '0.1.0',
-      technicalAssets: [],
-      trustBoundaries: [],
-      dataFlows: [],
-      dataAssets: []
     });
   });
-  
+
   it('deletes a model when the delete button is clicked', () => {
     render(<Models />);
 
@@ -132,8 +133,8 @@ describe('Models Page', () => {
     // Check if window.confirm was called
     expect(window.confirm).toHaveBeenCalled();
 
-    // Check if deleteModel was called with the correct model ID
-    expect(mockDeleteModel).toHaveBeenCalledWith('model-1');
+    // Check if deleteModelAsync was called with the correct model ID
+    expect(mockDeleteModelAsync).toHaveBeenCalledWith('model-1');
   });
 
   it('opens edit modal with pre-populated fields when Edit button is clicked', () => {
@@ -148,7 +149,7 @@ describe('Models Page', () => {
     expect(screen.getByLabelText('Version:')).toHaveValue('1.0.0');
   });
 
-  it('submitting edit form calls updateModel with correct args', () => {
+  it('submitting edit form calls updateModelAsync with correct args', () => {
     render(<Models />);
 
     const editButtons = screen.getAllByText('Edit');
@@ -157,11 +158,11 @@ describe('Models Page', () => {
     fireEvent.change(screen.getByLabelText('Name:'), { target: { value: 'Updated Name' } });
     fireEvent.click(screen.getByText('Save'));
 
-    expect(mockUpdateModel).toHaveBeenCalledWith('model-1', {
+    expect(mockUpdateModelAsync).toHaveBeenCalledWith('model-1', {
       name: 'Updated Name',
       description: 'Test description 1',
       version: '1.0.0',
-      repoUrl: undefined,
+      repo_url: undefined,
     });
   });
 

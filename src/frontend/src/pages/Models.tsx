@@ -1,9 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useModelStore, ThreatModel } from '@/store/modelStore';
 import './Models.css';
 
 const Models: React.FC = () => {
-  const { models, currentModelId, setCurrentModel, addModel, updateModel, deleteModel } = useModelStore();
+  const {
+    models, currentModelId, loading, error,
+    setCurrentModel, addModel,
+    fetchModels, createModelAsync, updateModelAsync, deleteModelAsync
+  } = useModelStore();
   const [showNewModelForm, setShowNewModelForm] = useState(false);
   const [newModelName, setNewModelName] = useState('');
   const [newModelDescription, setNewModelDescription] = useState('');
@@ -17,6 +21,10 @@ const Models: React.FC = () => {
   const [editVersion, setEditVersion] = useState('');
   const [editRepoUrl, setEditRepoUrl] = useState('');
 
+  useEffect(() => {
+    fetchModels();
+  }, [fetchModels]);
+
   const handleSelectModel = (id: string) => {
     setCurrentModel(id);
   };
@@ -25,14 +33,9 @@ const Models: React.FC = () => {
     e.preventDefault();
     if (!newModelName.trim()) return;
 
-    addModel({
+    createModelAsync({
       name: newModelName,
-      description: newModelDescription,
-      version: '0.1.0',
-      technicalAssets: [],
-      trustBoundaries: [],
-      dataFlows: [],
-      dataAssets: []
+      description: newModelDescription || undefined,
     });
 
     setNewModelName('');
@@ -42,7 +45,7 @@ const Models: React.FC = () => {
 
   const handleDeleteModel = (id: string) => {
     if (window.confirm('Are you sure you want to delete this model? This action cannot be undone.')) {
-      deleteModel(id);
+      deleteModelAsync(id);
     }
   };
 
@@ -50,7 +53,7 @@ const Models: React.FC = () => {
     const modelJson = JSON.stringify(model, null, 2);
     const blob = new Blob([modelJson], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
-    
+
     const a = document.createElement('a');
     a.href = url;
     const safeName = model.name.replace(/[^a-zA-Z0-9-_]/g, '-').replace(/-+/g, '-').slice(0, 100).toLowerCase();
@@ -64,7 +67,7 @@ const Models: React.FC = () => {
   const handleImportModel = (e: React.FormEvent) => {
     e.preventDefault();
     setImportError('');
-    
+
     try {
       if (importText.length > 1_048_576) {
         setImportError('Import too large. Maximum size: 1MB');
@@ -92,7 +95,7 @@ const Models: React.FC = () => {
 
       setImportText('');
       setShowImportForm(false);
-    } catch (error) {
+    } catch {
       setImportError('Invalid JSON format');
     }
   };
@@ -114,14 +117,18 @@ const Models: React.FC = () => {
   const handleUpdateModel = (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingModel) return;
-    updateModel(editingModel.id, {
+    updateModelAsync(editingModel.id, {
       name: editName,
       description: editDescription,
       version: editVersion,
-      repoUrl: editRepoUrl || undefined,
+      repo_url: editRepoUrl || undefined,
     });
     setShowEditForm(false);
     setEditingModel(null);
+  };
+
+  const dismissError = () => {
+    useModelStore.setState({ error: null });
   };
 
   return (
@@ -130,22 +137,31 @@ const Models: React.FC = () => {
       <p className="description">
         Manage your threat models. Create new models, import existing ones, or export models for sharing.
       </p>
-      
+
+      {error && (
+        <div className="error-banner">
+          <span>{error}</span>
+          <button className="dismiss-button" onClick={dismissError}>Dismiss</button>
+        </div>
+      )}
+
+      {loading && <div className="loading-indicator">Loading...</div>}
+
       <div className="models-actions">
-        <button 
-          className="action-button create-button" 
+        <button
+          className="action-button create-button"
           onClick={() => setShowNewModelForm(true)}
         >
           Create New Model
         </button>
-        <button 
-          className="action-button import-button" 
+        <button
+          className="action-button import-button"
           onClick={() => setShowImportForm(true)}
         >
           Import Model
         </button>
       </div>
-      
+
       {showNewModelForm && (
         <div className="modal-overlay">
           <div className="modal">
@@ -185,7 +201,7 @@ const Models: React.FC = () => {
           </div>
         </div>
       )}
-      
+
       {showImportForm && (
         <div className="modal-overlay">
           <div className="modal">
@@ -306,10 +322,10 @@ const Models: React.FC = () => {
           <div className="model-assets-col">Assets</div>
           <div className="model-actions-col">Actions</div>
         </div>
-        
+
         {models.map(model => (
-          <div 
-            key={model.id} 
+          <div
+            key={model.id}
             className={`model-item ${model.id === currentModelId ? 'selected' : ''}`}
             onClick={() => handleSelectModel(model.id)}
           >
@@ -357,7 +373,7 @@ const Models: React.FC = () => {
                 Export
               </button>
               {models.length > 1 && (
-                <button 
+                <button
                   className="action-button delete-button"
                   onClick={(e) => {
                     e.stopPropagation();
