@@ -11,6 +11,11 @@ repos:
       - id: detect-private-key
       - id: check-case-conflict
 
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.21.2
+    hooks:
+      - id: gitleaks
+
   - repo: https://github.com/psf/black
     rev: 23.3.0
     hooks:

@@ -95,13 +95,20 @@ Threat Oracle is in early development. Currently implemented features:
    cd Threat-Oracle
    ```
 
-2. Install Python dependencies:
+2. Set up environment variables:
+
+   ```bash
+   cp .env.dev.example .env.dev
+   # Edit .env.dev with your Neo4j credentials
+   ```
+
+3. Install Python dependencies:
 
    ```bash
    pip install -r requirements.txt
    ```
 
-3. Install pre-commit hooks:
+4. Install pre-commit hooks:
 
    ```bash
    pre-commit install
