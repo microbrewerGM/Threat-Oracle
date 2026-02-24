@@ -15,7 +15,7 @@ from api.middleware import (
     RequestSizeLimitMiddleware,
     SecurityHeadersMiddleware,
 )
-from api.routes import graph, health, imports, models
+from api.routes import analysis, graph, health, imports, models
 from src.db import close_driver
 
 logger = logging.getLogger("threat_oracle")
@@ -47,6 +47,10 @@ tags_metadata = [
     {
         "name": "models",
         "description": "Create, read, update, and delete threat models with their assets.",
+    },
+    {
+        "name": "analysis",
+        "description": "Trigger LLM-powered threat analysis and query results.",
     },
 ]
 
@@ -93,7 +97,17 @@ def create_app() -> FastAPI:
         allow_origins=settings.cors_origins,
         allow_credentials=True,
         allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-        allow_headers=["Content-Type", "Authorization", "X-API-Key", "X-Requested-With"],
+        allow_headers=[
+            "Content-Type",
+            "Authorization",
+            "X-API-Key",
+            "X-Requested-With",
+            "X-Anthropic-Api-Key",
+            "X-OpenAI-Api-Key",
+            "X-Google-Api-Key",
+            "X-Groq-Api-Key",
+            "X-Ollama-Base-Url",
+        ],
     )
 
     # Global exception handler — prevent leaking internal details
@@ -109,6 +123,7 @@ def create_app() -> FastAPI:
     app.include_router(graph.router)
     app.include_router(imports.router)
     app.include_router(models.router)
+    app.include_router(analysis.router)
 
     return app
 
