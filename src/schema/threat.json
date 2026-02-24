@@ -1,0 +1,80 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "threat.json",
+  "title": "Threat",
+  "description": "A threat identified through analysis of a threat model",
+  "type": "object",
+  "required": ["id", "title", "stride_category", "severity"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier (format: threat-{job_id}-{sequence})",
+      "pattern": "^threat-[a-f0-9]+-\\d+$"
+    },
+    "title": {
+      "type": "string",
+      "maxLength": 500
+    },
+    "stride_category": {
+      "type": "string",
+      "enum": ["spoofing", "tampering", "repudiation", "information_disclosure", "denial_of_service", "elevation_of_privilege"]
+    },
+    "severity": {
+      "type": "string",
+      "enum": ["critical", "high", "medium", "low", "info"]
+    },
+    "likelihood": {
+      "type": "string",
+      "enum": ["certain", "likely", "possible", "unlikely", "rare"]
+    },
+    "risk_score": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 10.0,
+      "description": "Composite risk score (0-10)"
+    },
+    "attack_vector": {
+      "type": "string",
+      "maxLength": 2000
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 5000
+    },
+    "remediation": {
+      "type": "string",
+      "maxLength": 5000
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "description": "LLM confidence score"
+    },
+    "cwe_ids": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^CWE-\\d+$" }
+    },
+    "capec_ids": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^CAPEC-\\d+$" }
+    },
+    "attack_technique_ids": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^T\\d{4}(\\.\\d{3})?$" }
+    },
+    "affected_assets": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "analysis_tier": {
+      "type": "string",
+      "enum": ["tier_0", "tier_1", "tier_2"]
+    },
+    "job_id": {
+      "type": "string",
+      "description": "Analysis job that produced this threat"
+    }
+  },
+  "additionalProperties": false
+}
