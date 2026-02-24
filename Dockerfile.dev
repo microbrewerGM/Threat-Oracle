@@ -10,7 +10,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Python deps
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-RUN pip install --no-cache-dir langchain-neo4j langchain-community
+RUN pip install --no-cache-dir jsonschema langchain-neo4j langchain-community
+
+ENV PYTHONPATH=/app
 
 # Source mounted as volume
 CMD ["bash"]

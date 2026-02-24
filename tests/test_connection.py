@@ -3,6 +3,8 @@ import os
 import pytest
 from neo4j import GraphDatabase
 
+pytestmark = pytest.mark.neo4j
+
 
 def get_aura_creds():
     """Get AuraDB credentials from environment variables."""

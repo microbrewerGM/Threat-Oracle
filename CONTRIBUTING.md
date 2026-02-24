@@ -16,6 +16,17 @@
 6. **When done**: Push your branch, open a PR, request review from another Morty, post in #threat-oracle
 7. **Blocked?** Post the blocker in #threat-oracle immediately. If it needs Aaron, tag him as an alert.
 
+## Environment Setup
+
+Before running the application locally, copy the environment template and fill in your credentials:
+
+```bash
+cp .env.dev.example .env.dev
+# Edit .env.dev with your Neo4j connection details
+```
+
+**Never commit real credentials.** The `.env.dev` file is gitignored. Only `.env.dev.example` (with empty values) is tracked.
+
 ## Commit Conventions
 
 Format: `<type>(<scope>): <description>`

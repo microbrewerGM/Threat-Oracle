@@ -62,6 +62,7 @@ Threat Oracle maintains comprehensive documentation to guide development and usa
 - [**Architecture**](ARCHITECTURE.md): Detailed software architecture and design
 - [**Development Plan**](DEVELOPMENT_PLAN.md): Incremental approach to feature implementation
 - [**Git Workflow**](GIT_WORKFLOW.md): Git workflow and best practices
+- [**Setup Guide**](SETUP.md): Getting started with local or cloud Neo4j
 - [**Contributing Guidelines**](CONTRIBUTING.md): How to contribute to the project
 - [**Markdown Guidelines**](MARKDOWN_GUIDELINES.md): Best practices for formatting documentation
 - [**Changelog**](CHANGELOG.md): Record of all notable changes
@@ -95,13 +96,20 @@ Threat Oracle is in early development. Currently implemented features:
    cd Threat-Oracle
    ```
 
-2. Install Python dependencies:
+2. Set up environment variables:
+
+   ```bash
+   cp .env.dev.example .env.dev
+   # Edit .env.dev with your Neo4j credentials
+   ```
+
+3. Install Python dependencies:
 
    ```bash
    pip install -r requirements.txt
    ```
 
-3. Install pre-commit hooks:
+4. Install pre-commit hooks:
 
    ```bash
    pre-commit install

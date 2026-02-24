@@ -53,6 +53,12 @@ const Sidebar: React.FC = () => {
             </Link>
           </li>
           <li>
+            <Link to="/knowledge-graph">
+              <span className="icon">🧠</span>
+              <span className="text">Knowledge Graph</span>
+            </Link>
+          </li>
+          <li>
             <Link to="/settings">
               <span className="icon">⚙️</span>
               <span className="text">Settings</span>

@@ -42,6 +42,7 @@ class TestCAPECParser:
                 assert aid.startswith("T"), f"Bad attack ID: {aid}"
 
 
+@pytest.mark.neo4j
 @pytest.mark.skipif(not HAVE_DB, reason="NEO4J env vars required")
 @pytest.mark.skipif(not HAVE_DATA, reason="CAPEC XML not downloaded")
 class TestCAPECImport:
