@@ -1,8 +1,23 @@
 """Tests for analysis.llm.dispatcher and work_units — no LLM calls."""
-import pytest
+import asyncio
+import logging
 
-from analysis.llm.dispatcher import get_job_result, get_job_status, start_analysis
-from analysis.llm.schemas import AnalysisTier, LLMProviderKeys
+import pytest
+from unittest.mock import AsyncMock, MagicMock, patch
+
+from analysis.llm.dispatcher import (
+    _run_analysis_pipeline,
+    get_job_result,
+    get_job_status,
+    start_analysis,
+)
+from analysis.llm.schemas import (
+    AnalysisJobStatus,
+    AnalysisTier,
+    LLMProviderKeys,
+    ThreatFinding,
+    WorkUnitResult,
+)
 from analysis.llm.work_units import (
     ALL_WORK_UNITS,
     get_ready_units,
@@ -130,3 +145,211 @@ class TestDispatcher:
             assert status.status in ("pending", "running")
 
         asyncio.run(_test())
+
+
+class TestRunAnalysisPipeline:
+    """Gap A: Tests for _run_analysis_pipeline Neo4j persistence logic."""
+
+    def _make_job(self, job_id: str, model_id: str) -> AnalysisJobStatus:
+        return AnalysisJobStatus(
+            job_id=job_id,
+            model_id=model_id,
+            tier=AnalysisTier.TIER_0,
+            status="pending",
+        )
+
+    @patch("analysis.llm.dispatcher.get_units_for_tier")
+    @patch("analysis.llm.dispatcher.get_ready_units")
+    @patch("analysis.llm.dispatcher._execute_work_unit", new_callable=AsyncMock)
+    def test_imports_threats_when_findings_exist(
+        self, mock_execute, mock_ready, mock_get_units
+    ):
+        """When stride_analysis produces findings, import_threats_to_neo4j is called."""
+        import analysis.llm.dispatcher as dispatcher
+
+        job_id = "job-test-import"
+        model_id = "model-test"
+
+        mock_unit = MagicMock()
+        mock_unit.name = "stride_analysis"
+        mock_unit.phase = 3
+        mock_get_units.return_value = [mock_unit]
+        mock_ready.side_effect = [[mock_unit], []]
+
+        finding_data = {
+            "findings": [
+                {
+                    "title": "SQLi",
+                    "stride_category": "tampering",
+                    "severity": "critical",
+                    "likelihood": "likely",
+                    "description": "SQL injection",
+                    "attack_vector": "network",
+                    "remediation": "Use parameterized queries",
+                    "confidence": 0.9,
+                }
+            ]
+        }
+        mock_execute.return_value = WorkUnitResult(
+            unit_name="stride_analysis",
+            phase=3,
+            data=finding_data,
+            tokens_used=0,
+            duration_seconds=0.1,
+        )
+
+        dispatcher._jobs[job_id] = self._make_job(job_id, model_id)
+
+        mock_import = MagicMock(return_value=(1, 1))
+        mock_threats_from = MagicMock(return_value=[{"threat_id": "t-1"}])
+        mock_threat_importer = MagicMock(
+            import_threats_to_neo4j=mock_import,
+            threats_from_findings=mock_threats_from,
+        )
+
+        with patch.dict(
+            "sys.modules",
+            {"importers.threat_importer": mock_threat_importer},
+        ), patch("src.db.get_driver", return_value=MagicMock()):
+            asyncio.run(
+                _run_analysis_pipeline(
+                    job_id,
+                    model_id,
+                    AnalysisTier.TIER_0,
+                    LLMProviderKeys(),
+                    {},
+                )
+            )
+
+        assert dispatcher._jobs[job_id].status == "completed"
+        mock_import.assert_called_once()
+        # Clean up
+        dispatcher._jobs.pop(job_id, None)
+        dispatcher._results.pop(job_id, None)
+
+    @patch("analysis.llm.dispatcher.get_units_for_tier")
+    @patch("analysis.llm.dispatcher.get_ready_units")
+    @patch("analysis.llm.dispatcher._execute_work_unit", new_callable=AsyncMock)
+    def test_neo4j_import_failure_does_not_crash(
+        self, mock_execute, mock_ready, mock_get_units, caplog
+    ):
+        """If Neo4j import fails, pipeline still completes with a warning."""
+        import analysis.llm.dispatcher as dispatcher
+
+        job_id = "job-test-fail"
+        model_id = "model-fail"
+
+        mock_unit = MagicMock()
+        mock_unit.name = "stride_analysis"
+        mock_unit.phase = 3
+        mock_get_units.return_value = [mock_unit]
+        mock_ready.side_effect = [[mock_unit], []]
+
+        mock_execute.return_value = WorkUnitResult(
+            unit_name="stride_analysis",
+            phase=3,
+            data={
+                "findings": [
+                    {
+                        "title": "XSS",
+                        "stride_category": "tampering",
+                        "severity": "high",
+                        "likelihood": "possible",
+                        "description": "Cross-site scripting",
+                        "attack_vector": "network",
+                        "remediation": "Escape output",
+                        "confidence": 0.8,
+                    }
+                ]
+            },
+            tokens_used=0,
+            duration_seconds=0.1,
+        )
+
+        dispatcher._jobs[job_id] = self._make_job(job_id, model_id)
+
+        mock_threat_importer = MagicMock(
+            import_threats_to_neo4j=MagicMock(
+                side_effect=RuntimeError("Neo4j down")
+            ),
+            threats_from_findings=MagicMock(
+                return_value=[{"threat_id": "t-x"}]
+            ),
+        )
+
+        with patch.dict(
+            "sys.modules",
+            {"importers.threat_importer": mock_threat_importer},
+        ), patch("src.db.get_driver", return_value=MagicMock()):
+            with caplog.at_level(logging.WARNING, logger="threat_oracle.llm"):
+                asyncio.run(
+                    _run_analysis_pipeline(
+                        job_id,
+                        model_id,
+                        AnalysisTier.TIER_0,
+                        LLMProviderKeys(),
+                        {},
+                    )
+                )
+
+        assert dispatcher._jobs[job_id].status == "completed"
+        assert any("Failed to persist" in r.message for r in caplog.records)
+        # Clean up
+        dispatcher._jobs.pop(job_id, None)
+        dispatcher._results.pop(job_id, None)
+
+    @patch("analysis.llm.dispatcher.get_units_for_tier")
+    @patch("analysis.llm.dispatcher.get_ready_units")
+    @patch("analysis.llm.dispatcher._execute_work_unit", new_callable=AsyncMock)
+    def test_no_import_when_no_findings(
+        self, mock_execute, mock_ready, mock_get_units
+    ):
+        """When no findings are produced, import_threats_to_neo4j is NOT called."""
+        import analysis.llm.dispatcher as dispatcher
+
+        job_id = "job-test-empty"
+        model_id = "model-empty"
+
+        mock_unit = MagicMock()
+        mock_unit.name = "file_tree"
+        mock_unit.phase = 1
+        mock_get_units.return_value = [mock_unit]
+        mock_ready.side_effect = [[mock_unit], []]
+
+        mock_execute.return_value = WorkUnitResult(
+            unit_name="file_tree",
+            phase=1,
+            data={"categories": {}},
+            tokens_used=0,
+            duration_seconds=0.1,
+        )
+
+        dispatcher._jobs[job_id] = self._make_job(job_id, model_id)
+
+        mock_import = MagicMock()
+        mock_threat_importer = MagicMock(
+            import_threats_to_neo4j=mock_import,
+            threats_from_findings=MagicMock(),
+        )
+
+        with patch.dict(
+            "sys.modules",
+            {"importers.threat_importer": mock_threat_importer},
+        ):
+            asyncio.run(
+                _run_analysis_pipeline(
+                    job_id,
+                    model_id,
+                    AnalysisTier.TIER_0,
+                    LLMProviderKeys(),
+                    {},
+                )
+            )
+
+        assert dispatcher._jobs[job_id].status == "completed"
+        assert dispatcher._jobs[job_id].threats_found == 0
+        # import was never called because findings list is empty
+        mock_import.assert_not_called()
+        # Clean up
+        dispatcher._jobs.pop(job_id, None)
+        dispatcher._results.pop(job_id, None)

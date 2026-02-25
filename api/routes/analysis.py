@@ -100,6 +100,64 @@ def trigger_analysis(
     # Fetch model data from Neo4j
     model_data = _get_model_data(model_id, session)
 
+    # If model has a repo_url, scan the repo and merge raw data for LLM prompts
+    repo_url = model_data.get("repo_url", "")
+    if repo_url:
+        try:
+            from analysis.repo_analyzer import analyze_repo
+
+            repo_data = analyze_repo(repo_url)
+            # Merge raw GitHub data into model_data for prompt builders
+            # repo_data keys: technical_assets, data_assets, trust_boundaries, data_flows, metadata
+            metadata = repo_data.get("metadata", {})
+            model_data["file_tree"] = []  # Will be populated below
+            model_data["dependencies"] = {}
+            model_data["languages"] = metadata.get("languages", {})
+
+            # Re-fetch tree paths for prompt builders (analyze_repo already fetched them
+            # but doesn't expose raw paths — re-derive from technical_assets heuristics)
+            # Instead, call GitHub API directly for raw tree
+            try:
+                from analysis.repo_analyzer import parse_github_url, _validate_github_names
+                import httpx
+
+                owner, repo_name = parse_github_url(repo_url)
+                _validate_github_names(owner, repo_name)
+                base = f"https://api.github.com/repos/{owner}/{repo_name}"
+                with httpx.Client(
+                    timeout=30,
+                    follow_redirects=False,
+                    headers={"Accept": "application/vnd.github.v3+json"},
+                ) as client:
+                    # File tree
+                    default_branch = metadata.get("default_branch", "main")
+                    resp = client.get(
+                        f"{base}/git/trees/{default_branch}",
+                        params={"recursive": "1"},
+                    )
+                    resp.raise_for_status()
+                    tree_data = resp.json()
+                    model_data["file_tree"] = [
+                        item["path"]
+                        for item in tree_data.get("tree", [])
+                        if item.get("type") in ("blob", "tree")
+                    ]
+            except Exception as tree_err:
+                logger.warning("Failed to fetch raw tree for %s: %s", repo_url, tree_err)
+
+            # Merge inferred assets so Tier 0 has useful data
+            if not model_data.get("technical_assets"):
+                model_data["technical_assets"] = repo_data.get("technical_assets", [])
+            if not model_data.get("data_assets"):
+                model_data["data_assets"] = repo_data.get("data_assets", [])
+            if not model_data.get("trust_boundaries"):
+                model_data["trust_boundaries"] = repo_data.get("trust_boundaries", [])
+            if not model_data.get("data_flows"):
+                model_data["data_flows"] = repo_data.get("data_flows", [])
+
+        except Exception as e:
+            logger.warning("Failed to analyze repo %s: %s", repo_url, e)
+
     # Start background analysis
     job_id = start_analysis(model_id, tier, keys, model_data)
 

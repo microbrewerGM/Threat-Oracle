@@ -183,6 +183,34 @@ async def _run_analysis_pipeline(
             ),
         )
 
+        # Persist threats to Neo4j
+        if findings:
+            try:
+                from importers.threat_importer import (
+                    import_threats_to_neo4j,
+                    threats_from_findings,
+                )
+                from src.db import get_driver
+
+                finding_dicts = [f.model_dump() for f in findings]
+                threat_nodes = threats_from_findings(finding_dicts, job_id)
+                driver = get_driver()
+                nodes_created, rels_created = import_threats_to_neo4j(
+                    driver, threat_nodes, model_id
+                )
+                logger.info(
+                    "Persisted %d threats (%d relationships) for job %s",
+                    nodes_created,
+                    rels_created,
+                    job_id,
+                )
+            except Exception as e:
+                logger.warning(
+                    "Failed to persist threats to Neo4j for job %s: %s",
+                    job_id,
+                    e,
+                )
+
         job.status = "completed"
         job.progress_pct = 100
         job.completed_at = end_time

@@ -36,12 +36,14 @@ describe('ModelSelector', () => {
   ];
   
   const mockSetCurrentModel = vi.fn();
-  
+  const mockFetchModel = vi.fn();
+
   beforeEach(() => {
     (useModelStore as any).mockReturnValue({
       models: mockModels,
       currentModelId: 'model-1',
-      setCurrentModel: mockSetCurrentModel
+      setCurrentModel: mockSetCurrentModel,
+      fetchModel: mockFetchModel
     });
   });
   
@@ -61,14 +63,48 @@ describe('ModelSelector', () => {
   
   it('calls setCurrentModel when a different model is selected', () => {
     render(<ModelSelector />);
-    
+
     // Get the select element
     const select = screen.getByLabelText(/current model/i);
-    
+
     // Change the selected model
     fireEvent.change(select, { target: { value: 'model-2' } });
-    
+
     // Check if setCurrentModel was called with the correct model ID
     expect(mockSetCurrentModel).toHaveBeenCalledWith('model-2');
+  });
+
+  it('calls fetchModel on initial render with currentModelId', () => {
+    render(<ModelSelector />);
+
+    expect(mockFetchModel).toHaveBeenCalledWith('model-1');
+  });
+
+  it('calls fetchModel when currentModelId changes', () => {
+    const { rerender } = render(<ModelSelector />);
+    expect(mockFetchModel).toHaveBeenCalledWith('model-1');
+
+    // Simulate currentModelId change by updating the mock
+    (useModelStore as any).mockReturnValue({
+      models: mockModels,
+      currentModelId: 'model-2',
+      setCurrentModel: mockSetCurrentModel,
+      fetchModel: mockFetchModel
+    });
+
+    rerender(<ModelSelector />);
+
+    expect(mockFetchModel).toHaveBeenCalledWith('model-2');
+  });
+
+  it('renders correctly when fetchModel is not yet resolved', () => {
+    // fetchModel returns a promise that hasn't resolved
+    mockFetchModel.mockReturnValue(new Promise(() => {}));
+
+    render(<ModelSelector />);
+
+    // Component should still render the select and model details
+    expect(screen.getByLabelText(/current model/i)).toBeInTheDocument();
+    expect(screen.getByText('Test description 1')).toBeInTheDocument();
   });
 });

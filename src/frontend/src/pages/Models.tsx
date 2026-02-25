@@ -14,6 +14,7 @@ const Models: React.FC = () => {
   const [showNewModelForm, setShowNewModelForm] = useState(false);
   const [newModelName, setNewModelName] = useState('');
   const [newModelDescription, setNewModelDescription] = useState('');
+  const [newModelRepoUrl, setNewModelRepoUrl] = useState('');
   const [importText, setImportText] = useState('');
   const [showImportForm, setShowImportForm] = useState(false);
   const [importError, setImportError] = useState('');
@@ -51,10 +52,12 @@ const Models: React.FC = () => {
     createModelAsync({
       name: newModelName,
       description: newModelDescription || undefined,
+      repo_url: newModelRepoUrl || undefined,
     });
 
     setNewModelName('');
     setNewModelDescription('');
+    setNewModelRepoUrl('');
     setShowNewModelForm(false);
   };
 
@@ -260,6 +263,17 @@ const Models: React.FC = () => {
                   placeholder="Enter model description"
                   maxLength={5000}
                   rows={4}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="model-repo-url">GitHub Repo URL:</label>
+                <input
+                  id="model-repo-url"
+                  type="url"
+                  value={newModelRepoUrl}
+                  onChange={(e) => setNewModelRepoUrl(e.target.value)}
+                  placeholder="https://github.com/owner/repo"
+                  maxLength={500}
                 />
               </div>
               <div className="form-actions">

@@ -174,4 +174,30 @@ describe('Models Page', () => {
 
     expect(screen.getByLabelText('Repo URL:')).toBeInTheDocument();
   });
+
+  it('create form includes repo URL field', () => {
+    render(<Models />);
+
+    fireEvent.click(screen.getByText('Create New Model'));
+
+    expect(screen.getByLabelText('GitHub Repo URL:')).toBeInTheDocument();
+  });
+
+  it('creating model with repo URL passes repo_url to createModelAsync', () => {
+    render(<Models />);
+
+    fireEvent.click(screen.getByText('Create New Model'));
+
+    fireEvent.change(screen.getByLabelText('Model Name:'), { target: { value: 'Repo Model' } });
+    fireEvent.change(screen.getByLabelText('Description:'), { target: { value: 'Model with repo' } });
+    fireEvent.change(screen.getByLabelText('GitHub Repo URL:'), { target: { value: 'https://github.com/test/repo' } });
+
+    fireEvent.click(screen.getByText('Create', { selector: 'button[type="submit"]' }));
+
+    expect(mockCreateModelAsync).toHaveBeenCalledWith({
+      name: 'Repo Model',
+      description: 'Model with repo',
+      repo_url: 'https://github.com/test/repo',
+    });
+  });
 });

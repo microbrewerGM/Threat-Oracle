@@ -1,10 +1,17 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useModelStore } from '@/store/modelStore';
 import './ModelSelector.css';
 
 const ModelSelector: React.FC = () => {
-  const { models, currentModelId, setCurrentModel } = useModelStore();
-  
+  const { models, currentModelId, setCurrentModel, fetchModel } = useModelStore();
+
+  // Hydrate the selected model's assets from the backend
+  useEffect(() => {
+    if (currentModelId) {
+      fetchModel(currentModelId);
+    }
+  }, [currentModelId, fetchModel]);
+
   const handleModelChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setCurrentModel(e.target.value);
   };
