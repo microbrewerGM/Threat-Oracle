@@ -239,10 +239,33 @@ def start_analysis(
         progress_pct=0,
     )
 
-    # Launch background task
-    asyncio.get_event_loop().create_task(
-        _run_analysis_pipeline(job_id, model_id, tier, keys, model_data)
-    )
+    # Launch background task on the main event loop (safe from worker threads)
+    import threading
+
+    def _schedule():
+        try:
+            loop = asyncio.get_running_loop()
+            loop.create_task(
+                _run_analysis_pipeline(job_id, model_id, tier, keys, model_data)
+            )
+        except RuntimeError:
+            # No running loop in this thread — create one
+            asyncio.run(
+                _run_analysis_pipeline(job_id, model_id, tier, keys, model_data)
+            )
+
+    try:
+        # If we're already in an async context, schedule directly
+        loop = asyncio.get_running_loop()
+        loop.create_task(
+            _run_analysis_pipeline(job_id, model_id, tier, keys, model_data)
+        )
+    except RuntimeError:
+        # Called from a sync worker thread — schedule on a new thread with its own loop
+        t = threading.Thread(target=lambda: asyncio.run(
+            _run_analysis_pipeline(job_id, model_id, tier, keys, model_data)
+        ), daemon=True)
+        t.start()
 
     return job_id
 
