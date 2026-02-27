@@ -1,0 +1,155 @@
+/* -----------------------------------------------------------------------
+ * LayerControls.css — Floating glassmorphism layer toggle panel
+ * ----------------------------------------------------------------------- */
+
+.layer-controls {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 10;
+  max-width: 200px;
+  padding: 10px 12px;
+  background: rgba(22, 27, 34, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--graph-border, #30363D);
+  border-radius: 8px;
+  user-select: none;
+}
+
+.layer-controls-title {
+  color: var(--graph-muted, #8B949E);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+/* --- Layer row --- */
+
+.layer-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 0;
+  cursor: pointer;
+}
+
+.layer-row.disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.layer-checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  min-width: 14px;
+  border: 1px solid var(--graph-muted, #8B949E);
+  border-radius: 3px;
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.layer-checkbox:checked {
+  background-color: var(--graph-accent-cyan, #00DFFF);
+  border-color: var(--graph-accent-cyan, #00DFFF);
+}
+
+.layer-checkbox:checked::after {
+  content: '';
+  position: absolute;
+  top: 1px;
+  left: 4px;
+  width: 4px;
+  height: 7px;
+  border: solid var(--graph-bg, #0D1117);
+  border-width: 0 1.5px 1.5px 0;
+  transform: rotate(45deg);
+}
+
+.layer-checkbox:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.layer-indicator {
+  width: 8px;
+  height: 8px;
+  min-width: 8px;
+  border-radius: 50%;
+}
+
+.layer-label {
+  color: var(--graph-text, #E6EDF3);
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* --- STRIDE sub-toggles --- */
+
+.stride-sub-toggles {
+  margin-left: 20px;
+  padding: 2px 0 2px 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 4px;
+}
+
+.stride-toggle {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 0;
+  cursor: pointer;
+}
+
+.stride-checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  min-width: 12px;
+  border: 1px solid var(--graph-muted, #8B949E);
+  border-radius: 2px;
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.stride-checkbox:checked {
+  border-color: currentColor;
+  background-color: currentColor;
+}
+
+.stride-checkbox:checked::after {
+  content: '';
+  position: absolute;
+  top: 0px;
+  left: 3px;
+  width: 4px;
+  height: 7px;
+  border: solid var(--graph-bg, #0D1117);
+  border-width: 0 1.5px 1.5px 0;
+  transform: rotate(45deg);
+}
+
+.stride-letter {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* --- Threat count label --- */
+
+.layer-threat-count {
+  color: var(--graph-muted, #8B949E);
+  font-size: 11px;
+  font-weight: 400;
+}

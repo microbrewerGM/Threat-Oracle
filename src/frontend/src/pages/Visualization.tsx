@@ -1,77 +1,69 @@
+/**
+ * Visualization.tsx — Full-viewport dark layout hosting the ThreatGraph.
+ *
+ * Compact topbar with inline model selector, graph fills remaining space.
+ */
+
 import React from 'react';
-import SimpleGraph from '@/components/graph/SimpleGraph';
-import ModelSelector from '@/components/model/ModelSelector';
+import ThreatGraph from '@/components/graph/ThreatGraph';
+import LayerControls from '@/components/graph/LayerControls';
+import DetailPanel from '@/components/graph/DetailPanel';
 import { useModelStore } from '@/store/modelStore';
 import './Visualization.css';
 
 const Visualization: React.FC = () => {
-  const { getCurrentModel } = useModelStore();
+  const { models, currentModelId, setCurrentModel, getCurrentModel } = useModelStore();
   const currentModel = getCurrentModel();
-  
-  // Transform model data into graph nodes and edges
-  const nodes = currentModel ? currentModel.technicalAssets.map(asset => ({
-    id: asset.id,
-    name: asset.name,
-    type: asset.type
-  })) : [];
-  
-  const edges = currentModel ? currentModel.dataFlows.map(flow => ({
-    id: flow.id,
-    source: flow.source_id,
-    target: flow.target_id,
-    label: flow.protocol.toUpperCase()
-  })) : [];
+
+  const handleModelChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setCurrentModel(e.target.value);
+  };
 
   return (
     <div className="visualization-page">
-      <h1>Threat Model Visualization</h1>
-      <p className="description">
-        This is a simple visualization of the threat model using a graph-based approach.
-        Nodes represent technical assets and edges represent data flows between them.
-      </p>
-      
-      <ModelSelector />
-      
-      <div className="graph-container">
-        {nodes.length > 0 && edges.length > 0 ? (
-          <SimpleGraph nodes={nodes} edges={edges} />
-        ) : (
-          <div className="empty-graph">
-            <p>No data available to visualize.</p>
+      {/* --- Compact dark topbar --- */}
+      <div className="visualization-topbar">
+        <label htmlFor="viz-model-select">Model:</label>
+        <select
+          id="viz-model-select"
+          value={currentModelId || ''}
+          onChange={handleModelChange}
+        >
+          {models.map((model) => (
+            <option key={model.id} value={model.id}>
+              {model.name} (v{model.version})
+            </option>
+          ))}
+        </select>
+
+        {currentModel && (
+          <div className="model-stats-compact">
+            <span>
+              <span className="stat-count">{currentModel.technicalAssets.length}</span> assets
+            </span>
+            <span>
+              <span className="stat-count">{currentModel.dataFlows.length}</span> flows
+            </span>
+            <span>
+              <span className="stat-count">{currentModel.trustBoundaries.length}</span> boundaries
+            </span>
           </div>
         )}
       </div>
-      
-      <div className="legend">
-        <h2>Legend</h2>
-        <div className="legend-items">
-          <div className="legend-item">
-            <div className="legend-color node-server"></div>
-            <span>Server</span>
-          </div>
-          <div className="legend-item">
-            <div className="legend-color node-application"></div>
-            <span>Application</span>
-          </div>
-          <div className="legend-item">
-            <div className="legend-color node-database"></div>
-            <span>Database</span>
-          </div>
-          <div className="legend-item">
-            <div className="legend-color node-service"></div>
-            <span>Service</span>
-          </div>
+
+      {/* --- Graph area --- */}
+      {currentModel ? (
+        <div className="visualization-graph-area">
+          <ThreatGraph />
+          <LayerControls />
+          <DetailPanel />
         </div>
-      </div>
-      
-      <div className="instructions">
-        <h2>Instructions</h2>
-        <ul>
-          <li>Drag nodes to reposition them</li>
-          <li>Hover over nodes to see their names</li>
-          <li>The graph will automatically layout using a force-directed algorithm</li>
-        </ul>
-      </div>
+      ) : (
+        <div className="visualization-empty">
+          <div className="empty-icon">&#x2B22;</div>
+          <p>No model selected. Choose a model above to visualize.</p>
+        </div>
+      )}
     </div>
   );
 };
