@@ -61,6 +61,10 @@ repos:
     hooks:
       - id: markdownlint
         args: ["--config", ".markdownlint.json"]
+        # .bmad-core is vendored third-party framework content we don't maintain.
+        # .claude/ agent/skill defs use intentional pseudo-XML tags (e.g. <banned>,
+        # <on-completion>) that MD033 would flag but must not be stripped.
+        exclude: ^(\.bmad-core/|\.claude/)
 
   - repo: local
     hooks:
