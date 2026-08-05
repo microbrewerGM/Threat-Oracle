@@ -1,17 +1,21 @@
 # Markdown Guidelines
 
-This document outlines the best practices and guidelines for writing Markdown documents in the Threat Oracle project. Following these guidelines ensures consistency across all documentation and improves readability on GitHub.
+This document outlines the best practices and guidelines for writing Markdown documents in the Threat Oracle
+project. Following these guidelines ensures consistency across all documentation and improves readability on GitHub.
 
 ## Markdown Linting
 
-We use [markdownlint](https://github.com/DavidAnson/markdownlint) to enforce consistent Markdown formatting. The configuration is defined in `.markdownlint.json` at the root of the repository.
+We use [markdownlint](https://github.com/DavidAnson/markdownlint) to enforce consistent Markdown formatting.
+The configuration is defined in `.markdownlint.json` at the root of the repository.
 
 ### Installing markdownlint
 
 #### VS Code Extension
 
-1. Install the [markdownlint extension](https://marketplace.visualstudio.com/items?itemName=DavidAnson.vscode-markdownlint) for VS Code
+1. Install the [markdownlint extension][vscode-markdownlint-ext] for VS Code
 2. The extension will automatically use the `.markdownlint.json` configuration file in the project
+
+[vscode-markdownlint-ext]: https://marketplace.visualstudio.com/items?itemName=DavidAnson.vscode-markdownlint
 
 #### Command Line
 
@@ -70,7 +74,7 @@ markdownlint "**/*.md"
 - Specify the language for syntax highlighting
 - Surround code blocks with blank lines
 
-```markdown
+````markdown
 Here is some text.
 
 ```python
@@ -79,7 +83,7 @@ def hello_world():
 ```
 
 More text here.
-```
+````
 
 ### Links
 

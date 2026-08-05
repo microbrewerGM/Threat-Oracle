@@ -2,7 +2,9 @@
 
 ## Project Overview
 
-Threat Oracle is a visual threat modeling tool that creates digital twins of applications and infrastructure using a graph-based approach (Neo4j). It ingests security knowledge bases (CWE, ATT&CK, CAPEC) and maps them onto repository graphs for automated threat analysis.
+Threat Oracle is a visual threat modeling tool that creates digital twins of applications and infrastructure
+using a graph-based approach (Neo4j). It ingests security knowledge bases (CWE, ATT&CK, CAPEC) and maps them
+onto repository graphs for automated threat analysis.
 
 ## Tech Stack
 
@@ -22,7 +24,8 @@ Threat Oracle is a visual threat modeling tool that creates digital twins of app
 
 ## Why Beads & Worktrees Matter
 
-Beads provide **traceability** (what changed, why, by whom) and worktrees provide **isolation** (changes don't affect main until merged). This matters because:
+Beads provide **traceability** (what changed, why, by whom) and worktrees provide **isolation** (changes don't
+affect main until merged). This matters because:
 
 - Parallel orchestrators can work without conflicts
 - Failed experiments are contained and easily discarded
@@ -92,6 +95,7 @@ Use when: new feature, multiple approaches, multi-file changes, or unclear requi
 3. Create bead(s) from approved plan → dispatch supervisors
 
 **Plan → Bead mapping:**
+
 - Single-domain plan → standalone bead
 - Cross-domain plan → epic + children with dependencies
 

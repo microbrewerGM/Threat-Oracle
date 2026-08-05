@@ -115,26 +115,26 @@ Add the technical asset node type to the schema with basic properties.
 
    You can either manually follow steps 6a-9a or use our automated script (6b):
 
-   ### 6a. **Create a Pull Request Manually**
+### 6a. **Create a Pull Request Manually**
 
    Create a PR on GitHub with the following information:
 
-   - Clear title describing the change
-   - Description of what the PR does
-   - Any relevant issue numbers
-   - Steps to test the changes
+- Clear title describing the change
+- Description of what the PR does
+- Any relevant issue numbers
+- Steps to test the changes
 
-   ### 7a. **Code Review**
+### 7a. **Code Review**
 
-   - At least one team member must review and approve the PR
-   - Address any feedback from the review
-   - Make sure all CI checks pass
+- At least one team member must review and approve the PR
+- Address any feedback from the review
+- Make sure all CI checks pass
 
-   ### 8a. **Merge the PR**
+### 8a. **Merge the PR**
 
    Once the PR is approved and all checks pass, merge the PR using the "Squash and merge" option to keep the history clean.
 
-   ### 9a. **Delete the Feature Branch**
+### 9a. **Delete the Feature Branch**
 
    After the PR is merged, delete the feature branch:
 
@@ -144,7 +144,7 @@ Add the technical asset node type to the schema with basic properties.
    git branch -d feature/your-feature-name
    ```
 
-   ### 6b. **OR Use the Automated Workflow Script**
+### 6b. **OR Use the Automated Workflow Script**
 
    We provide a script to automate the PR creation, review, merge, and cleanup process:
 
@@ -153,12 +153,13 @@ Add the technical asset node type to the schema with basic properties.
    ```
 
    This script will:
-   - Create a PR with a title and description you provide
-   - Wait for CI checks to complete
-   - Approve the PR
-   - Merge the PR using the squash option
-   - Switch to the main branch and pull the latest changes
-   - Delete the local feature branch
+
+- Create a PR with a title and description you provide
+- Wait for CI checks to complete
+- Approve the PR
+- Merge the PR using the squash option
+- Switch to the main branch and pull the latest changes
+- Delete the local feature branch
 
    You can also provide the PR title and body as command-line arguments:
 
@@ -174,7 +175,8 @@ Add the technical asset node type to the schema with basic properties.
 
 ## Pre-commit and Pre-push Hooks
 
-We use pre-commit and pre-push hooks to ensure code quality, consistency, and adherence to our development workflow. These hooks run automatically when you commit or push changes.
+We use pre-commit and pre-push hooks to ensure code quality, consistency, and adherence to our development
+workflow. These hooks run automatically when you commit or push changes.
 
 To install the hooks:
 
@@ -210,7 +212,8 @@ All PRs trigger CI checks that:
 5. Check for security vulnerabilities
 6. Verify user approval in the INTERACTION_LOG.md file
 
-PRs cannot be merged until all CI checks pass. This ensures that all features have been demonstrated to and approved by the user before they are merged into the main branch.
+PRs cannot be merged until all CI checks pass. This ensures that all features have been demonstrated to and
+approved by the user before they are merged into the main branch.
 
 ## Release Process
 
