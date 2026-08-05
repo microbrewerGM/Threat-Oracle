@@ -1,12 +1,14 @@
 """Phase 2: ATT&CK STIX importer tests — TDD."""
+
 import os
 import pytest
 from neo4j import GraphDatabase
 
 from importers.attack_importer import parse_attack_stix, import_attack_to_neo4j
 
-
-ATTACK_JSON_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "enterprise-attack.json")
+ATTACK_JSON_PATH = os.path.join(
+    os.path.dirname(__file__), "..", "data", "enterprise-attack.json"
+)
 HAVE_DATA = os.path.exists(ATTACK_JSON_PATH)
 
 
@@ -15,7 +17,9 @@ def get_driver():
     pw = os.environ.get("NEO4J_PASSWORD")
     if not uri or not pw:
         return None
-    return GraphDatabase.driver(uri, auth=(os.environ.get("NEO4J_USERNAME", "neo4j"), pw))
+    return GraphDatabase.driver(
+        uri, auth=(os.environ.get("NEO4J_USERNAME", "neo4j"), pw)
+    )
 
 
 HAVE_DB = os.environ.get("NEO4J_URI") is not None

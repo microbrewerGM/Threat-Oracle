@@ -1,4 +1,5 @@
 """FastAPI dependencies for dependency injection."""
+
 import threading
 from typing import Generator
 

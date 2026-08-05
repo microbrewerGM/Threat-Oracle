@@ -1,4 +1,5 @@
 """Analysis dispatcher — orchestrates work units with fan-out/fan-in."""
+
 from __future__ import annotations
 
 import asyncio
@@ -154,12 +155,9 @@ async def _run_analysis_pipeline(
                             if name == "cwe_mapping" and "cwe_ids" in mapping:
                                 finding.cwe_ids = mapping["cwe_ids"]
                             elif (
-                                name == "attack_mapping"
-                                and "technique_ids" in mapping
+                                name == "attack_mapping" and "technique_ids" in mapping
                             ):
-                                finding.attack_technique_ids = mapping[
-                                    "technique_ids"
-                                ]
+                                finding.attack_technique_ids = mapping["technique_ids"]
 
             # Update progress
             job.units_completed = len(completed)
@@ -262,9 +260,12 @@ def start_analysis(
         )
     except RuntimeError:
         # Called from a sync worker thread — schedule on a new thread with its own loop
-        t = threading.Thread(target=lambda: asyncio.run(
-            _run_analysis_pipeline(job_id, model_id, tier, keys, model_data)
-        ), daemon=True)
+        t = threading.Thread(
+            target=lambda: asyncio.run(
+                _run_analysis_pipeline(job_id, model_id, tier, keys, model_data)
+            ),
+            daemon=True,
+        )
         t.start()
 
     return job_id

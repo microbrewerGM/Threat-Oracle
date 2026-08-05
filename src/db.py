@@ -3,12 +3,12 @@
 Provides a singleton Neo4j driver with connection pooling, configured
 from environment variables. Used by both the API layer and importers.
 """
+
 import os
 from contextlib import contextmanager
 from typing import Optional
 
 from neo4j import GraphDatabase, Driver
-
 
 _driver: Optional[Driver] = None
 
@@ -19,7 +19,12 @@ def get_neo4j_config() -> dict:
     username = os.environ.get("NEO4J_USERNAME", "neo4j")
     password = os.environ.get("NEO4J_PASSWORD", "")
     encrypted = os.environ.get("NEO4J_ENCRYPTED", "").lower() in ("true", "1", "yes")
-    return {"uri": uri, "username": username, "password": password, "encrypted": encrypted}
+    return {
+        "uri": uri,
+        "username": username,
+        "password": password,
+        "encrypted": encrypted,
+    }
 
 
 def get_driver() -> Driver:

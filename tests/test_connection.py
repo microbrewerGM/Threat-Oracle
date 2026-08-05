@@ -1,4 +1,5 @@
 """Phase 1: AuraDB connection tests."""
+
 import os
 import pytest
 from neo4j import GraphDatabase
@@ -11,10 +12,10 @@ def get_aura_creds():
     uri = os.environ.get("NEO4J_URI")
     user = os.environ.get("NEO4J_USERNAME", "neo4j")
     password = os.environ.get("NEO4J_PASSWORD")
-    
+
     if not uri or not password:
         pytest.skip("NEO4J_URI and NEO4J_PASSWORD env vars required")
-    
+
     return uri, user, password
 
 
@@ -44,12 +45,16 @@ def test_create_and_delete_node(driver):
     with driver.session() as session:
         # Create
         session.run("CREATE (t:Test {name: 'connection_test', ts: datetime()})")
-        result = session.run("MATCH (t:Test {name: 'connection_test'}) RETURN count(t) AS c")
+        result = session.run(
+            "MATCH (t:Test {name: 'connection_test'}) RETURN count(t) AS c"
+        )
         assert result.single()["c"] >= 1
-        
+
         # Cleanup
         session.run("MATCH (t:Test {name: 'connection_test'}) DELETE t")
-        result = session.run("MATCH (t:Test {name: 'connection_test'}) RETURN count(t) AS c")
+        result = session.run(
+            "MATCH (t:Test {name: 'connection_test'}) RETURN count(t) AS c"
+        )
         assert result.single()["c"] == 0
 
 

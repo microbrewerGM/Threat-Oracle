@@ -1,4 +1,5 @@
 """Tests for API dependency injection — API key auth and Neo4j session."""
+
 import pytest
 from unittest.mock import MagicMock, patch
 

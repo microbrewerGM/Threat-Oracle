@@ -1,4 +1,5 @@
 """Prompt builders for Phase 2: Architecture analysis work units."""
+
 from __future__ import annotations
 
 import json
@@ -93,9 +94,7 @@ def _build_trust_boundaries_prompt(
 def _build_data_flows_prompt(
     model_data: dict[str, Any], prior_results: dict
 ) -> list[dict[str, str]]:
-    context = _prior_data(
-        prior_results, "api_endpoints", "trust_boundaries"
-    )
+    context = _prior_data(prior_results, "api_endpoints", "trust_boundaries")
     return [
         {"role": "system", "content": SYSTEM_MSG},
         {

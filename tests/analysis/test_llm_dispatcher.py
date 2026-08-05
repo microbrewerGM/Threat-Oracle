@@ -1,4 +1,5 @@
 """Tests for analysis.llm.dispatcher and work_units — no LLM calls."""
+
 import asyncio
 import logging
 
@@ -95,7 +96,13 @@ class TestWorkUnits:
         assert "trust_boundaries" not in names
 
     def test_trust_boundaries_unblocked(self):
-        completed = {"file_tree", "dependencies", "frameworks", "data_stores", "api_endpoints"}
+        completed = {
+            "file_tree",
+            "dependencies",
+            "frameworks",
+            "data_stores",
+            "api_endpoints",
+        }
         ready = get_ready_units(completed, "tier_1")
         names = {u.name for u in ready}
         assert "trust_boundaries" in names
@@ -269,12 +276,8 @@ class TestRunAnalysisPipeline:
         dispatcher._jobs[job_id] = self._make_job(job_id, model_id)
 
         mock_threat_importer = MagicMock(
-            import_threats_to_neo4j=MagicMock(
-                side_effect=RuntimeError("Neo4j down")
-            ),
-            threats_from_findings=MagicMock(
-                return_value=[{"threat_id": "t-x"}]
-            ),
+            import_threats_to_neo4j=MagicMock(side_effect=RuntimeError("Neo4j down")),
+            threats_from_findings=MagicMock(return_value=[{"threat_id": "t-x"}]),
         )
 
         with patch.dict(
@@ -301,9 +304,7 @@ class TestRunAnalysisPipeline:
     @patch("analysis.llm.dispatcher.get_units_for_tier")
     @patch("analysis.llm.dispatcher.get_ready_units")
     @patch("analysis.llm.dispatcher._execute_work_unit", new_callable=AsyncMock)
-    def test_no_import_when_no_findings(
-        self, mock_execute, mock_ready, mock_get_units
-    ):
+    def test_no_import_when_no_findings(self, mock_execute, mock_ready, mock_get_units):
         """When no findings are produced, import_threats_to_neo4j is NOT called."""
         import analysis.llm.dispatcher as dispatcher
 

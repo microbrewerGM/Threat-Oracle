@@ -1,4 +1,5 @@
 """Tests for analysis API endpoints."""
+
 import logging
 from unittest.mock import MagicMock, patch
 
@@ -280,8 +281,9 @@ def test_trigger_calls_analyze_repo_when_repo_url(
     }
 
     # Also mock the GitHub tree API call (nested try/except inside the route)
-    with patch("analysis.repo_analyzer.parse_github_url", return_value=("test", "repo")), \
-         patch("analysis.repo_analyzer._validate_github_names"):
+    with patch(
+        "analysis.repo_analyzer.parse_github_url", return_value=("test", "repo")
+    ), patch("analysis.repo_analyzer._validate_github_names"):
         # The inner httpx call may fail — that's fine, it's in a try/except
         response = client.post(
             "/api/v1/models/model-repo/analyze",
@@ -348,11 +350,15 @@ def test_file_tree_data_merged_into_model_data(
     }
 
     # Mock the GitHub tree fetch (lazy imports in route function)
-    with patch("analysis.repo_analyzer.parse_github_url", return_value=("test", "repo")), \
-         patch("analysis.repo_analyzer._validate_github_names"), \
-         patch("httpx.Client") as mock_httpx_client:
+    with patch(
+        "analysis.repo_analyzer.parse_github_url", return_value=("test", "repo")
+    ), patch("analysis.repo_analyzer._validate_github_names"), patch(
+        "httpx.Client"
+    ) as mock_httpx_client:
         mock_client_instance = MagicMock()
-        mock_httpx_client.return_value.__enter__ = MagicMock(return_value=mock_client_instance)
+        mock_httpx_client.return_value.__enter__ = MagicMock(
+            return_value=mock_client_instance
+        )
         mock_httpx_client.return_value.__exit__ = MagicMock(return_value=False)
         mock_resp = MagicMock()
         mock_resp.json.return_value = {

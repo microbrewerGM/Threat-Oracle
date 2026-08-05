@@ -1,12 +1,14 @@
 """Phase 2: CAPEC importer tests — bridges CWE to ATT&CK."""
+
 import os
 import pytest
 from neo4j import GraphDatabase
 
 from importers.capec_importer import parse_capec_xml, import_capec_to_neo4j
 
-
-CAPEC_XML_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "capec_latest.xml")
+CAPEC_XML_PATH = os.path.join(
+    os.path.dirname(__file__), "..", "data", "capec_latest.xml"
+)
 HAVE_DATA = os.path.exists(CAPEC_XML_PATH)
 HAVE_DB = os.environ.get("NEO4J_URI") is not None
 
@@ -16,7 +18,9 @@ def get_driver():
     pw = os.environ.get("NEO4J_PASSWORD")
     if not uri or not pw:
         return None
-    return GraphDatabase.driver(uri, auth=(os.environ.get("NEO4J_USERNAME", "neo4j"), pw))
+    return GraphDatabase.driver(
+        uri, auth=(os.environ.get("NEO4J_USERNAME", "neo4j"), pw)
+    )
 
 
 @pytest.mark.skipif(not HAVE_DATA, reason="CAPEC XML not downloaded")
@@ -64,12 +68,16 @@ class TestCAPECImport:
 
     def test_exploits_weakness_edges(self, driver, imported):
         with driver.session() as session:
-            result = session.run("MATCH ()-[r:EXPLOITS_WEAKNESS]->() RETURN count(r) AS count")
+            result = session.run(
+                "MATCH ()-[r:EXPLOITS_WEAKNESS]->() RETURN count(r) AS count"
+            )
             assert result.single()["count"] > 500
 
     def test_maps_to_technique_edges(self, driver, imported):
         with driver.session() as session:
-            result = session.run("MATCH ()-[r:MAPS_TO_TECHNIQUE]->() RETURN count(r) AS count")
+            result = session.run(
+                "MATCH ()-[r:MAPS_TO_TECHNIQUE]->() RETURN count(r) AS count"
+            )
             assert result.single()["count"] > 100
 
     def test_full_chain_cwe_to_attack(self, driver, imported):
@@ -80,7 +88,9 @@ class TestCAPECImport:
                 RETURN count(DISTINCT t) AS techniques
             """)
             count = result.single()["techniques"]
-            assert count > 50, f"Expected 50+ techniques reachable from CWE via CAPEC, got {count}"
+            assert (
+                count > 50
+            ), f"Expected 50+ techniques reachable from CWE via CAPEC, got {count}"
 
     def test_end_to_end_chain(self, driver, imported):
         """At least some CWE→CAPEC→ATT&CK full chains should exist."""

@@ -1,4 +1,5 @@
 """Prompt builders for each analysis phase."""
+
 from __future__ import annotations
 
 from typing import Any, Callable

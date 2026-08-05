@@ -36,10 +36,10 @@ def load_schema(schema_name: str) -> Dict[str, Any]:
         return _schema_cache[schema_name]
 
     schema_path = os.path.join(SCHEMA_DIR, f"{schema_name}.json")
-    
+
     with open(schema_path, "r") as f:
         schema = json.load(f)
-    
+
     _schema_cache[schema_name] = schema
     return schema
 

@@ -1,4 +1,5 @@
 """Threat Oracle FastAPI application."""
+
 import logging
 from contextlib import asynccontextmanager
 
@@ -21,7 +22,9 @@ from src.db import close_driver
 logger = logging.getLogger("threat_oracle")
 
 # Rate limiter
-limiter = Limiter(key_func=get_remote_address, default_limits=[settings.rate_limit_default])
+limiter = Limiter(
+    key_func=get_remote_address, default_limits=[settings.rate_limit_default]
+)
 
 
 @asynccontextmanager
@@ -113,7 +116,9 @@ def create_app() -> FastAPI:
     # Global exception handler — prevent leaking internal details
     @app.exception_handler(Exception)
     async def global_exception_handler(request: Request, exc: Exception):
-        logger.exception("Unhandled exception on %s %s", request.method, request.url.path)
+        logger.exception(
+            "Unhandled exception on %s %s", request.method, request.url.path
+        )
         return JSONResponse(
             status_code=500,
             content={"detail": "Internal server error"},
