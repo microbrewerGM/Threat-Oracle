@@ -3,12 +3,12 @@
 Provides a singleton Neo4j driver with connection pooling, configured
 from environment variables. Used by both the API layer and importers.
 """
+
 import os
 from contextlib import contextmanager
 from typing import Optional
 
 from neo4j import GraphDatabase, Driver
-
 
 _driver: Optional[Driver] = None
 
@@ -18,13 +18,20 @@ def get_neo4j_config() -> dict:
     uri = os.environ.get("NEO4J_URI", "")
     username = os.environ.get("NEO4J_USERNAME", "neo4j")
     password = os.environ.get("NEO4J_PASSWORD", "")
-    return {"uri": uri, "username": username, "password": password}
+    encrypted = os.environ.get("NEO4J_ENCRYPTED", "").lower() in ("true", "1", "yes")
+    return {
+        "uri": uri,
+        "username": username,
+        "password": password,
+        "encrypted": encrypted,
+    }
 
 
 def get_driver() -> Driver:
     """Get or create the singleton Neo4j driver.
 
     Raises ValueError if NEO4J_URI or NEO4J_PASSWORD are not set.
+    Set NEO4J_ENCRYPTED=true to enable TLS for bolt:// connections.
     """
     global _driver
     if _driver is not None:
@@ -36,10 +43,13 @@ def get_driver() -> Driver:
             "NEO4J_URI and NEO4J_PASSWORD environment variables are required"
         )
 
-    _driver = GraphDatabase.driver(
-        config["uri"],
-        auth=(config["username"], config["password"]),
-    )
+    driver_kwargs: dict = {
+        "auth": (config["username"], config["password"]),
+    }
+    if config["encrypted"]:
+        driver_kwargs["encrypted"] = True
+
+    _driver = GraphDatabase.driver(config["uri"], **driver_kwargs)
     return _driver
 
 

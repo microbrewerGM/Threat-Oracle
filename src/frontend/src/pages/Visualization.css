@@ -1,101 +1,92 @@
+/* -----------------------------------------------------------------------
+ * Visualization.css — Full-viewport dark layout for ThreatGraph
+ * ----------------------------------------------------------------------- */
+
 .visualization-page {
-  padding: 20px;
-}
-
-.visualization-page h1 {
-  margin-bottom: 16px;
-  color: var(--dark-color);
-}
-
-.description {
-  font-size: 1.1rem;
-  margin-bottom: 24px;
-  max-width: 800px;
-  line-height: 1.6;
-}
-
-.graph-container {
-  margin-bottom: 30px;
-  height: 500px;
-  border-radius: var(--border-radius);
+  margin: -20px;
+  height: calc(100vh - 60px);
+  display: flex;
+  flex-direction: column;
+  background-color: var(--graph-bg);
   overflow: hidden;
-  background-color: white;
 }
 
-.empty-graph {
+/* --- Dark topbar with model selector --- */
+
+.visualization-topbar {
   display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  background-color: var(--graph-surface);
+  border-bottom: 1px solid var(--graph-border);
+  flex-shrink: 0;
+  min-height: 44px;
+}
+
+.visualization-topbar label {
+  color: var(--graph-muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.visualization-topbar select {
+  background-color: var(--graph-card);
+  color: var(--graph-text);
+  border: 1px solid var(--graph-border);
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 13px;
+  max-width: 320px;
+}
+
+.visualization-topbar select:focus {
+  border-color: var(--graph-accent-cyan);
+  outline: none;
+}
+
+.visualization-topbar .model-stats-compact {
+  display: flex;
+  gap: 16px;
+  margin-left: auto;
+  color: var(--graph-muted);
+  font-size: 11px;
+}
+
+.visualization-topbar .model-stats-compact span {
+  white-space: nowrap;
+}
+
+.visualization-topbar .stat-count {
+  color: var(--graph-text);
+  font-weight: 600;
+}
+
+/* --- Graph area --- */
+
+.visualization-graph-area {
+  flex: 1;
+  position: relative;
+  min-height: 0;
+}
+
+/* --- Empty state --- */
+
+.visualization-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
-  align-items: center;
-  height: 100%;
-  background-color: #f9f9f9;
-  color: var(--secondary-color);
-  font-style: italic;
-}
-
-.legend {
-  background-color: white;
-  border-radius: var(--border-radius);
-  padding: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
-}
-
-.legend h2 {
-  color: var(--primary-color);
-  margin-bottom: 16px;
-  font-size: 1.4rem;
-}
-
-.legend-items {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-}
-
-.legend-item {
-  display: flex;
-  align-items: center;
   gap: 8px;
+  color: var(--graph-muted);
 }
 
-.legend-color {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  border: 2px solid white;
+.visualization-empty .empty-icon {
+  font-size: 36px;
+  opacity: 0.4;
 }
 
-.instructions {
-  background-color: white;
-  border-radius: var(--border-radius);
-  padding: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
-}
-
-.instructions h2 {
-  color: var(--primary-color);
-  margin-bottom: 16px;
-  font-size: 1.4rem;
-}
-
-.instructions ul {
-  padding-left: 20px;
-}
-
-.instructions li {
-  margin-bottom: 10px;
-  line-height: 1.5;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .graph-container {
-    height: 400px;
-  }
-  
-  .legend-items {
-    flex-direction: column;
-    gap: 10px;
-  }
+.visualization-empty p {
+  font-size: 14px;
 }

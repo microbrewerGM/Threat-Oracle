@@ -1,15 +1,45 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useModelStore, ThreatModel } from '@/store/modelStore';
+import { useLLMKeyStore } from '@/store/llmKeyStore';
+import { threatOracleAPI } from '@/services/api';
+import ThreatsPanel from '@/components/ThreatsPanel';
 import './Models.css';
 
 const Models: React.FC = () => {
-  const { models, currentModelId, setCurrentModel, addModel, deleteModel } = useModelStore();
+  const {
+    models, currentModelId, loading, error,
+    setCurrentModel, addModel,
+    fetchModels, createModelAsync, updateModelAsync, deleteModelAsync
+  } = useModelStore();
   const [showNewModelForm, setShowNewModelForm] = useState(false);
   const [newModelName, setNewModelName] = useState('');
   const [newModelDescription, setNewModelDescription] = useState('');
+  const [newModelRepoUrl, setNewModelRepoUrl] = useState('');
   const [importText, setImportText] = useState('');
   const [showImportForm, setShowImportForm] = useState(false);
   const [importError, setImportError] = useState('');
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [editingModel, setEditingModel] = useState<ThreatModel | null>(null);
+  const [editName, setEditName] = useState('');
+  const [editDescription, setEditDescription] = useState('');
+  const [editVersion, setEditVersion] = useState('');
+  const [editRepoUrl, setEditRepoUrl] = useState('');
+
+  const { hasAnyKey, getHeaders } = useLLMKeyStore();
+  const [showAnalyzeModal, setShowAnalyzeModal] = useState(false);
+  const [analyzingModelId, setAnalyzingModelId] = useState<string | null>(null);
+  const [selectedTier, setSelectedTier] = useState('tier_1');
+  const [analysisJobId, setAnalysisJobId] = useState<string | null>(null);
+  const [analysisProgress, setAnalysisProgress] = useState<number>(0);
+  const [analysisStatus, setAnalysisStatus] = useState<string>('');
+  const [analysisError, setAnalysisError] = useState<string>('');
+  const [threats, setThreats] = useState<any[]>([]);
+  const [showThreats, setShowThreats] = useState(false);
+  const [threatsModelId, setThreatsModelId] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchModels();
+  }, [fetchModels]);
 
   const handleSelectModel = (id: string) => {
     setCurrentModel(id);
@@ -19,24 +49,21 @@ const Models: React.FC = () => {
     e.preventDefault();
     if (!newModelName.trim()) return;
 
-    addModel({
+    createModelAsync({
       name: newModelName,
-      description: newModelDescription,
-      version: '0.1.0',
-      technicalAssets: [],
-      trustBoundaries: [],
-      dataFlows: [],
-      dataAssets: []
+      description: newModelDescription || undefined,
+      repo_url: newModelRepoUrl || undefined,
     });
 
     setNewModelName('');
     setNewModelDescription('');
+    setNewModelRepoUrl('');
     setShowNewModelForm(false);
   };
 
   const handleDeleteModel = (id: string) => {
     if (window.confirm('Are you sure you want to delete this model? This action cannot be undone.')) {
-      deleteModel(id);
+      deleteModelAsync(id);
     }
   };
 
@@ -44,10 +71,11 @@ const Models: React.FC = () => {
     const modelJson = JSON.stringify(model, null, 2);
     const blob = new Blob([modelJson], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
-    
+
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${model.name.replace(/\s+/g, '-').toLowerCase()}-v${model.version}.json`;
+    const safeName = model.name.replace(/[^a-zA-Z0-9-_]/g, '-').replace(/-+/g, '-').slice(0, 100).toLowerCase();
+    a.download = `${safeName}-v${model.version}.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -57,29 +85,35 @@ const Models: React.FC = () => {
   const handleImportModel = (e: React.FormEvent) => {
     e.preventDefault();
     setImportError('');
-    
+
     try {
+      if (importText.length > 1_048_576) {
+        setImportError('Import too large. Maximum size: 1MB');
+        return;
+      }
+
       const modelData = JSON.parse(importText);
-      
+
       // Basic validation
       if (!modelData.name || !modelData.version) {
         setImportError('Invalid model format: missing required fields');
         return;
       }
-      
+
+      // Strict allowlist extraction — prevents prototype pollution
       addModel({
-        name: modelData.name,
-        description: modelData.description || '',
-        version: modelData.version,
-        technicalAssets: modelData.technicalAssets || [],
-        trustBoundaries: modelData.trustBoundaries || [],
-        dataFlows: modelData.dataFlows || [],
-        dataAssets: modelData.dataAssets || []
+        name: String(modelData.name).slice(0, 255),
+        description: String(modelData.description || '').slice(0, 5000),
+        version: String(modelData.version).slice(0, 50),
+        technicalAssets: Array.isArray(modelData.technicalAssets) ? modelData.technicalAssets : [],
+        trustBoundaries: Array.isArray(modelData.trustBoundaries) ? modelData.trustBoundaries : [],
+        dataFlows: Array.isArray(modelData.dataFlows) ? modelData.dataFlows : [],
+        dataAssets: Array.isArray(modelData.dataAssets) ? modelData.dataAssets : []
       });
-      
+
       setImportText('');
       setShowImportForm(false);
-    } catch (error) {
+    } catch {
       setImportError('Invalid JSON format');
     }
   };
@@ -89,28 +123,117 @@ const Models: React.FC = () => {
     return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
   };
 
+  const handleEditModel = (model: ThreatModel) => {
+    setEditingModel(model);
+    setEditName(model.name);
+    setEditDescription(model.description || '');
+    setEditVersion(model.version);
+    setEditRepoUrl(model.repoUrl || '');
+    setShowEditForm(true);
+  };
+
+  const handleUpdateModel = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingModel) return;
+    updateModelAsync(editingModel.id, {
+      name: editName,
+      description: editDescription,
+      version: editVersion,
+      repo_url: editRepoUrl || undefined,
+    });
+    setShowEditForm(false);
+    setEditingModel(null);
+  };
+
+  const handleAnalyze = (modelId: string) => {
+    setAnalyzingModelId(modelId);
+    setSelectedTier('tier_1');
+    setAnalysisError('');
+    setAnalysisJobId(null);
+    setAnalysisProgress(0);
+    setAnalysisStatus('');
+    setShowAnalyzeModal(true);
+  };
+
+  const startAnalysis = async () => {
+    if (!analyzingModelId) return;
+    setAnalysisError('');
+
+    try {
+      const headers = getHeaders();
+      const resp = await threatOracleAPI.triggerAnalysis(analyzingModelId, selectedTier, headers);
+      setAnalysisJobId(resp.job_id);
+      setAnalysisStatus('pending');
+
+      // Start polling
+      const pollInterval = setInterval(async () => {
+        try {
+          const status = await threatOracleAPI.getAnalysisStatus(analyzingModelId, resp.job_id);
+          setAnalysisProgress(status.progress_pct);
+          setAnalysisStatus(status.status);
+
+          if (status.status === 'completed' || status.status === 'failed') {
+            clearInterval(pollInterval);
+            if (status.status === 'failed') {
+              setAnalysisError(status.error || 'Analysis failed');
+            }
+          }
+        } catch (err) {
+          clearInterval(pollInterval);
+          setAnalysisError(err instanceof Error ? err.message : 'Failed to check status');
+        }
+      }, 2000);
+    } catch (err) {
+      setAnalysisError(err instanceof Error ? err.message : 'Failed to start analysis');
+    }
+  };
+
+  const handleViewThreats = async (modelId: string) => {
+    try {
+      const resp = await threatOracleAPI.listThreats(modelId);
+      setThreats(resp.threats);
+      setThreatsModelId(modelId);
+      setShowThreats(true);
+    } catch (err) {
+      console.error('Failed to load threats:', err);
+    }
+  };
+
+  const dismissError = () => {
+    useModelStore.setState({ error: null });
+  };
+
   return (
     <div className="models-page">
       <h1>Threat Models</h1>
       <p className="description">
         Manage your threat models. Create new models, import existing ones, or export models for sharing.
       </p>
-      
+
+      {error && (
+        <div className="error-banner">
+          <span>{error}</span>
+          <button className="dismiss-button" onClick={dismissError}>Dismiss</button>
+        </div>
+      )}
+
+      {loading && <div className="loading-indicator">Loading...</div>}
+
       <div className="models-actions">
-        <button 
-          className="action-button create-button" 
+        <button
+          className="action-button create-button"
           onClick={() => setShowNewModelForm(true)}
         >
           Create New Model
         </button>
-        <button 
-          className="action-button import-button" 
+        <button
+          className="action-button import-button"
           onClick={() => setShowImportForm(true)}
         >
           Import Model
         </button>
       </div>
-      
+
       {showNewModelForm && (
         <div className="modal-overlay">
           <div className="modal">
@@ -127,6 +250,7 @@ const Models: React.FC = () => {
                   value={newModelName}
                   onChange={(e) => setNewModelName(e.target.value)}
                   placeholder="Enter model name"
+                  maxLength={255}
                   required
                 />
               </div>
@@ -137,7 +261,19 @@ const Models: React.FC = () => {
                   value={newModelDescription}
                   onChange={(e) => setNewModelDescription(e.target.value)}
                   placeholder="Enter model description"
+                  maxLength={5000}
                   rows={4}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="model-repo-url">GitHub Repo URL:</label>
+                <input
+                  id="model-repo-url"
+                  type="url"
+                  value={newModelRepoUrl}
+                  onChange={(e) => setNewModelRepoUrl(e.target.value)}
+                  placeholder="https://github.com/owner/repo"
+                  maxLength={500}
                 />
               </div>
               <div className="form-actions">
@@ -148,7 +284,7 @@ const Models: React.FC = () => {
           </div>
         </div>
       )}
-      
+
       {showImportForm && (
         <div className="modal-overlay">
           <div className="modal">
@@ -164,6 +300,7 @@ const Models: React.FC = () => {
                   value={importText}
                   onChange={(e) => setImportText(e.target.value)}
                   placeholder="Paste model JSON here"
+                  maxLength={1048576}
                   rows={10}
                   required
                 />
@@ -177,7 +314,175 @@ const Models: React.FC = () => {
           </div>
         </div>
       )}
-      
+
+      {showEditForm && editingModel && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <div className="modal-header">
+              <h2>Edit Model</h2>
+              <button className="close-button" onClick={() => setShowEditForm(false)}>×</button>
+            </div>
+            <form onSubmit={handleUpdateModel}>
+              <div className="form-group">
+                <label htmlFor="edit-name">Name:</label>
+                <input
+                  id="edit-name"
+                  type="text"
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  maxLength={255}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="edit-description">Description:</label>
+                <textarea
+                  id="edit-description"
+                  value={editDescription}
+                  onChange={(e) => setEditDescription(e.target.value)}
+                  maxLength={5000}
+                  rows={4}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="edit-version">Version:</label>
+                <input
+                  id="edit-version"
+                  type="text"
+                  value={editVersion}
+                  onChange={(e) => setEditVersion(e.target.value)}
+                  maxLength={50}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="edit-repo-url">Repo URL:</label>
+                <input
+                  id="edit-repo-url"
+                  type="url"
+                  value={editRepoUrl}
+                  onChange={(e) => setEditRepoUrl(e.target.value)}
+                  placeholder="https://github.com/owner/repo"
+                  maxLength={500}
+                />
+                {editRepoUrl && (() => {
+                  try {
+                    const protocol = new URL(editRepoUrl).protocol;
+                    if (protocol === 'http:' || protocol === 'https:') {
+                      return (
+                        <div className="repo-url-link">
+                          <a href={editRepoUrl} target="_blank" rel="noopener noreferrer">{editRepoUrl}</a>
+                        </div>
+                      );
+                    }
+                  } catch { /* invalid URL, don't render link */ }
+                  return null;
+                })()}
+              </div>
+              {editingModel.analysisMetadata && (
+                <div className="analysis-metadata">
+                  <div>Analyzed: {new Date(editingModel.analysisMetadata.analyzedAt).toLocaleDateString()}</div>
+                  <div className="languages">
+                    {Object.entries(editingModel.analysisMetadata.languages).map(([lang, pct]) => (
+                      <span key={lang} className="language-tag">{lang}: {pct}%</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              <div className="form-actions">
+                <button type="button" onClick={() => setShowEditForm(false)}>Cancel</button>
+                <button type="submit">Save</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {showAnalyzeModal && analyzingModelId && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <div className="modal-header">
+              <h2>Analyze Model</h2>
+              <button className="close-button" onClick={() => setShowAnalyzeModal(false)}>×</button>
+            </div>
+            <div className="analyze-content">
+              {!analysisJobId ? (
+                <>
+                  <div className="form-group">
+                    <label htmlFor="tier-select">Analysis Tier:</label>
+                    <select
+                      id="tier-select"
+                      value={selectedTier}
+                      onChange={(e) => setSelectedTier(e.target.value)}
+                      className="tier-select"
+                    >
+                      <option value="tier_0">Tier 0 — Heuristics (Free, no API key needed)</option>
+                      <option value="tier_1">Tier 1 — Fast LLM (Groq/Gemini Flash/Ollama)</option>
+                      <option value="tier_2">Tier 2 — Deep Analysis (Claude/GPT-4o/Gemini Pro)</option>
+                    </select>
+                  </div>
+                  {selectedTier !== 'tier_0' && !hasAnyKey() && (
+                    <div className="warning-message">
+                      No API keys configured. Go to Settings to add LLM API keys for Tier 1/2 analysis.
+                    </div>
+                  )}
+                  {analysisError && <div className="error-message">{analysisError}</div>}
+                  <div className="form-actions">
+                    <button type="button" onClick={() => setShowAnalyzeModal(false)}>Cancel</button>
+                    <button
+                      onClick={startAnalysis}
+                      disabled={selectedTier !== 'tier_0' && !hasAnyKey()}
+                    >
+                      Start Analysis
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <div className="analysis-progress">
+                  <div className="progress-info">
+                    <span>Status: {analysisStatus}</span>
+                    <span>{analysisProgress}%</span>
+                  </div>
+                  <div className="progress-bar-container">
+                    <div
+                      className="progress-bar-fill"
+                      style={{ width: `${analysisProgress}%` }}
+                    />
+                  </div>
+                  {analysisError && <div className="error-message">{analysisError}</div>}
+                  {analysisStatus === 'completed' && (
+                    <div className="form-actions">
+                      <button onClick={() => {
+                        setShowAnalyzeModal(false);
+                        handleViewThreats(analyzingModelId);
+                      }}>
+                        View Threats
+                      </button>
+                    </div>
+                  )}
+                  {analysisStatus === 'failed' && (
+                    <div className="form-actions">
+                      <button onClick={() => setShowAnalyzeModal(false)}>Close</button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showThreats && threatsModelId && (
+        <div className="modal-overlay">
+          <div className="modal modal-wide">
+            <div className="modal-header">
+              <h2>Threat Analysis Results</h2>
+              <button className="close-button" onClick={() => setShowThreats(false)}>×</button>
+            </div>
+            <ThreatsPanel threats={threats} />
+          </div>
+        </div>
+      )}
+
       <div className="models-list">
         <div className="models-list-header">
           <div className="model-name-col">Name</div>
@@ -186,10 +491,10 @@ const Models: React.FC = () => {
           <div className="model-assets-col">Assets</div>
           <div className="model-actions-col">Actions</div>
         </div>
-        
+
         {models.map(model => (
-          <div 
-            key={model.id} 
+          <div
+            key={model.id}
             className={`model-item ${model.id === currentModelId ? 'selected' : ''}`}
             onClick={() => handleSelectModel(model.id)}
           >
@@ -218,7 +523,25 @@ const Models: React.FC = () => {
               </div>
             </div>
             <div className="model-actions-col">
-              <button 
+              <button
+                className="action-button analyze-button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleAnalyze(model.id);
+                }}
+              >
+                Analyze
+              </button>
+              <button
+                className="action-button edit-button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleEditModel(model);
+                }}
+              >
+                Edit
+              </button>
+              <button
                 className="action-button export-button"
                 onClick={(e) => {
                   e.stopPropagation();
@@ -228,7 +551,7 @@ const Models: React.FC = () => {
                 Export
               </button>
               {models.length > 1 && (
-                <button 
+                <button
                   className="action-button delete-button"
                   onClick={(e) => {
                     e.stopPropagation();

@@ -1,10 +1,10 @@
 """Phase 2: CWE importer tests — TDD."""
+
 import os
 import pytest
 from neo4j import GraphDatabase
 
 from importers.cwe_importer import parse_cwe_xml, import_cwe_to_neo4j, CWEWeakness
-
 
 # --- Parsing tests (no DB needed) ---
 
@@ -30,8 +30,13 @@ class TestCWEParser:
             assert w.cwe_id, "Missing CWE ID"
             assert w.name, f"CWE-{w.cwe_id} missing name"
             assert w.description, f"CWE-{w.cwe_id} missing description"
-            assert w.abstraction in ("Pillar", "Class", "Base", "Variant", "Compound"), \
-                f"CWE-{w.cwe_id} unexpected abstraction: {w.abstraction}"
+            assert w.abstraction in (
+                "Pillar",
+                "Class",
+                "Base",
+                "Variant",
+                "Compound",
+            ), f"CWE-{w.cwe_id} unexpected abstraction: {w.abstraction}"
 
     def test_finds_known_cwe(self, weaknesses):
         """Should find well-known CWEs like SQL Injection (89)."""
@@ -43,7 +48,9 @@ class TestCWEParser:
     def test_has_relationships(self, weaknesses):
         """At least some weaknesses should have related weaknesses."""
         with_rels = [w for w in weaknesses if w.related]
-        assert len(with_rels) > 100, f"Expected 100+ with relationships, got {len(with_rels)}"
+        assert (
+            len(with_rels) > 100
+        ), f"Expected 100+ with relationships, got {len(with_rels)}"
 
     def test_sql_injection_details(self, weaknesses):
         """CWE-89 should have known properties."""
@@ -58,12 +65,15 @@ class TestCWEParser:
 
 # --- Import tests (need DB) ---
 
+
 def get_driver():
     uri = os.environ.get("NEO4J_URI")
     pw = os.environ.get("NEO4J_PASSWORD")
     if not uri or not pw:
         return None
-    return GraphDatabase.driver(uri, auth=(os.environ.get("NEO4J_USERNAME", "neo4j"), pw))
+    return GraphDatabase.driver(
+        uri, auth=(os.environ.get("NEO4J_USERNAME", "neo4j"), pw)
+    )
 
 
 HAVE_DB = os.environ.get("NEO4J_URI") is not None

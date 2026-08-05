@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { useLLMKeyStore } from '@/store/llmKeyStore';
 import './Settings.css';
 
 const Settings: React.FC = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [autoSave, setAutoSave] = useState(true);
   const [notifications, setNotifications] = useState(true);
+  const { anthropicKey, openaiKey, googleKey, groqKey, ollamaUrl, setKey, clearAllKeys, hasAnyKey } = useLLMKeyStore();
   
   // These functions would actually update settings in a real implementation
   const toggleDarkMode = () => setDarkMode(!darkMode);
@@ -79,6 +81,106 @@ const Settings: React.FC = () => {
           </div>
         </div>
         
+        <div className="settings-section">
+          <h2>LLM API Keys</h2>
+          <p className="section-description">
+            Configure API keys for LLM-powered threat analysis. Keys are stored in memory only and cleared when you close the browser.
+          </p>
+          <div className="setting-item">
+            <div className="setting-info">
+              <h3>Anthropic</h3>
+              <p>Claude models for Tier 2 analysis</p>
+            </div>
+            <div className="setting-control">
+              <input
+                type="password"
+                value={anthropicKey}
+                onChange={(e) => setKey('anthropic', e.target.value)}
+                placeholder="sk-ant-..."
+                className="key-input"
+                autoComplete="off"
+              />
+            </div>
+          </div>
+          <div className="setting-item">
+            <div className="setting-info">
+              <h3>OpenAI</h3>
+              <p>GPT-4o for Tier 2 analysis</p>
+            </div>
+            <div className="setting-control">
+              <input
+                type="password"
+                value={openaiKey}
+                onChange={(e) => setKey('openai', e.target.value)}
+                placeholder="sk-..."
+                className="key-input"
+                autoComplete="off"
+              />
+            </div>
+          </div>
+          <div className="setting-item">
+            <div className="setting-info">
+              <h3>Google</h3>
+              <p>Gemini models for Tier 1/2 analysis</p>
+            </div>
+            <div className="setting-control">
+              <input
+                type="password"
+                value={googleKey}
+                onChange={(e) => setKey('google', e.target.value)}
+                placeholder="AIza..."
+                className="key-input"
+                autoComplete="off"
+              />
+            </div>
+          </div>
+          <div className="setting-item">
+            <div className="setting-info">
+              <h3>Groq</h3>
+              <p>Fast Llama models for Tier 1 analysis</p>
+            </div>
+            <div className="setting-control">
+              <input
+                type="password"
+                value={groqKey}
+                onChange={(e) => setKey('groq', e.target.value)}
+                placeholder="gsk_..."
+                className="key-input"
+                autoComplete="off"
+              />
+            </div>
+          </div>
+          <div className="setting-item">
+            <div className="setting-info">
+              <h3>Ollama (Local)</h3>
+              <p>Local LLM server URL</p>
+            </div>
+            <div className="setting-control">
+              <input
+                type="text"
+                value={ollamaUrl}
+                onChange={(e) => setKey('ollama', e.target.value)}
+                placeholder="http://localhost:11434"
+                className="key-input"
+                autoComplete="off"
+              />
+            </div>
+          </div>
+          {hasAnyKey() && (
+            <div className="setting-item">
+              <div className="setting-info">
+                <h3>Clear All Keys</h3>
+                <p>Remove all API keys from memory</p>
+              </div>
+              <div className="setting-control">
+                <button className="action-button delete-button" onClick={clearAllKeys}>
+                  Clear All
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
         <div className="settings-section">
           <h2>About</h2>
           <div className="about-info">

@@ -1,4 +1,5 @@
 """Tests for threat model CRUD endpoints."""
+
 from unittest.mock import MagicMock, patch
 
 
@@ -25,14 +26,23 @@ def _make_mock_result(records):
 
 def test_create_model(client, mock_neo4j_session):
     """POST /api/v1/models creates a new threat model."""
-    mock_neo4j_session.run.return_value = _make_mock_result([
-        {
-            "m": {"model_id": "model-abc123", "name": "Test Model", "description": "A test", "version": "0.1.0"},
-            "model_id": "model-abc123",
-        }
-    ])
+    mock_neo4j_session.run.return_value = _make_mock_result(
+        [
+            {
+                "m": {
+                    "model_id": "model-abc123",
+                    "name": "Test Model",
+                    "description": "A test",
+                    "version": "0.1.0",
+                },
+                "model_id": "model-abc123",
+            }
+        ]
+    )
 
-    response = client.post("/api/v1/models", json={"name": "Test Model", "description": "A test"})
+    response = client.post(
+        "/api/v1/models", json={"name": "Test Model", "description": "A test"}
+    )
 
     assert response.status_code == 200
     data = response.json()
@@ -46,10 +56,12 @@ def test_create_model(client, mock_neo4j_session):
 
 def test_list_models(client, mock_neo4j_session):
     """GET /api/v1/models returns list of models."""
-    mock_neo4j_session.run.return_value = _make_mock_result([
-        {"m": {"model_id": "model-1", "name": "Model 1"}},
-        {"m": {"model_id": "model-2", "name": "Model 2"}},
-    ])
+    mock_neo4j_session.run.return_value = _make_mock_result(
+        [
+            {"m": {"model_id": "model-1", "name": "Model 1"}},
+            {"m": {"model_id": "model-2", "name": "Model 2"}},
+        ]
+    )
 
     response = client.get("/api/v1/models")
 
@@ -64,15 +76,17 @@ def test_list_models(client, mock_neo4j_session):
 
 def test_get_model(client, mock_neo4j_session):
     """GET /api/v1/models/{id} returns model with assets."""
-    mock_neo4j_session.run.return_value = _make_mock_result([
-        {
-            "m": {"model_id": "model-1", "name": "Model 1"},
-            "technical_assets": [{"asset_id": "ta-1", "name": "Web Server"}],
-            "trust_boundaries": [],
-            "data_flows": [],
-            "data_assets": [],
-        }
-    ])
+    mock_neo4j_session.run.return_value = _make_mock_result(
+        [
+            {
+                "m": {"model_id": "model-1", "name": "Model 1"},
+                "technical_assets": [{"asset_id": "ta-1", "name": "Web Server"}],
+                "trust_boundaries": [],
+                "data_flows": [],
+                "data_assets": [],
+            }
+        ]
+    )
 
     response = client.get("/api/v1/models/model-1")
 
@@ -98,9 +112,9 @@ def test_get_model_not_found(client, mock_neo4j_session):
 
 def test_update_model(client, mock_neo4j_session):
     """PUT /api/v1/models/{id} updates model properties."""
-    mock_neo4j_session.run.return_value = _make_mock_result([
-        {"m": {"model_id": "model-1", "name": "Updated Name", "version": "0.2.0"}}
-    ])
+    mock_neo4j_session.run.return_value = _make_mock_result(
+        [{"m": {"model_id": "model-1", "name": "Updated Name", "version": "0.2.0"}}]
+    )
 
     response = client.put("/api/v1/models/model-1", json={"name": "Updated Name"})
 
@@ -142,9 +156,9 @@ def test_delete_model_not_found(client, mock_neo4j_session):
 
 def test_add_technical_asset(client, mock_neo4j_session):
     """POST /api/v1/models/{id}/assets creates a technical asset."""
-    mock_neo4j_session.run.return_value = _make_mock_result([
-        {"ta": {"asset_id": "ta-abc", "name": "API Server", "type": "process"}}
-    ])
+    mock_neo4j_session.run.return_value = _make_mock_result(
+        [{"ta": {"asset_id": "ta-abc", "name": "API Server", "type": "process"}}]
+    )
 
     response = client.post(
         "/api/v1/models/model-1/assets",
@@ -170,9 +184,9 @@ def test_delete_technical_asset(client, mock_neo4j_session):
 
 def test_add_trust_boundary(client, mock_neo4j_session):
     """POST /api/v1/models/{id}/boundaries creates a trust boundary."""
-    mock_neo4j_session.run.return_value = _make_mock_result([
-        {"tb": {"boundary_id": "tb-abc", "name": "DMZ", "type": "network"}}
-    ])
+    mock_neo4j_session.run.return_value = _make_mock_result(
+        [{"tb": {"boundary_id": "tb-abc", "name": "DMZ", "type": "network"}}]
+    )
 
     response = client.post(
         "/api/v1/models/model-1/boundaries",
@@ -198,13 +212,27 @@ def test_delete_trust_boundary(client, mock_neo4j_session):
 
 def test_add_data_flow(client, mock_neo4j_session):
     """POST /api/v1/models/{id}/flows creates a data flow."""
-    mock_neo4j_session.run.return_value = _make_mock_result([
-        {"df": {"flow_id": "df-abc", "name": "API Call", "source": "client", "target": "server"}}
-    ])
+    mock_neo4j_session.run.return_value = _make_mock_result(
+        [
+            {
+                "df": {
+                    "flow_id": "df-abc",
+                    "name": "API Call",
+                    "source": "client",
+                    "target": "server",
+                }
+            }
+        ]
+    )
 
     response = client.post(
         "/api/v1/models/model-1/flows",
-        json={"name": "API Call", "source": "client", "target": "server", "protocol": "HTTPS"},
+        json={
+            "name": "API Call",
+            "source": "client",
+            "target": "server",
+            "protocol": "HTTPS",
+        },
     )
 
     assert response.status_code == 200
@@ -226,9 +254,17 @@ def test_delete_data_flow(client, mock_neo4j_session):
 
 def test_add_data_asset(client, mock_neo4j_session):
     """POST /api/v1/models/{id}/data-assets creates a data asset."""
-    mock_neo4j_session.run.return_value = _make_mock_result([
-        {"da": {"data_asset_id": "da-abc", "name": "User PII", "classification": "confidential"}}
-    ])
+    mock_neo4j_session.run.return_value = _make_mock_result(
+        [
+            {
+                "da": {
+                    "data_asset_id": "da-abc",
+                    "name": "User PII",
+                    "classification": "confidential",
+                }
+            }
+        ]
+    )
 
     response = client.post(
         "/api/v1/models/model-1/data-assets",

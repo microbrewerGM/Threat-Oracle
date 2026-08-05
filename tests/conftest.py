@@ -1,4 +1,5 @@
 """Shared pytest fixtures for Threat Oracle tests."""
+
 import pytest
 from unittest.mock import MagicMock
 
