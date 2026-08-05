@@ -193,7 +193,7 @@ class TestGetSession:
         mock_get_driver.return_value = mock_driver
 
         with pytest.raises(RuntimeError):
-            with get_session() as session:
+            with get_session():
                 raise RuntimeError("boom")
 
         mock_session.close.assert_called_once()

@@ -7,15 +7,15 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from neo4j import Session
 
 from api.dependencies import get_neo4j_session
-
-# Valid label pattern: alphanumeric + underscore only
-VALID_LABEL_PATTERN = re.compile(r"^[A-Za-z][A-Za-z0-9_]{0,63}$")
 from api.models import (
     GraphStatsResponse,
     NodeDetailResponse,
     NodeListResponse,
     SearchResponse,
 )
+
+# Valid label pattern: alphanumeric + underscore only
+VALID_LABEL_PATTERN = re.compile(r"^[A-Za-z][A-Za-z0-9_]{0,63}$")
 
 router = APIRouter(prefix="/api/v1/graph", tags=["graph"])
 
@@ -25,7 +25,7 @@ def graph_stats(session: Session = Depends(get_neo4j_session)):
     """Get graph statistics: node counts by label, total relationships."""
     label_result = session.run("CALL db.labels() YIELD label RETURN label")
     labels = [r["label"] for r in label_result]
-    labels = [l for l in labels if VALID_LABEL_PATTERN.match(l)]
+    labels = [lbl for lbl in labels if VALID_LABEL_PATTERN.match(lbl)]
 
     node_counts = {}
     for label in labels:
