@@ -22,13 +22,13 @@ const AssetDetailPopup: React.FC<AssetDetailPopupProps> = ({
   const currentModel = getCurrentModel();
 
   // Type guards for asset types
-  const isTechnicalAsset = (asset: any): asset is TechnicalAsset => 
+  const isTechnicalAsset = (asset: any): asset is TechnicalAsset =>
     assetType === 'technical';
-  
-  const isDataAsset = (asset: any): asset is DataAsset => 
+
+  const isDataAsset = (asset: any): asset is DataAsset =>
     assetType === 'data';
-  
-  const isTrustBoundary = (asset: any): asset is TrustBoundary => 
+
+  const isTrustBoundary = (asset: any): asset is TrustBoundary =>
     assetType === 'trust';
 
   // Find the asset based on the type and id
@@ -63,8 +63,8 @@ const AssetDetailPopup: React.FC<AssetDetailPopupProps> = ({
   // Get related data assets (for technical assets)
   const relatedDataAssets = assetType === 'technical' && currentModel
     ? currentModel.dataAssets.filter(
-        (da) => 
-          da.stored_in?.includes(assetId) || 
+        (da) =>
+          da.stored_in?.includes(assetId) ||
           da.processed_by?.includes(assetId)
       )
     : [];
@@ -75,7 +75,7 @@ const AssetDetailPopup: React.FC<AssetDetailPopupProps> = ({
         <h3>{asset.name}</h3>
         <button className="close-button" onClick={onClose}>×</button>
       </div>
-      
+
       <div className="popup-content">
         <div className="popup-section">
           <h4>Basic Information</h4>
@@ -100,7 +100,7 @@ const AssetDetailPopup: React.FC<AssetDetailPopupProps> = ({
             </div>
           )}
         </div>
-        
+
         {isTechnicalAsset(asset) && (
           <div className="popup-section">
             <h4>Technical Details</h4>
@@ -124,7 +124,7 @@ const AssetDetailPopup: React.FC<AssetDetailPopupProps> = ({
             )}
           </div>
         )}
-        
+
         {isDataAsset(asset) && (
           <div className="popup-section">
             <h4>Data Classification</h4>
@@ -144,7 +144,7 @@ const AssetDetailPopup: React.FC<AssetDetailPopupProps> = ({
             )}
           </div>
         )}
-        
+
         {isTrustBoundary(asset) && (
           <div className="popup-section">
             <h4>Security Information</h4>
@@ -156,7 +156,7 @@ const AssetDetailPopup: React.FC<AssetDetailPopupProps> = ({
             )}
           </div>
         )}
-        
+
         {relatedFlows && relatedFlows.length > 0 && (
           <div className="popup-section">
             <h4>Related Data Flows</h4>
@@ -169,7 +169,7 @@ const AssetDetailPopup: React.FC<AssetDetailPopupProps> = ({
             </ul>
           </div>
         )}
-        
+
         {relatedDataAssets && relatedDataAssets.length > 0 && (
           <div className="popup-section">
             <h4>Related Data Assets</h4>
@@ -180,7 +180,7 @@ const AssetDetailPopup: React.FC<AssetDetailPopupProps> = ({
             </ul>
           </div>
         )}
-        
+
         {asset.tags && asset.tags.length > 0 && (
           <div className="popup-section">
             <h4>Tags</h4>
@@ -192,7 +192,7 @@ const AssetDetailPopup: React.FC<AssetDetailPopupProps> = ({
           </div>
         )}
       </div>
-      
+
       <div className="popup-footer">
         <button className="drilldown-button" onClick={onDrillDown}>
           View Details <span className="chevron">»</span>

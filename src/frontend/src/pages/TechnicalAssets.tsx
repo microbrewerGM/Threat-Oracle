@@ -7,16 +7,16 @@ const TechnicalAssets: React.FC = () => {
   const { getCurrentModel } = useModelStore();
   const currentModel = getCurrentModel();
   const technicalAssets = currentModel?.technicalAssets || [];
-  
+
   return (
     <div className="technical-assets-page">
       <h1>Technical Assets</h1>
       <p className="description">
         Technical assets represent the components of your system such as servers, applications, databases, and more.
       </p>
-      
+
       <ModelSelector />
-      
+
       <div className="assets-list">
         {technicalAssets.length > 0 ? (
           technicalAssets.map(asset => (

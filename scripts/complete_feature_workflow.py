@@ -4,14 +4,12 @@ Script to automate the PR creation, review, merge, and cleanup process.
 This script is intended to be used after pushing a feature branch.
 """
 
-import os
 import re
 import subprocess
 import sys
 import json
 import time
 import argparse
-from datetime import datetime
 
 
 def get_current_branch():

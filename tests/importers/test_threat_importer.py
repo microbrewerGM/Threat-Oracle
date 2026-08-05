@@ -1,6 +1,6 @@
 """Tests for threat_importer — unit tests with mock Neo4j driver."""
 
-from unittest.mock import MagicMock, call
+from unittest.mock import MagicMock
 
 from importers.threat_importer import (
     ThreatNode,

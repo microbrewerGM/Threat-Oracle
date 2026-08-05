@@ -10,10 +10,10 @@ describe('Header Component', () => {
         <Header />
       </BrowserRouter>
     );
-    
+
     // Check if the logo is rendered
     expect(screen.getByText('Threat Oracle')).toBeInTheDocument();
-    
+
     // Check if navigation links are rendered
     expect(screen.getByText('Dashboard')).toBeInTheDocument();
     expect(screen.getByText('Models')).toBeInTheDocument();

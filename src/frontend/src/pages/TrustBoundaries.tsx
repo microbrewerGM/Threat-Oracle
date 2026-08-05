@@ -7,16 +7,16 @@ const TrustBoundaries: React.FC = () => {
   const { getCurrentModel } = useModelStore();
   const currentModel = getCurrentModel();
   const trustBoundaries = currentModel?.trustBoundaries || [];
-  
+
   return (
     <div className="trust-boundaries-page">
       <h1>Trust Boundaries</h1>
       <p className="description">
         Trust boundaries define the security zones in your system, such as network segments, security zones, and organizational boundaries.
       </p>
-      
+
       <ModelSelector />
-      
+
       <div className="boundaries-list">
         {trustBoundaries.length > 0 ? (
           trustBoundaries.map(boundary => (

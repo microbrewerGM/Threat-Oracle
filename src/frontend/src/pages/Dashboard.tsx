@@ -8,14 +8,14 @@ const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const { getCurrentModel } = useModelStore();
   const currentModel = getCurrentModel();
-  
+
   return (
     <div className="dashboard">
       <h1>Threat Oracle Dashboard</h1>
       <p className="description">
         Welcome to Threat Oracle, a visual threat modeling tool that creates digital twins of applications and infrastructure using a graph-based approach.
       </p>
-      
+
       <ModelSelector />
 
       <div className="dashboard-cards">

@@ -7,11 +7,11 @@ import './DataAssets.css';
 const DataAssets: React.FC = () => {
   const { getCurrentModel, addDataAsset, updateDataAsset, deleteDataAsset } = useModelStore();
   const currentModel = getCurrentModel();
-  
+
   const [showAddForm, setShowAddForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState<DataAsset | null>(null);
-  
+
   // Form state
   const [formData, setFormData] = useState<Partial<DataAsset>>({
     name: '',
@@ -32,7 +32,7 @@ const DataAssets: React.FC = () => {
     transmitted_in: [],
     tags: []
   });
-  
+
   const resetForm = () => {
     setFormData({
       name: '',
@@ -54,45 +54,45 @@ const DataAssets: React.FC = () => {
       tags: []
     });
   };
-  
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
-  
+
   const handleArrayInputChange = (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
     const value = e.target.value;
-    setFormData(prev => ({ 
-      ...prev, 
+    setFormData(prev => ({
+      ...prev,
       [field]: value.split(',').map(item => item.trim()).filter(item => item !== '')
     }));
   };
-  
+
   const handleAddAsset = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.type || !formData.medium || !formData.classification) return;
-    
+
     addDataAsset(formData as Omit<DataAsset, 'id'>);
     resetForm();
     setShowAddForm(false);
   };
-  
+
   const handleEditAsset = (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedAsset || !formData.name || !formData.type || !formData.medium || !formData.classification) return;
-    
+
     updateDataAsset(selectedAsset.id, formData);
     resetForm();
     setSelectedAsset(null);
     setShowEditForm(false);
   };
-  
+
   const handleDeleteAsset = (id: string) => {
     if (window.confirm('Are you sure you want to delete this data asset? This action cannot be undone.')) {
       deleteDataAsset(id);
     }
   };
-  
+
   const openEditForm = (asset: DataAsset) => {
     setSelectedAsset(asset);
     setFormData({
@@ -116,7 +116,7 @@ const DataAssets: React.FC = () => {
     });
     setShowEditForm(true);
   };
-  
+
   const getClassificationBadgeClass = (classification: string) => {
     switch (classification) {
       case 'public': return 'badge-info';
@@ -128,7 +128,7 @@ const DataAssets: React.FC = () => {
       default: return 'badge-secondary';
     }
   };
-  
+
   const getTypeBadgeClass = (type: string) => {
     switch (type) {
       case 'pii': return 'badge-danger';
@@ -143,19 +143,19 @@ const DataAssets: React.FC = () => {
       default: return 'badge-secondary';
     }
   };
-  
+
   const formatArrayForDisplay = (arr?: string[]) => {
     if (!arr || arr.length === 0) return '-';
     return arr.join(', ');
   };
-  
+
   const renderForm = (isEdit: boolean) => {
     const title = isEdit ? 'Edit Data Asset' : 'Add Data Asset';
     const submitHandler = isEdit ? handleEditAsset : handleAddAsset;
-    const closeHandler = isEdit 
+    const closeHandler = isEdit
       ? () => { setShowEditForm(false); setSelectedAsset(null); resetForm(); }
       : () => { setShowAddForm(false); resetForm(); };
-    
+
     return (
       <div className="modal-overlay">
         <div className="modal">
@@ -176,7 +176,7 @@ const DataAssets: React.FC = () => {
                 required
               />
             </div>
-            
+
             <div className="form-group">
               <label htmlFor="description">Description:</label>
               <textarea
@@ -188,7 +188,7 @@ const DataAssets: React.FC = () => {
                 rows={3}
               />
             </div>
-            
+
             <div className="form-row">
               <div className="form-group">
                 <label htmlFor="type">Type:</label>
@@ -211,7 +211,7 @@ const DataAssets: React.FC = () => {
                   <option value="other">Other</option>
                 </select>
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="medium">Medium:</label>
                 <select
@@ -226,7 +226,7 @@ const DataAssets: React.FC = () => {
                   <option value="hybrid">Hybrid</option>
                 </select>
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="classification">Classification:</label>
                 <select
@@ -245,7 +245,7 @@ const DataAssets: React.FC = () => {
                 </select>
               </div>
             </div>
-            
+
             <div className="form-row">
               <div className="form-group">
                 <label htmlFor="format">Format:</label>
@@ -258,7 +258,7 @@ const DataAssets: React.FC = () => {
                   placeholder="e.g., JSON, XML, PDF"
                 />
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="volume">Volume:</label>
                 <input
@@ -271,7 +271,7 @@ const DataAssets: React.FC = () => {
                 />
               </div>
             </div>
-            
+
             <div className="form-row">
               <div className="form-group">
                 <label htmlFor="owner">Owner:</label>
@@ -284,7 +284,7 @@ const DataAssets: React.FC = () => {
                   placeholder="Enter owner or responsible party"
                 />
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="retention_period">Retention Period:</label>
                 <input
@@ -297,7 +297,7 @@ const DataAssets: React.FC = () => {
                 />
               </div>
             </div>
-            
+
             <div className="form-group">
               <label htmlFor="regulatory_requirements">Regulatory Requirements:</label>
               <input
@@ -309,7 +309,7 @@ const DataAssets: React.FC = () => {
                 placeholder="e.g., GDPR, HIPAA, PCI-DSS (comma separated)"
               />
             </div>
-            
+
             <div className="form-row">
               <div className="form-group">
                 <label htmlFor="encryption_requirements">Encryption Requirements:</label>
@@ -326,7 +326,7 @@ const DataAssets: React.FC = () => {
                   <option value="end_to_end">End-to-End</option>
                 </select>
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="integrity_requirements">Integrity Requirements:</label>
                 <select
@@ -341,7 +341,7 @@ const DataAssets: React.FC = () => {
                   <option value="critical">Critical</option>
                 </select>
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="availability_requirements">Availability Requirements:</label>
                 <select
@@ -357,7 +357,7 @@ const DataAssets: React.FC = () => {
                 </select>
               </div>
             </div>
-            
+
             <div className="form-group">
               <label htmlFor="stored_in">Stored In (Technical Asset IDs):</label>
               <input
@@ -369,7 +369,7 @@ const DataAssets: React.FC = () => {
                 placeholder="e.g., ta-001, ta-003 (comma separated)"
               />
             </div>
-            
+
             <div className="form-group">
               <label htmlFor="processed_by">Processed By (Technical Asset IDs):</label>
               <input
@@ -381,7 +381,7 @@ const DataAssets: React.FC = () => {
                 placeholder="e.g., ta-002, ta-004 (comma separated)"
               />
             </div>
-            
+
             <div className="form-group">
               <label htmlFor="transmitted_in">Transmitted In (Data Flow IDs):</label>
               <input
@@ -393,7 +393,7 @@ const DataAssets: React.FC = () => {
                 placeholder="e.g., df-001, df-002 (comma separated)"
               />
             </div>
-            
+
             <div className="form-group">
               <label htmlFor="tags">Tags:</label>
               <input
@@ -405,7 +405,7 @@ const DataAssets: React.FC = () => {
                 placeholder="e.g., customer, financial, sensitive (comma separated)"
               />
             </div>
-            
+
             <div className="form-actions">
               <button type="button" onClick={closeHandler}>Cancel</button>
               <button type="submit">{isEdit ? 'Update' : 'Add'}</button>
@@ -415,25 +415,25 @@ const DataAssets: React.FC = () => {
       </div>
     );
   };
-  
+
   return (
     <div className="data-assets-page">
       <h1>Data Assets</h1>
       <p className="description">
         Data assets represent the information that flows through your system, such as personal data, financial records, and configuration data.
       </p>
-      
+
       <div className="page-actions">
         <ModelSelector />
-        <button 
-          className="action-button add-button" 
+        <button
+          className="action-button add-button"
           onClick={() => setShowAddForm(true)}
           disabled={!currentModel}
         >
           Add Data Asset
         </button>
       </div>
-      
+
       {currentModel && currentModel.dataAssets.length > 0 ? (
         <div className="data-assets-list">
           <div className="data-assets-list-header">
@@ -443,7 +443,7 @@ const DataAssets: React.FC = () => {
             <div className="asset-classification-col">Classification</div>
             <div className="asset-actions-col">Actions</div>
           </div>
-          
+
           {currentModel.dataAssets.map(asset => (
             <div key={asset.id} className="data-asset-item">
               <div className="asset-name-col">
@@ -466,68 +466,68 @@ const DataAssets: React.FC = () => {
                 </span>
               </div>
               <div className="asset-actions-col">
-                <button 
+                <button
                   className="action-button view-button"
                   onClick={() => openEditForm(asset)}
                 >
                   View/Edit
                 </button>
-                <button 
+                <button
                   className="action-button delete-button"
                   onClick={() => handleDeleteAsset(asset.id)}
                 >
                   Delete
                 </button>
               </div>
-              
+
               <div className="asset-details">
                 <div className="detail-row">
                   <div className="detail-label">Format:</div>
                   <div className="detail-value">{asset.format || '-'}</div>
-                  
+
                   <div className="detail-label">Volume:</div>
                   <div className="detail-value">{asset.volume || '-'}</div>
-                  
+
                   <div className="detail-label">Owner:</div>
                   <div className="detail-value">{asset.owner || '-'}</div>
                 </div>
-                
+
                 <div className="detail-row">
                   <div className="detail-label">Retention:</div>
                   <div className="detail-value">{asset.retention_period || '-'}</div>
-                  
+
                   <div className="detail-label">Encryption:</div>
                   <div className="detail-value">{asset.encryption_requirements?.replace(/_/g, ' ') || '-'}</div>
                 </div>
-                
+
                 <div className="detail-row">
                   <div className="detail-label">Integrity:</div>
                   <div className="detail-value">{asset.integrity_requirements || '-'}</div>
-                  
+
                   <div className="detail-label">Availability:</div>
                   <div className="detail-value">{asset.availability_requirements || '-'}</div>
                 </div>
-                
+
                 <div className="detail-row">
                   <div className="detail-label">Regulatory:</div>
                   <div className="detail-value">{formatArrayForDisplay(asset.regulatory_requirements)}</div>
                 </div>
-                
+
                 <div className="detail-row">
                   <div className="detail-label">Stored In:</div>
                   <div className="detail-value">{formatArrayForDisplay(asset.stored_in)}</div>
                 </div>
-                
+
                 <div className="detail-row">
                   <div className="detail-label">Processed By:</div>
                   <div className="detail-value">{formatArrayForDisplay(asset.processed_by)}</div>
                 </div>
-                
+
                 <div className="detail-row">
                   <div className="detail-label">Transmitted In:</div>
                   <div className="detail-value">{formatArrayForDisplay(asset.transmitted_in)}</div>
                 </div>
-                
+
                 {asset.tags && asset.tags.length > 0 && (
                   <div className="detail-row">
                     <div className="detail-label">Tags:</div>
@@ -547,13 +547,13 @@ const DataAssets: React.FC = () => {
           <div className="empty-icon">📊</div>
           <h2>No Data Assets</h2>
           <p>
-            {currentModel 
+            {currentModel
               ? 'This model does not have any data assets yet. Click "Add Data Asset" to create one.'
               : 'Please select a model to view or add data assets.'}
           </p>
         </div>
       )}
-      
+
       {showAddForm && renderForm(false)}
       {showEditForm && selectedAsset && renderForm(true)}
     </div>

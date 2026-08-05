@@ -15,19 +15,19 @@ const ModelSelector: React.FC = () => {
   const handleModelChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setCurrentModel(e.target.value);
   };
-  
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
   };
-  
+
   return (
     <div className="model-selector">
       <div className="model-selector-header">
         <label htmlFor="model-select">Current Model:</label>
-        <select 
-          id="model-select" 
-          value={currentModelId || ''} 
+        <select
+          id="model-select"
+          value={currentModelId || ''}
           onChange={handleModelChange}
         >
           {models.map(model => (
@@ -37,7 +37,7 @@ const ModelSelector: React.FC = () => {
           ))}
         </select>
       </div>
-      
+
       {currentModelId && (
         <div className="model-details">
           {models.filter(model => model.id === currentModelId).map(model => (

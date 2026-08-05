@@ -3,7 +3,6 @@
 import asyncio
 import logging
 
-import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
 
 from analysis.llm.dispatcher import (
@@ -16,7 +15,6 @@ from analysis.llm.schemas import (
     AnalysisJobStatus,
     AnalysisTier,
     LLMProviderKeys,
-    ThreatFinding,
     WorkUnitResult,
 )
 from analysis.llm.work_units import (

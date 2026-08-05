@@ -87,15 +87,15 @@
     flex-direction: column;
     align-items: flex-start;
   }
-  
+
   .model-selector-header label {
     margin-bottom: 8px;
   }
-  
+
   .model-selector-header select {
     width: 100%;
   }
-  
+
   .model-metadata {
     flex-direction: column;
     gap: 4px;

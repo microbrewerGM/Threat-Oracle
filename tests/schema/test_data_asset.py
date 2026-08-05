@@ -2,7 +2,6 @@
 Tests for the data asset schema validation.
 """
 
-import pytest
 from src.schema import validator
 
 

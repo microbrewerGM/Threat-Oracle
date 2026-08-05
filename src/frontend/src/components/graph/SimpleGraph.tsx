@@ -36,52 +36,52 @@ const SimpleGraph: React.FC<SimpleGraphProps> = ({
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const [selectedEdge, setSelectedEdge] = useState<Edge | null>(null);
   const [popupPosition, setPopupPosition] = useState<{ x: number; y: number } | null>(null);
-  
+
   // Determine asset type based on node type
   const getAssetType = (nodeType: string): 'technical' | 'data' | 'trust' => {
-    if (nodeType.includes('server') || 
-        nodeType.includes('application') || 
-        nodeType.includes('database') || 
-        nodeType.includes('container') || 
-        nodeType.includes('api') || 
-        nodeType.includes('service') || 
+    if (nodeType.includes('server') ||
+        nodeType.includes('application') ||
+        nodeType.includes('database') ||
+        nodeType.includes('container') ||
+        nodeType.includes('api') ||
+        nodeType.includes('service') ||
         nodeType.includes('network_device')) {
       return 'technical';
-    } else if (nodeType.includes('network_segment') || 
-               nodeType.includes('security_zone') || 
-               nodeType.includes('organizational_boundary') || 
+    } else if (nodeType.includes('network_segment') ||
+               nodeType.includes('security_zone') ||
+               nodeType.includes('organizational_boundary') ||
                nodeType.includes('physical_boundary')) {
       return 'trust';
     } else {
       return 'technical'; // Default to technical for now
     }
   };
-  
+
   const handleNodeClick = (event: MouseEvent, node: Node) => {
     event.stopPropagation();
     setSelectedEdge(null);
     setSelectedNode(node);
     setPopupPosition({ x: event.clientX, y: event.clientY });
   };
-  
+
   const handleEdgeClick = (event: MouseEvent, edge: Edge) => {
     event.stopPropagation();
     setSelectedNode(null);
     setSelectedEdge(edge);
     setPopupPosition({ x: event.clientX, y: event.clientY });
   };
-  
+
   const handleClosePopup = () => {
     setSelectedNode(null);
     setSelectedEdge(null);
     setPopupPosition(null);
   };
-  
+
   const handleNodeDrillDown = () => {
     if (selectedNode) {
       // Navigate to the appropriate page based on the node type
       const assetType = getAssetType(selectedNode.type);
-      
+
       switch (assetType) {
         case 'technical':
           navigate(`/technical-assets?id=${selectedNode.id}`);
@@ -93,12 +93,12 @@ const SimpleGraph: React.FC<SimpleGraphProps> = ({
           navigate(`/trust-boundaries?id=${selectedNode.id}`);
           break;
       }
-      
+
       // Close the popup
       handleClosePopup();
     }
   };
-  
+
   const handleEdgeDrillDown = () => {
     if (selectedEdge) {
       navigate(`/data-flows?id=${selectedEdge.id}`);
@@ -237,7 +237,7 @@ const SimpleGraph: React.FC<SimpleGraphProps> = ({
   return (
     <div className="simple-graph-container">
       <svg ref={svgRef} width={width} height={height} className="simple-graph" />
-      
+
       {selectedNode && popupPosition && (
         <AssetDetailPopup
           assetId={selectedNode.id}
@@ -247,7 +247,7 @@ const SimpleGraph: React.FC<SimpleGraphProps> = ({
           onDrillDown={handleNodeDrillDown}
         />
       )}
-      
+
       {selectedEdge && popupPosition && (
         <EdgeDetailPopup
           edgeId={selectedEdge.id}

@@ -1,7 +1,6 @@
 """Threat importer — converts analysis findings to Neo4j Threat nodes."""
 
 from dataclasses import dataclass, field
-from typing import Optional
 
 
 @dataclass

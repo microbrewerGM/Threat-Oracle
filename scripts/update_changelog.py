@@ -7,7 +7,6 @@ This script is intended to be used as a pre-commit hook.
 import os
 import re
 import subprocess
-from datetime import datetime
 
 CHANGELOG_PATH = "CHANGELOG.md"
 UNRELEASED_PATTERN = r"## \[Unreleased\]\n\n### Added\n"
