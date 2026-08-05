@@ -540,7 +540,6 @@ const ThreatGraph: React.FC = () => {
           }
 
           const cx = points.reduce((s, p) => s + p[0], 0) / points.length;
-          const cy = points.reduce((s, p) => s + p[1], 0) / points.length;
           // Place label above the topmost point
           const minY = Math.min(...points.map((p) => p[1]));
           labelEl.attr('x', cx).attr('y', minY - 50);
@@ -750,6 +749,11 @@ const ThreatGraph: React.FC = () => {
 
     // Restart to ensure tick fires with our new selections
     sim.alpha(0.5).restart();
+    // `layers` (the layer-visibility/selection store slice) is intentionally
+    // omitted: this effect only needs its stable `setSelectedThreat` action,
+    // and depending on the whole object would re-run this expensive D3
+    // redraw on every layer toggle instead of only on data changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nodes, edges, simulation, boundaryGroups, nodeThreatMap]);
 
   // -----------------------------------------------------------------------
@@ -839,6 +843,11 @@ const ThreatGraph: React.FC = () => {
           }
         });
     }
+    // `layers` itself is intentionally omitted from the dep array: every
+    // field this effect reads is already listed individually below so it
+    // only re-runs on the specific toggles/selections it cares about,
+    // rather than on any change to the layers store slice.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     layers.trustBoundaries,
     layers.dataFlows,

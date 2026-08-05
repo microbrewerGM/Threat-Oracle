@@ -1,14 +1,11 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import ModelSelector from '@/components/model/ModelSelector';
-import { useModelStore } from '@/store/modelStore';
 import './Dashboard.css';
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
-  const { getCurrentModel } = useModelStore();
-  const currentModel = getCurrentModel();
-  
+
   return (
     <div className="dashboard">
       <h1>Threat Oracle Dashboard</h1>
