@@ -64,12 +64,12 @@ To identify the next logical story based on project progress and epic definition
     ALERT: Next story has unmet prerequisites:
     Story: {epicNum}.{storyNum} - {Story Title}
     Prerequisites not met: [list specific prerequisites]
-    
+
     Would you like to:
     1. Create the story anyway (mark prerequisites as pending)
     2. Skip to a different story (requires your specific instruction)
     3. Cancel story creation
-    
+
     Please choose an option (1/2/3):
     ```
 
@@ -77,12 +77,12 @@ To identify the next logical story based on project progress and epic definition
 
     ```plaintext
     Epic {epicNum} Complete: All stories in Epic {epicNum} have been completed.
-    
+
     Would you like to:
     1. Begin Epic {epicNum + 1} with story {epicNum + 1}.1
     2. Select a specific story to work on
     3. Cancel story creation
-    
+
     Please choose an option (1/2/3):
     ```
 
@@ -124,11 +124,11 @@ Based on configuration loaded in Step 0:
 - **If `architectureVersion: v4` and `architectureSharded: true`**:
   - Read `{architectureShardedLocation}/index.md` to understand available documentation
   - Follow the structured reading order in section 4.2 below
-  
+
 - **If `architectureVersion: v4` and `architectureSharded: false`**:
   - Load the monolithic architecture from `architectureFile`
   - Extract relevant sections based on v4 structure (tech stack, project structure, etc.)
-  
+
 - **If `architectureVersion` is NOT v4**:
   - Inform user: "Architecture document is not v4 format. Will use best judgment to find relevant information."
   - If `architectureSharded: true`: Search sharded files by filename relevance

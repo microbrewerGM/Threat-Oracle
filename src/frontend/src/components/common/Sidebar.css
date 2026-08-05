@@ -73,25 +73,25 @@
     border-right: none;
     border-bottom: 1px solid var(--border-color);
   }
-  
+
   .sidebar.collapsed {
     width: 100%;
     height: 50px;
     overflow: hidden;
   }
-  
+
   .sidebar-toggle {
     transform: rotate(90deg);
   }
-  
+
   .sidebar.collapsed .sidebar-toggle {
     transform: rotate(-90deg);
   }
-  
+
   .sidebar-nav {
     padding: 10px 0;
   }
-  
+
   .sidebar.collapsed .sidebar-nav {
     display: none;
   }

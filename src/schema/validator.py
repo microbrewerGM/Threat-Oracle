@@ -6,7 +6,7 @@ This module provides functions to validate objects against JSON schemas.
 
 import json
 import os
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List
 
 import jsonschema
 from jsonschema import ValidationError

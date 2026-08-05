@@ -32,6 +32,7 @@ cp .env.dev.example .env.dev
 Format: `<type>(<scope>): <description>`
 
 **Types:**
+
 - `feat` — new feature or capability
 - `fix` — bug fix
 - `docs` — documentation only
@@ -42,7 +43,8 @@ Format: `<type>(<scope>): <description>`
 **Scopes:** `graph`, `api`, `infra`, `analysis`, `frontend`, `docs`
 
 **Examples:**
-```
+
+```text
 feat(graph): add CWE node importer with MITRE mappings
 fix(api): handle missing repo URL in fetcher endpoint
 docs(docs): update schema with CAPEC relationship types
@@ -64,22 +66,26 @@ Keep commits atomic — one logical change per commit.
 | `docs/` | Shared | Schema docs, architecture, runbooks |
 | `scripts/` | Shared | Utility scripts, CI helpers |
 
-**Cross-ownership edits**: If you need to change files in another Morty's directory, open a PR and request their review. Don't merge without approval.
+**Cross-ownership edits**: If you need to change files in another Morty's directory, open a PR and request
+their review. Don't merge without approval.
 
 ## Issue Labels
 
 ### Assignment
+
 - `morty:purple` — assigned to Purple Morty
 - `morty:psm` — assigned to PhenomSec Morty
 - `morty:homenet` — assigned to HomeNet Morty
 - `morty:unassigned` — available to claim
 
 ### Priority
+
 - `P0-critical` — do this now, blocks others
 - `P1-high` — core MVP work
 - `P2-medium` — important but not blocking
 
 ### Type
+
 - `type:infra` — AWS infrastructure
 - `type:backend` — API/Lambda
 - `type:frontend` — Next.js UI
@@ -88,6 +94,7 @@ Keep commits atomic — one logical change per commit.
 - `type:docs` — documentation
 
 ### Sprint
+
 - `sprint:mvp-1` — infrastructure foundation
 - `sprint:mvp-2` — analysis pipeline
 - `sprint:mvp-3` — frontend + visualization
@@ -103,6 +110,7 @@ When an issue is too big (>1 day of work), break it down:
 4. Each sub-issue should have a test that proves it works
 
 **Good breakdown example:**
+
 - ❌ "Build the AWS importer" (too big)
 - ✅ "#1: S3 bucket for frontend hosting" → "#2: CloudFront distribution" → "#3: Cognito user pool" (sequential, testable)
 

@@ -7,19 +7,19 @@ const Settings: React.FC = () => {
   const [autoSave, setAutoSave] = useState(true);
   const [notifications, setNotifications] = useState(true);
   const { anthropicKey, openaiKey, googleKey, groqKey, ollamaUrl, setKey, clearAllKeys, hasAnyKey } = useLLMKeyStore();
-  
+
   // These functions would actually update settings in a real implementation
   const toggleDarkMode = () => setDarkMode(!darkMode);
   const toggleAutoSave = () => setAutoSave(!autoSave);
   const toggleNotifications = () => setNotifications(!notifications);
-  
+
   return (
     <div className="settings-page">
       <h1>Settings</h1>
       <p className="description">
         Configure your Threat Oracle experience with these settings.
       </p>
-      
+
       <div className="settings-container">
         <div className="settings-section">
           <h2>Appearance</h2>
@@ -30,9 +30,9 @@ const Settings: React.FC = () => {
             </div>
             <div className="setting-control">
               <label className="toggle-switch">
-                <input 
-                  type="checkbox" 
-                  checked={darkMode} 
+                <input
+                  type="checkbox"
+                  checked={darkMode}
                   onChange={toggleDarkMode}
                 />
                 <span className="toggle-slider"></span>
@@ -40,7 +40,7 @@ const Settings: React.FC = () => {
             </div>
           </div>
         </div>
-        
+
         <div className="settings-section">
           <h2>Editor</h2>
           <div className="setting-item">
@@ -50,9 +50,9 @@ const Settings: React.FC = () => {
             </div>
             <div className="setting-control">
               <label className="toggle-switch">
-                <input 
-                  type="checkbox" 
-                  checked={autoSave} 
+                <input
+                  type="checkbox"
+                  checked={autoSave}
                   onChange={toggleAutoSave}
                 />
                 <span className="toggle-slider"></span>
@@ -60,7 +60,7 @@ const Settings: React.FC = () => {
             </div>
           </div>
         </div>
-        
+
         <div className="settings-section">
           <h2>Notifications</h2>
           <div className="setting-item">
@@ -70,9 +70,9 @@ const Settings: React.FC = () => {
             </div>
             <div className="setting-control">
               <label className="toggle-switch">
-                <input 
-                  type="checkbox" 
-                  checked={notifications} 
+                <input
+                  type="checkbox"
+                  checked={notifications}
                   onChange={toggleNotifications}
                 />
                 <span className="toggle-slider"></span>
@@ -80,7 +80,7 @@ const Settings: React.FC = () => {
             </div>
           </div>
         </div>
-        
+
         <div className="settings-section">
           <h2>LLM API Keys</h2>
           <p className="section-description">

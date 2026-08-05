@@ -419,26 +419,26 @@ input:focus, textarea:focus, select:focus {
     flex-direction: column;
     gap: 16px;
   }
-  
+
   .form-row .form-group {
     margin-bottom: 0;
   }
-  
+
   .data-asset-item {
     flex-direction: column;
   }
-  
+
   .asset-type-col,
   .asset-medium-col,
   .asset-classification-col,
   .asset-actions-col {
     margin-top: 8px;
   }
-  
+
   .asset-actions-col {
     justify-content: flex-start;
   }
-  
+
   .placeholder-content,
   .empty-state {
     padding: 20px;

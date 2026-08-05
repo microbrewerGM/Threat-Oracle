@@ -30,7 +30,7 @@ const EdgeDetailPopup: React.FC<EdgeDetailPopupProps> = ({
   const sourceAsset = currentModel?.technicalAssets.find(
     (a) => a.id === edge.source_id
   );
-  
+
   const targetAsset = currentModel?.technicalAssets.find(
     (a) => a.id === edge.target_id
   );
@@ -47,7 +47,7 @@ const EdgeDetailPopup: React.FC<EdgeDetailPopupProps> = ({
         <h3>{edge.name || `${edge.protocol.toUpperCase()} Flow`}</h3>
         <button className="close-button" onClick={onClose}>×</button>
       </div>
-      
+
       <div className="popup-content">
         <div className="popup-section">
           <h4>Basic Information</h4>
@@ -72,7 +72,7 @@ const EdgeDetailPopup: React.FC<EdgeDetailPopupProps> = ({
             </span>
           </div>
         </div>
-        
+
         <div className="popup-section">
           <h4>Connection Details</h4>
           {edge.port && (
@@ -92,7 +92,7 @@ const EdgeDetailPopup: React.FC<EdgeDetailPopupProps> = ({
             </div>
           )}
         </div>
-        
+
         <div className="popup-section">
           <h4>Security Information</h4>
           <div className="info-row">
@@ -108,7 +108,7 @@ const EdgeDetailPopup: React.FC<EdgeDetailPopupProps> = ({
             </div>
           )}
         </div>
-        
+
         <div className="popup-section">
           <h4>Connected Assets</h4>
           <div className="info-row">
@@ -136,7 +136,7 @@ const EdgeDetailPopup: React.FC<EdgeDetailPopupProps> = ({
             </span>
           </div>
         </div>
-        
+
         {edge.tags && edge.tags.length > 0 && (
           <div className="popup-section">
             <h4>Tags</h4>
@@ -148,7 +148,7 @@ const EdgeDetailPopup: React.FC<EdgeDetailPopupProps> = ({
           </div>
         )}
       </div>
-      
+
       <div className="popup-footer">
         <button className="drilldown-button" onClick={onDrillDown}>
           View Details <span className="chevron">»</span>

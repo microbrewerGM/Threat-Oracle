@@ -21,7 +21,7 @@ def db_health_check(driver: Driver = Depends(get_neo4j_driver)):
     try:
         driver.verify_connectivity()
         return {"status": "ok", "database": "connected"}
-    except Exception as e:
+    except Exception:
         return {
             "status": "degraded",
             "database": "disconnected",

@@ -154,16 +154,16 @@
   .features-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .resources-list {
     grid-template-columns: 1fr;
   }
-  
+
   .step {
     flex-direction: column;
     gap: 10px;
   }
-  
+
   .step-number {
     margin-bottom: 5px;
   }

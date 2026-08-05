@@ -33,7 +33,7 @@ describe('ModelSelector', () => {
       dataFlows: []
     }
   ];
-  
+
   const mockSetCurrentModel = vi.fn();
   const mockFetchModel = vi.fn();
 
@@ -45,21 +45,21 @@ describe('ModelSelector', () => {
       fetchModel: mockFetchModel
     });
   });
-  
+
   it('renders the component with model information', () => {
     render(<ModelSelector />);
-    
+
     // Check if the component renders the model selector
     expect(screen.getByLabelText(/current model/i)).toBeInTheDocument();
-    
+
     // Check if the model details are displayed
     expect(screen.getByText('Test description 1')).toBeInTheDocument();
-    
+
     // Check if the asset counts are displayed
     const assetCounts = screen.getAllByText('1');
     expect(assetCounts.length).toBe(3); // Technical assets, trust boundaries, and data flows
   });
-  
+
   it('calls setCurrentModel when a different model is selected', () => {
     render(<ModelSelector />);
 

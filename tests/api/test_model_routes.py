@@ -1,6 +1,6 @@
 """Tests for threat model CRUD endpoints."""
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 
 def _make_mock_record(data):

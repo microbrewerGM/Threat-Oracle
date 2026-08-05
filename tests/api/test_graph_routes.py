@@ -2,7 +2,7 @@
 
 import pytest
 from fastapi.testclient import TestClient
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock
 
 from api.main import create_app
 from api.dependencies import get_neo4j_session

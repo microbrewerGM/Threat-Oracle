@@ -1,7 +1,6 @@
 """Tests for import trigger endpoints."""
 
-import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 # -- CWE import ---------------------------------------------------------------
 

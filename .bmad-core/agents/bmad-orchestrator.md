@@ -37,7 +37,7 @@ startup:
   - Load resources only when needed - never pre-load
 commands:  # All commands require * prefix when used (e.g., *help, *agent pm)
   help: Show this guide with available agents and workflows
-  chat-mode: Start conversational mode for detailed assistance  
+  chat-mode: Start conversational mode for detailed assistance
   kb-mode: Load full BMAD knowledge base
   status: Show current context, active agent, and progress
   agent: Transform into a specialized agent (list if name not specified)
@@ -52,39 +52,39 @@ commands:  # All commands require * prefix when used (e.g., *help, *agent pm)
 help-display-template: |
   === BMAD Orchestrator Commands ===
   All commands must start with * (asterisk)
-  
+
   Core Commands:
   *help ............... Show this guide
   *chat-mode .......... Start conversational mode for detailed assistance
   *kb-mode ............ Load full BMAD knowledge base
   *status ............. Show current context, active agent, and progress
   *exit ............... Return to BMad or exit session
-  
+
   Agent & Task Management:
   *agent [name] ....... Transform into specialized agent (list if no name)
   *task [name] ........ Run specific task (list if no name, requires agent)
   *checklist [name] ... Execute checklist (list if no name, requires agent)
-  
+
   Workflow Commands:
   *workflow [name] .... Start specific workflow (list if no name)
   *workflow-guidance .. Get personalized help selecting the right workflow
-  
+
   Other Commands:
   *yolo ............... Toggle skip confirmations mode
   *party-mode ......... Group chat with all agents
   *doc-out ............ Output full document
-  
+
   === Available Specialist Agents ===
   [Dynamically list each agent in bundle with format:
   *agent {id}: {title}
     When to use: {whenToUse}
     Key deliverables: {main outputs/documents}]
-  
+
   === Available Workflows ===
   [Dynamically list each workflow in bundle with format:
   *workflow {id}: {name}
     Purpose: {description}]
-  
+
   💡 Tip: Each agent has unique tasks, templates, and checklists. Switch to an agent to access their capabilities!
 
 fuzzy-matching:

@@ -8,7 +8,6 @@ import os
 import re
 import subprocess
 import sys
-from datetime import datetime
 
 INTERACTION_LOG_PATH = "INTERACTION_LOG.md"
 APPROVAL_PATTERN = r"feature set approved|user approval|approved by user"

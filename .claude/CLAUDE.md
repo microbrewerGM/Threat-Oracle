@@ -2,7 +2,9 @@
 
 ## Project Overview
 
-Threat Oracle is a visual threat modeling tool that creates digital twins of applications and infrastructure using a graph-based approach (Neo4j). It ingests security knowledge bases (CWE, ATT&CK, CAPEC) and maps them onto repository graphs for automated threat analysis.
+Threat Oracle is a visual threat modeling tool that creates digital twins of applications and infrastructure
+using a graph-based approach (Neo4j). It ingests security knowledge bases (CWE, ATT&CK, CAPEC) and maps them
+onto repository graphs for automated threat analysis.
 
 Stack: Python · FastAPI · Neo4j · Docker · AWS (CDK/Lambda/S3/CloudFront/Cognito)
 

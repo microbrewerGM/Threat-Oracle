@@ -25,9 +25,9 @@ This starts:
 
 | Service  | URL                    | Credentials         |
 |----------|------------------------|----------------------|
-| Frontend | http://localhost:3000   | —                    |
-| Backend  | http://localhost:8000   | —                    |
-| Neo4j Browser | http://localhost:7474 | `neo4j` / `password` |
+| Frontend | <http://localhost:3000>   | —                    |
+| Backend  | <http://localhost:8000>   | —                    |
+| Neo4j Browser | <http://localhost:7474> | `neo4j` / `password` |
 
 No `.env` file needed — `docker-compose.yml` includes a local Neo4j with default credentials.
 
@@ -72,7 +72,7 @@ cp .env.dev.example .env.dev
 
 Edit `.env.dev` with your AuraDB credentials:
 
-```
+```text
 NEO4J_URI=neo4j+s://xxxxxxxx.databases.neo4j.io
 NEO4J_USERNAME=neo4j
 NEO4J_PASSWORD=your-generated-password
@@ -90,7 +90,7 @@ npm install
 npm run dev
 ```
 
-The frontend runs at http://localhost:5173 and proxies API requests to the backend.
+The frontend runs at <http://localhost:5173> and proxies API requests to the backend.
 
 ### 4. Load Knowledge Bases
 
@@ -202,9 +202,9 @@ curl http://localhost:8000/api/v1/health
 
 ### Browse the Graph
 
-- **Neo4j Browser** (local only): http://localhost:7474
-- **Threat Oracle Frontend**: http://localhost:5173 (dev) or http://localhost:3000 (Docker)
-- **API Docs**: http://localhost:8000/docs (Swagger UI)
+- **Neo4j Browser** (local only): <http://localhost:7474>
+- **Threat Oracle Frontend**: <http://localhost:5173> (dev) or <http://localhost:3000> (Docker)
+- **API Docs**: <http://localhost:8000/docs> (Swagger UI)
 
 ### Check Import Status
 
@@ -216,7 +216,7 @@ After importing, the Knowledge Graph Explorer page shows node counts and allows 
 
 | Problem | Solution |
 |---------|----------|
-| `NEO4J_URI and NEO4J_PASSWORD environment variables are required` | Create `.env.dev` from the example: `cp .env.dev.example .env.dev` and fill in credentials |
+| `NEO4J_URI and NEO4J_PASSWORD environment variables are required` | Copy `.env.dev.example` to `.env.dev` |
 | `CWE XML file not found in data/` | Download the knowledge base files (see above) |
 | AuraDB connection timeout | Check that your AuraDB instance is **Running** in the console and the URI is correct |
 | Port 8000 already in use | Stop other services on that port, or change the port mapping in docker-compose |

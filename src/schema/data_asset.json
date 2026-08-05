@@ -20,15 +20,15 @@
     "type": {
       "type": "string",
       "enum": [
-        "pii", 
-        "pfi", 
-        "phi", 
-        "intellectual_property", 
-        "authentication_data", 
-        "configuration", 
-        "logs", 
-        "business_data", 
-        "operational_data", 
+        "pii",
+        "pfi",
+        "phi",
+        "intellectual_property",
+        "authentication_data",
+        "configuration",
+        "logs",
+        "business_data",
+        "operational_data",
         "other"
       ],
       "description": "Type of data contained in the asset"

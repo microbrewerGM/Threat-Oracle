@@ -28,6 +28,10 @@ def parse_cwe_xml(xml_path: str) -> list[CWEWeakness]:
     weaknesses = []
     for w in root.findall(".//cwe:Weakness", NS):
         cwe_id = w.get("ID")
+        if cwe_id is None:
+            # Malformed entry — a Weakness element without an ID is not
+            # usable (nothing to key the graph node on), so skip it.
+            continue
         name = w.get("Name", "")
         abstraction = w.get("Abstraction", "")
         status = w.get("Status", "")
@@ -118,7 +122,7 @@ def import_cwe_to_neo4j(driver, weaknesses: list[CWEWeakness], batch_size: int =
 
     with driver.session() as session:
         for i in range(0, len(edges), batch_size):
-            batch = edges[i : i + batch_size]
+            edge_batch = edges[i : i + batch_size]
             session.run(
                 """
                 UNWIND $edges AS e
@@ -131,7 +135,7 @@ def import_cwe_to_neo4j(driver, weaknesses: list[CWEWeakness], batch_size: int =
                     MERGE (s)-[:CHILD_OF]->(t)
                 } IN TRANSACTIONS OF 1 ROWS
                 """,
-                edges=[e for e in batch if e["nature"] == "ChildOf"],
+                edges=[e for e in edge_batch if e["nature"] == "ChildOf"],
             )
             # Handle other relationship types
             for nature, rel_type in [
@@ -142,7 +146,7 @@ def import_cwe_to_neo4j(driver, weaknesses: list[CWEWeakness], batch_size: int =
                 ("CanAlsoBe", "CAN_ALSO_BE"),
                 ("Requires", "REQUIRES"),
             ]:
-                typed_edges = [e for e in batch if e["nature"] == nature]
+                typed_edges = [e for e in edge_batch if e["nature"] == nature]
                 if typed_edges:
                     session.run(
                         f"""

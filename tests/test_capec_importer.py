@@ -34,11 +34,11 @@ class TestCAPECParser:
 
     def test_has_cwe_links(self, patterns):
         with_cwes = [p for p in patterns if p.related_cwes]
-        assert len(with_cwes) > 200, f"Expected 200+ with CWE links"
+        assert len(with_cwes) > 200, "Expected 200+ with CWE links"
 
     def test_has_attack_links(self, patterns):
         with_attacks = [p for p in patterns if p.related_attacks]
-        assert len(with_attacks) > 100, f"Expected 100+ with ATT&CK links"
+        assert len(with_attacks) > 100, "Expected 100+ with ATT&CK links"
 
     def test_attack_ids_formatted(self, patterns):
         for p in patterns:

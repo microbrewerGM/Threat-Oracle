@@ -1,6 +1,7 @@
 # Threat Oracle Architecture
 
-This document outlines the architecture, design principles, and deployment strategies for Threat Oracle. It serves as a guide for developers and provides a mapping between features and architectural components.
+This document outlines the architecture, design principles, and deployment strategies for Threat Oracle.
+It serves as a guide for developers and provides a mapping between features and architectural components.
 
 ## Table of Contents
 
@@ -16,9 +17,11 @@ This document outlines the architecture, design principles, and deployment strat
 
 ## System Overview
 
-Threat Oracle is a visual threat modeling tool that creates digital twins of applications and infrastructure using a graph-based approach. The system consists of several key components:
+Threat Oracle is a visual threat modeling tool that creates digital twins of applications and infrastructure
+using a graph-based approach. The system consists of several key components:
 
-1. **Frontend Application**: A React-based web application that provides the user interface for creating, visualizing, and analyzing threat models.
+1. **Frontend Application**: A React-based web application that provides the user
+   interface for creating, visualizing, and analyzing threat models.
 2. **Backend API**: A FastAPI-based service that handles business logic, data processing, and integration with databases.
 3. **Graph Database**: A Neo4j or compatible graph database that stores the digital twin models.
 4. **Schema Service**: A service that manages and validates the schema for the digital twin models.
@@ -30,6 +33,7 @@ Threat Oracle is a visual threat modeling tool that creates digital twins of app
 ### 1. Microservices Architecture
 
 Threat Oracle follows a microservices architecture to enable:
+
 - Independent development and deployment of components
 - Technology flexibility for different components
 - Scalability of individual services based on demand
@@ -38,6 +42,7 @@ Threat Oracle follows a microservices architecture to enable:
 ### 2. API-First Design
 
 All services expose well-defined APIs:
+
 - RESTful APIs for synchronous operations
 - GraphQL for complex data queries
 - Event-driven APIs for asynchronous operations
@@ -45,6 +50,7 @@ All services expose well-defined APIs:
 ### 3. Domain-Driven Design
 
 The system is organized around business domains:
+
 - Schema management
 - Model creation and editing
 - Visualization
@@ -53,6 +59,7 @@ The system is organized around business domains:
 ### 4. Cloud-Native Design
 
 The architecture embraces cloud-native principles:
+
 - Containerization of all components
 - Stateless services where possible
 - Externalized configuration
@@ -61,6 +68,7 @@ The architecture embraces cloud-native principles:
 ### 5. DevOps Integration
 
 The architecture supports DevOps practices:
+
 - Infrastructure as Code (IaC)
 - Continuous Integration/Continuous Deployment (CI/CD)
 - Automated testing at all levels
@@ -72,7 +80,7 @@ The architecture supports DevOps practices:
 
 The frontend follows a modern React architecture:
 
-```
+```text
 frontend/
 ├── public/              # Static assets
 ├── src/
@@ -98,6 +106,7 @@ frontend/
 ```
 
 **Key Technologies**:
+
 - React for UI components
 - TypeScript for type safety
 - Zustand for state management
@@ -109,7 +118,7 @@ frontend/
 
 The backend follows a modular, domain-driven architecture:
 
-```
+```text
 backend/
 ├── api/                 # API layer
 │   ├── routes/          # API route definitions
@@ -133,6 +142,7 @@ backend/
 ```
 
 **Key Technologies**:
+
 - FastAPI for API framework
 - Pydantic for data validation
 - SQLAlchemy for ORM (when needed)
@@ -144,7 +154,7 @@ backend/
 
 The schema service manages the digital twin schema:
 
-```
+```text
 schema/
 ├── definitions/         # Schema definitions
 │   ├── nodes/           # Node type definitions
@@ -156,6 +166,7 @@ schema/
 ```
 
 **Key Technologies**:
+
 - JSON Schema for schema definition
 - FastAPI for API endpoints
 - Pydantic for validation
@@ -215,12 +226,14 @@ This section maps the key features of Threat Oracle to the architectural compone
 ### 1. Digital Twin Creation
 
 **Components Involved**:
+
 - Frontend Model Editor
 - Backend API (Model Management)
 - Schema Service
 - Graph Database
 
 **Implementation Strategy**:
+
 - User creates nodes and edges through the UI
 - Frontend validates basic input
 - Backend validates against schema
@@ -230,11 +243,13 @@ This section maps the key features of Threat Oracle to the architectural compone
 ### 2. Graph Data Structure
 
 **Components Involved**:
+
 - Schema Service
 - Graph Database
 - Backend API (Graph Management)
 
 **Implementation Strategy**:
+
 - Schema defines valid node and edge types
 - Graph database stores the structure
 - API provides CRUD operations for graph elements
@@ -243,11 +258,13 @@ This section maps the key features of Threat Oracle to the architectural compone
 ### 3. Visualization
 
 **Components Involved**:
+
 - Frontend Visualization Engine
 - Backend API (Graph Query)
 - Graph Database
 
 **Implementation Strategy**:
+
 - Backend queries graph data
 - Frontend renders using D3.js
 - Interactive elements allow exploration
@@ -257,12 +274,14 @@ This section maps the key features of Threat Oracle to the architectural compone
 ### 4. Threat and Risk Analysis
 
 **Components Involved**:
+
 - Analysis Engine
 - Backend API (Analysis)
 - Graph Database
 - Frontend Reporting Components
 
 **Implementation Strategy**:
+
 - Analysis rules are defined in the backend
 - Rules are applied to the graph model
 - Results are stored and associated with the model
@@ -276,12 +295,14 @@ Threat Oracle supports multiple deployment models to accommodate different envir
 ### Local Development Environment
 
 **Architecture**:
+
 - Frontend and backend run as separate processes
 - Local Neo4j instance or SQLite with graph extensions
 - Hot reloading for rapid development
 - Local mocks for external dependencies
 
 **Implementation**:
+
 - Docker Compose for local service orchestration
 - npm/yarn for frontend development
 - Python virtual environment for backend
@@ -290,12 +311,14 @@ Threat Oracle supports multiple deployment models to accommodate different envir
 ### Containerized Deployment
 
 **Architecture**:
+
 - All components packaged as Docker containers
 - Container orchestration with Docker Compose
 - Shared volumes for persistence
 - Network isolation between components
 
 **Implementation**:
+
 - Multi-stage Docker builds for efficient images
 - Docker Compose for service definition
 - Volume mounts for data persistence
@@ -304,6 +327,7 @@ Threat Oracle supports multiple deployment models to accommodate different envir
 ### Kubernetes Deployment
 
 **Architecture**:
+
 - Microservices deployed as Kubernetes pods
 - Horizontal scaling for stateless components
 - StatefulSets for stateful components
@@ -311,6 +335,7 @@ Threat Oracle supports multiple deployment models to accommodate different envir
 - ConfigMaps and Secrets for configuration
 
 **Implementation**:
+
 - Helm charts for deployment management
 - Kubernetes manifests for resource definition
 - Horizontal Pod Autoscalers for scaling
@@ -320,12 +345,14 @@ Threat Oracle supports multiple deployment models to accommodate different envir
 ### Cloud-Native Deployment
 
 **Architecture**:
+
 - Managed services where appropriate
 - Serverless components for suitable workloads
 - Cloud provider integrations
 - Multi-region for high availability
 
 **Implementation Options**:
+
 - AWS: EKS, Neptune, Lambda, S3, CloudFront
 - Azure: AKS, Cosmos DB, Functions, Blob Storage, CDN
 - GCP: GKE, Cloud Spanner, Cloud Functions, Cloud Storage, Cloud CDN
@@ -418,4 +445,5 @@ Threat Oracle supports multiple deployment models to accommodate different envir
 
 ---
 
-This architecture document will evolve as the project progresses. Regular reviews and updates will ensure it remains aligned with the project's goals and the evolving technology landscape.
+This architecture document will evolve as the project progresses. Regular reviews and updates will ensure it
+remains aligned with the project's goals and the evolving technology landscape.

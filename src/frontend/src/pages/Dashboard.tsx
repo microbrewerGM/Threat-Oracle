@@ -5,6 +5,9 @@ import './Dashboard.css';
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
+  const { getCurrentModel } = useModelStore();
+  const currentModel = getCurrentModel();
+main
 
   return (
     <div className="dashboard">
@@ -12,7 +15,7 @@ const Dashboard: React.FC = () => {
       <p className="description">
         Welcome to Threat Oracle, a visual threat modeling tool that creates digital twins of applications and infrastructure using a graph-based approach.
       </p>
-      
+
       <ModelSelector />
 
       <div className="dashboard-cards">

@@ -1,6 +1,7 @@
 # Threat Oracle Frontend
 
-This is the frontend application for Threat Oracle, a visual threat modeling tool that creates digital twins of applications and infrastructure using a graph-based approach.
+This is the frontend application for Threat Oracle, a visual threat modeling tool that creates digital twins
+of applications and infrastructure using a graph-based approach.
 
 ## Prerequisites
 
@@ -56,7 +57,7 @@ npm run test:coverage
 
 ## Project Structure
 
-```
+```text
 frontend/
 ├── public/              # Static assets
 ├── src/

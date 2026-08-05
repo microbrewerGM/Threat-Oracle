@@ -4,7 +4,7 @@ import os
 import pytest
 from neo4j import GraphDatabase
 
-from importers.cwe_importer import parse_cwe_xml, import_cwe_to_neo4j, CWEWeakness
+from importers.cwe_importer import parse_cwe_xml, import_cwe_to_neo4j
 
 # --- Parsing tests (no DB needed) ---
 

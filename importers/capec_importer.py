@@ -2,7 +2,6 @@
 
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
-from typing import Optional
 
 NS = {"capec": "http://capec.mitre.org/capec-3"}
 
@@ -106,7 +105,7 @@ def import_capec_to_neo4j(driver, patterns: list[CAPECPattern], batch_size: int 
 
     with driver.session() as session:
         for i in range(0, len(cwe_edges), batch_size):
-            batch = cwe_edges[i : i + batch_size]
+            edge_batch = cwe_edges[i : i + batch_size]
             session.run(
                 """
                 UNWIND $edges AS e
@@ -114,7 +113,7 @@ def import_capec_to_neo4j(driver, patterns: list[CAPECPattern], batch_size: int 
                 MATCH (w:CWE {cwe_id: e.cwe})
                 MERGE (c)-[:EXPLOITS_WEAKNESS]->(w)
                 """,
-                edges=batch,
+                edges=edge_batch,
             )
 
     # Phase 3: CAPEC → ATT&CK Technique relationships
@@ -127,7 +126,7 @@ def import_capec_to_neo4j(driver, patterns: list[CAPECPattern], batch_size: int 
 
     with driver.session() as session:
         for i in range(0, len(attack_edges), batch_size):
-            batch = attack_edges[i : i + batch_size]
+            edge_batch = attack_edges[i : i + batch_size]
             session.run(
                 """
                 UNWIND $edges AS e
@@ -135,7 +134,7 @@ def import_capec_to_neo4j(driver, patterns: list[CAPECPattern], batch_size: int 
                 MATCH (t:Technique {attack_id: e.attack_id})
                 MERGE (c)-[:MAPS_TO_TECHNIQUE]->(t)
                 """,
-                edges=batch,
+                edges=edge_batch,
             )
 
     return len(patterns), len(cwe_edges), len(attack_edges)

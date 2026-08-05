@@ -331,12 +331,12 @@
   .models-list-header {
     display: none;
   }
-  
+
   .model-item {
     flex-direction: column;
     gap: 10px;
   }
-  
+
   .model-version-col,
   .model-date-col,
   .model-assets-col,
@@ -344,11 +344,11 @@
     flex: 1;
     width: 100%;
   }
-  
+
   .model-assets-col {
     justify-content: flex-start;
   }
-  
+
   .model-actions-col {
     justify-content: flex-start;
   }
