@@ -180,8 +180,6 @@ export function useD3Graph(
       resizeObserverRef.current = null;
       svgSel.on('.zoom', null);
     };
-    // We intentionally depend on nodes/edges array identity changes
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nodes, edges, chargeStrength, linkDistance, centeringStrength, nodeSize, zoomExtent, svgRef, containerRef]);
 
   return {

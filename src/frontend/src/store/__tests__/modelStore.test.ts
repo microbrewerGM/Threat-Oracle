@@ -81,7 +81,7 @@ describe('modelStore', () => {
       const model = state.models.find((m) => m.id === 'model-001');
       expect(model!.name).toBe('Updated Name');
       expect(model!.updated).toBeDefined();
-      // The id should remain unchanged even if passed in updates
+      expect(model!.updated).not.toBe(originalUpdated);
     });
 
     it('does not overwrite id or created', () => {

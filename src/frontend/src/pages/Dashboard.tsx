@@ -1,13 +1,13 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import ModelSelector from '@/components/model/ModelSelector';
-import { useModelStore } from '@/store/modelStore';
 import './Dashboard.css';
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const { getCurrentModel } = useModelStore();
   const currentModel = getCurrentModel();
+main
 
   return (
     <div className="dashboard">

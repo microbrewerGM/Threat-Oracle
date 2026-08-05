@@ -21,14 +21,19 @@ const AssetDetailPopup: React.FC<AssetDetailPopupProps> = ({
   const { getCurrentModel } = useModelStore();
   const currentModel = getCurrentModel();
 
-  // Type guards for asset types
-  const isTechnicalAsset = (asset: any): asset is TechnicalAsset =>
+
+  // Type guards for asset types. The `_asset` parameter is unused in the body
+  // (the check is against the outer `assetType`) but must stay in the
+  // signature — callers rely on the `asset is X` predicate to narrow `asset`
+  // at the call sites below (e.g. `isTechnicalAsset(asset) && ...`).
+  const isTechnicalAsset = (_asset: any): _asset is TechnicalAsset =>
     assetType === 'technical';
 
-  const isDataAsset = (asset: any): asset is DataAsset =>
+  const isDataAsset = (_asset: any): _asset is DataAsset =>
     assetType === 'data';
 
-  const isTrustBoundary = (asset: any): asset is TrustBoundary =>
+  const isTrustBoundary = (_asset: any): _asset is TrustBoundary =>
+
     assetType === 'trust';
 
   // Find the asset based on the type and id
