@@ -33,16 +33,16 @@ def get_commit_message():
         text=True,
         check=True,
     ).stdout.strip()
-    
+
     commit_msg_file = os.path.join(git_dir, "COMMIT_EDITMSG")
-    
+
     if os.path.exists(commit_msg_file):
         with open(commit_msg_file, "r") as f:
             message = f.read().strip()
             # Remove comment lines
             message = re.sub(r"^#.*$", "", message, flags=re.MULTILINE)
             return message.strip()
-    
+
     return None
 
 
@@ -51,21 +51,23 @@ def update_changelog(commit_message):
     if not os.path.exists(CHANGELOG_PATH):
         print(f"Warning: {CHANGELOG_PATH} does not exist. Skipping changelog update.")
         return
-    
+
     with open(CHANGELOG_PATH, "r") as f:
         content = f.read()
-    
+
     # Skip if CHANGELOG.md is being modified in this commit
     staged_files = get_staged_files()
     if CHANGELOG_PATH in staged_files:
-        print(f"Note: {CHANGELOG_PATH} is being modified in this commit. Skipping automatic update.")
+        print(
+            f"Note: {CHANGELOG_PATH} is being modified in this commit. Skipping automatic update."
+        )
         return
-    
+
     # Skip if commit message starts with "chore:" or similar
     if re.match(r"^(chore|docs|style|refactor|test):", commit_message.lower()):
         print("Skipping changelog update for chore/docs/style/refactor/test commit.")
         return
-    
+
     # Determine which section to update based on commit message
     if re.match(r"^feat(\(.+\))?:", commit_message.lower()):
         section = "### Added\n"
@@ -92,14 +94,14 @@ def update_changelog(commit_message):
         # Default to Added section for other commit types
         section = "### Added\n"
         entry = f"- {commit_message}\n"
-    
+
     # Add entry to the appropriate section
     section_pos = content.find(section) + len(section)
     updated_content = content[:section_pos] + entry + content[section_pos:]
-    
+
     with open(CHANGELOG_PATH, "w") as f:
         f.write(updated_content)
-    
+
     print(f"Updated {CHANGELOG_PATH} with: {entry.strip()}")
 
 

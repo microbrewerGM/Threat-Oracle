@@ -1,8 +1,8 @@
 """CWE XML importer — parses CWE XML and loads into Neo4j AuraDB."""
+
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
 from typing import Optional
-
 
 NS = {"cwe": "http://cwe.mitre.org/cwe-7"}
 
@@ -10,6 +10,7 @@ NS = {"cwe": "http://cwe.mitre.org/cwe-7"}
 @dataclass
 class CWEWeakness:
     """Parsed CWE weakness node."""
+
     cwe_id: str
     name: str
     abstraction: str  # Pillar, Class, Base, Variant, Compound
@@ -32,10 +33,16 @@ def parse_cwe_xml(xml_path: str) -> list[CWEWeakness]:
         status = w.get("Status", "")
 
         desc_el = w.find("cwe:Description", NS)
-        description = desc_el.text.strip() if desc_el is not None and desc_el.text else ""
+        description = (
+            desc_el.text.strip() if desc_el is not None and desc_el.text else ""
+        )
 
         likelihood_el = w.find("cwe:Likelihood_Of_Exploit", NS)
-        likelihood = likelihood_el.text.strip() if likelihood_el is not None and likelihood_el.text else None
+        likelihood = (
+            likelihood_el.text.strip()
+            if likelihood_el is not None and likelihood_el.text
+            else None
+        )
 
         related = []
         for rel in w.findall(".//cwe:Related_Weakness", NS):
@@ -44,29 +51,31 @@ def parse_cwe_xml(xml_path: str) -> list[CWEWeakness]:
             if nature and target:
                 related.append((nature, target))
 
-        weaknesses.append(CWEWeakness(
-            cwe_id=cwe_id,
-            name=name,
-            abstraction=abstraction,
-            status=status,
-            description=description,
-            likelihood=likelihood,
-            related=related,
-        ))
+        weaknesses.append(
+            CWEWeakness(
+                cwe_id=cwe_id,
+                name=name,
+                abstraction=abstraction,
+                status=status,
+                description=description,
+                likelihood=likelihood,
+                related=related,
+            )
+        )
 
     return weaknesses
 
 
 def import_cwe_to_neo4j(driver, weaknesses: list[CWEWeakness], batch_size: int = 500):
     """Import parsed CWE weaknesses into Neo4j.
-    
+
     Creates :CWE nodes and relationship edges (ChildOf, PeerOf, CanPrecede, etc.)
     Uses MERGE to be idempotent.
     """
     # Phase 1: Create all nodes
     with driver.session() as session:
         for i in range(0, len(weaknesses), batch_size):
-            batch = weaknesses[i:i + batch_size]
+            batch = weaknesses[i : i + batch_size]
             nodes = [
                 {
                     "cwe_id": f"CWE-{w.cwe_id}",
@@ -74,7 +83,9 @@ def import_cwe_to_neo4j(driver, weaknesses: list[CWEWeakness], batch_size: int =
                     "name": w.name,
                     "abstraction": w.abstraction,
                     "status": w.status,
-                    "description": w.description[:2000],  # Truncate for AuraDB free tier
+                    "description": w.description[
+                        :2000
+                    ],  # Truncate for AuraDB free tier
                     "likelihood": w.likelihood,
                 }
                 for w in batch
@@ -97,15 +108,17 @@ def import_cwe_to_neo4j(driver, weaknesses: list[CWEWeakness], batch_size: int =
     edges = []
     for w in weaknesses:
         for nature, target in w.related:
-            edges.append({
-                "source": f"CWE-{w.cwe_id}",
-                "target": f"CWE-{target}",
-                "nature": nature,
-            })
+            edges.append(
+                {
+                    "source": f"CWE-{w.cwe_id}",
+                    "target": f"CWE-{target}",
+                    "nature": nature,
+                }
+            )
 
     with driver.session() as session:
         for i in range(0, len(edges), batch_size):
-            batch = edges[i:i + batch_size]
+            batch = edges[i : i + batch_size]
             session.run(
                 """
                 UNWIND $edges AS e

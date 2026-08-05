@@ -1,4 +1,5 @@
 """Graph query endpoints for browsing the threat knowledge graph."""
+
 import re
 from typing import Optional
 
@@ -8,8 +9,13 @@ from neo4j import Session
 from api.dependencies import get_neo4j_session
 
 # Valid label pattern: alphanumeric + underscore only
-VALID_LABEL_PATTERN = re.compile(r'^[A-Za-z][A-Za-z0-9_]{0,63}$')
-from api.models import GraphStatsResponse, NodeDetailResponse, NodeListResponse, SearchResponse
+VALID_LABEL_PATTERN = re.compile(r"^[A-Za-z][A-Za-z0-9_]{0,63}$")
+from api.models import (
+    GraphStatsResponse,
+    NodeDetailResponse,
+    NodeListResponse,
+    SearchResponse,
+)
 
 router = APIRouter(prefix="/api/v1/graph", tags=["graph"])
 
@@ -23,9 +29,7 @@ def graph_stats(session: Session = Depends(get_neo4j_session)):
 
     node_counts = {}
     for label in labels:
-        count_result = session.run(
-            f"MATCH (n:`{label}`) RETURN count(n) AS count"
-        )
+        count_result = session.run(f"MATCH (n:`{label}`) RETURN count(n) AS count")
         node_counts[label] = count_result.single()["count"]
 
     # Total relationships
@@ -56,7 +60,9 @@ def graph_stats(session: Session = Depends(get_neo4j_session)):
 
 @router.get("/nodes", response_model=NodeListResponse)
 def list_nodes(
-    label: Optional[str] = Query(None, description="Filter by node label (e.g., CWE, Technique, CAPEC)"),
+    label: Optional[str] = Query(
+        None, description="Filter by node label (e.g., CWE, Technique, CAPEC)"
+    ),
     search: Optional[str] = Query(None, description="Search node names"),
     skip: int = Query(0, ge=0),
     limit: int = Query(25, ge=1, le=100),

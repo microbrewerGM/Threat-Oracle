@@ -1,4 +1,5 @@
 """Pydantic v2 schemas for the LLM analysis engine."""
+
 from __future__ import annotations
 
 from enum import Enum
@@ -61,9 +62,7 @@ class LLMProviderKeys(BaseModel):
             "ollama_base_url": "ollama",
         }
         return [
-            name
-            for field, name in mapping.items()
-            if getattr(self, field) is not None
+            name for field, name in mapping.items() if getattr(self, field) is not None
         ]
 
 

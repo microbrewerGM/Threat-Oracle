@@ -1,4 +1,5 @@
 """Tests for src.db — Neo4j driver singleton and session management."""
+
 import pytest
 from unittest.mock import MagicMock, patch
 
@@ -6,7 +7,9 @@ from unittest.mock import MagicMock, patch
 class TestGetNeo4jConfig:
     """Tests for get_neo4j_config()."""
 
-    @patch.dict("os.environ", {"NEO4J_URI": "bolt://localhost:7687", "NEO4J_PASSWORD": "secret"})
+    @patch.dict(
+        "os.environ", {"NEO4J_URI": "bolt://localhost:7687", "NEO4J_PASSWORD": "secret"}
+    )
     def test_reads_uri_and_password(self):
         from src.db import get_neo4j_config
 

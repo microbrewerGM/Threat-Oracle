@@ -240,9 +240,7 @@ class TestAnalyzeRepo:
         lang_resp.json.return_value = {}
 
         tree_resp = MagicMock()
-        tree_resp.json.return_value = {
-            "tree": [{"path": "README.md", "type": "blob"}]
-        }
+        tree_resp.json.return_value = {"tree": [{"path": "README.md", "type": "blob"}]}
 
         mock_client.get.side_effect = [repo_resp, lang_resp, tree_resp]
 

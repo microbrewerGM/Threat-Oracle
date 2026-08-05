@@ -1,4 +1,5 @@
 """Analysis endpoints — trigger LLM analysis and query results."""
+
 import logging
 
 from fastapi import APIRouter, Depends, Header, HTTPException
@@ -118,7 +119,10 @@ def trigger_analysis(
             # but doesn't expose raw paths — re-derive from technical_assets heuristics)
             # Instead, call GitHub API directly for raw tree
             try:
-                from analysis.repo_analyzer import parse_github_url, _validate_github_names
+                from analysis.repo_analyzer import (
+                    parse_github_url,
+                    _validate_github_names,
+                )
                 import httpx
 
                 owner, repo_name = parse_github_url(repo_url)
@@ -143,7 +147,9 @@ def trigger_analysis(
                         if item.get("type") in ("blob", "tree")
                     ]
             except Exception as tree_err:
-                logger.warning("Failed to fetch raw tree for %s: %s", repo_url, tree_err)
+                logger.warning(
+                    "Failed to fetch raw tree for %s: %s", repo_url, tree_err
+                )
 
             # Merge inferred assets so Tier 0 has useful data
             if not model_data.get("technical_assets"):
@@ -229,18 +235,24 @@ def list_threats(
                 description=t.get("description", ""),
                 remediation=t.get("remediation", ""),
                 confidence=float(t.get("confidence", 0.5)),
-                cwe_ids=t.get("cwe_ids", [])
-                if isinstance(t.get("cwe_ids"), list)
-                else [],
-                capec_ids=t.get("capec_ids", [])
-                if isinstance(t.get("capec_ids"), list)
-                else [],
-                attack_technique_ids=t.get("attack_technique_ids", [])
-                if isinstance(t.get("attack_technique_ids"), list)
-                else [],
-                affected_assets=t.get("affected_assets", [])
-                if isinstance(t.get("affected_assets"), list)
-                else [],
+                cwe_ids=(
+                    t.get("cwe_ids", []) if isinstance(t.get("cwe_ids"), list) else []
+                ),
+                capec_ids=(
+                    t.get("capec_ids", [])
+                    if isinstance(t.get("capec_ids"), list)
+                    else []
+                ),
+                attack_technique_ids=(
+                    t.get("attack_technique_ids", [])
+                    if isinstance(t.get("attack_technique_ids"), list)
+                    else []
+                ),
+                affected_assets=(
+                    t.get("affected_assets", [])
+                    if isinstance(t.get("affected_assets"), list)
+                    else []
+                ),
                 analysis_tier=t.get("analysis_tier", "tier_1"),
                 job_id=t.get("job_id", ""),
             )

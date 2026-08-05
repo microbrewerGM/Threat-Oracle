@@ -1,8 +1,12 @@
 """Tests for threat_importer — unit tests with mock Neo4j driver."""
+
 from unittest.mock import MagicMock, call
 
-from importers.threat_importer import ThreatNode, threats_from_findings, import_threats_to_neo4j
-
+from importers.threat_importer import (
+    ThreatNode,
+    threats_from_findings,
+    import_threats_to_neo4j,
+)
 
 # --- threats_from_findings tests ---
 
@@ -203,4 +207,6 @@ def test_no_cwe_edges_when_empty():
     import_threats_to_neo4j(driver, threats, "model-1")
     for c in session.run.call_args_list:
         query = c[0][0]
-        assert "EXPLOITS" not in query, "CWE query should not be called with empty cwe_ids"
+        assert (
+            "EXPLOITS" not in query
+        ), "CWE query should not be called with empty cwe_ids"

@@ -1,4 +1,5 @@
 """Tests for LLM prompt builders — all phases."""
+
 import pytest
 from unittest.mock import MagicMock
 
@@ -6,7 +7,6 @@ from analysis.llm.prompts import get_prompt_builder
 from analysis.llm.prompts.phase1_extraction import PHASE1_BUILDERS
 from analysis.llm.prompts.phase2_architecture import PHASE2_BUILDERS
 from analysis.llm.prompts.phase3_threats import PHASE3_BUILDERS
-
 
 SAMPLE_MODEL_DATA = {
     "file_tree": ["src/main.py", "requirements.txt", "Dockerfile"],
@@ -105,7 +105,9 @@ class TestPhase2Builders:
 
     def test_api_endpoints_includes_prior_data(self):
         prior = {
-            "file_tree": _make_prior_result({"categories": {"source_code": ["main.py"]}}),
+            "file_tree": _make_prior_result(
+                {"categories": {"source_code": ["main.py"]}}
+            ),
             "frameworks": _make_prior_result({"frameworks": [{"name": "FastAPI"}]}),
         }
         builder = PHASE2_BUILDERS["api_endpoints"]

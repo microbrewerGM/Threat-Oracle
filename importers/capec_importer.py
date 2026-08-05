@@ -1,8 +1,8 @@
 """CAPEC XML importer — bridges CWE weaknesses to ATT&CK techniques."""
+
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
 from typing import Optional
-
 
 NS = {"capec": "http://capec.mitre.org/capec-3"}
 
@@ -10,12 +10,15 @@ NS = {"capec": "http://capec.mitre.org/capec-3"}
 @dataclass
 class CAPECPattern:
     """Parsed CAPEC attack pattern."""
+
     capec_id: str
     name: str
     status: str
     description: str = ""
-    related_cwes: list[str] = field(default_factory=list)       # CWE IDs
-    related_attacks: list[str] = field(default_factory=list)    # ATT&CK technique IDs (e.g., "1574.010")
+    related_cwes: list[str] = field(default_factory=list)  # CWE IDs
+    related_attacks: list[str] = field(
+        default_factory=list
+    )  # ATT&CK technique IDs (e.g., "1574.010")
 
 
 def parse_capec_xml(xml_path: str) -> list[CAPECPattern]:
@@ -32,7 +35,9 @@ def parse_capec_xml(xml_path: str) -> list[CAPECPattern]:
         desc_el = ap.find("capec:Description", NS)
         description = ""
         if desc_el is not None:
-            description = ET.tostring(desc_el, encoding="unicode", method="text").strip()[:2000]
+            description = ET.tostring(
+                desc_el, encoding="unicode", method="text"
+            ).strip()[:2000]
 
         # Related CWEs
         related_cwes = []
@@ -51,14 +56,16 @@ def parse_capec_xml(xml_path: str) -> list[CAPECPattern]:
                     attack_id = f"T{entry_id.text}"
                     related_attacks.append(attack_id)
 
-        patterns.append(CAPECPattern(
-            capec_id=capec_id,
-            name=name,
-            status=status,
-            description=description,
-            related_cwes=related_cwes,
-            related_attacks=related_attacks,
-        ))
+        patterns.append(
+            CAPECPattern(
+                capec_id=capec_id,
+                name=name,
+                status=status,
+                description=description,
+                related_cwes=related_cwes,
+                related_attacks=related_attacks,
+            )
+        )
 
     return patterns
 
@@ -68,7 +75,7 @@ def import_capec_to_neo4j(driver, patterns: list[CAPECPattern], batch_size: int 
     # Phase 1: Create CAPEC nodes
     with driver.session() as session:
         for i in range(0, len(patterns), batch_size):
-            batch = patterns[i:i + batch_size]
+            batch = patterns[i : i + batch_size]
             nodes = [
                 {
                     "capec_id": f"CAPEC-{p.capec_id}",
@@ -99,7 +106,7 @@ def import_capec_to_neo4j(driver, patterns: list[CAPECPattern], batch_size: int 
 
     with driver.session() as session:
         for i in range(0, len(cwe_edges), batch_size):
-            batch = cwe_edges[i:i + batch_size]
+            batch = cwe_edges[i : i + batch_size]
             session.run(
                 """
                 UNWIND $edges AS e
@@ -114,11 +121,13 @@ def import_capec_to_neo4j(driver, patterns: list[CAPECPattern], batch_size: int 
     attack_edges = []
     for p in patterns:
         for attack_id in p.related_attacks:
-            attack_edges.append({"capec": f"CAPEC-{p.capec_id}", "attack_id": attack_id})
+            attack_edges.append(
+                {"capec": f"CAPEC-{p.capec_id}", "attack_id": attack_id}
+            )
 
     with driver.session() as session:
         for i in range(0, len(attack_edges), batch_size):
-            batch = attack_edges[i:i + batch_size]
+            batch = attack_edges[i : i + batch_size]
             session.run(
                 """
                 UNWIND $edges AS e

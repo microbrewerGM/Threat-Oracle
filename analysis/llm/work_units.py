@@ -1,4 +1,5 @@
 """Work unit definitions for the three-phase analysis pipeline."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -131,6 +132,5 @@ def get_ready_units(completed: set[str], tier: str) -> list[WorkUnit]:
     return [
         u
         for u in available
-        if u.name not in completed
-        and all(dep in completed for dep in u.depends_on)
+        if u.name not in completed and all(dep in completed for dep in u.depends_on)
     ]
