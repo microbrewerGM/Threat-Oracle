@@ -1,4 +1,5 @@
 """Tests for analysis.llm.schemas."""
+
 import pytest
 from pydantic import ValidationError
 

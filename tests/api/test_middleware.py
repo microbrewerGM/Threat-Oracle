@@ -1,4 +1,5 @@
 """Tests for API middleware — security headers, request size, audit logging."""
+
 import logging
 from unittest.mock import patch
 
@@ -60,7 +61,10 @@ class TestSecurityHeadersMiddleware:
 
     def test_permissions_policy(self):
         resp = self.client.get("/test")
-        assert resp.headers["Permissions-Policy"] == "geolocation=(), camera=(), microphone=()"
+        assert (
+            resp.headers["Permissions-Policy"]
+            == "geolocation=(), camera=(), microphone=()"
+        )
 
     def test_headers_on_post(self):
         resp = self.client.post("/test")

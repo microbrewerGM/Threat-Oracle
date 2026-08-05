@@ -26,9 +26,9 @@ def test_validate_valid_data_asset():
         "stored_in": ["ta-003"],
         "processed_by": ["ta-002"],
         "transmitted_in": ["df-002"],
-        "tags": ["customer", "personal"]
+        "tags": ["customer", "personal"],
     }
-    
+
     errors = validator.validate(valid_asset, "data_asset")
     assert len(errors) == 0
     assert validator.is_valid(valid_asset, "data_asset") is True
@@ -49,9 +49,9 @@ def test_validate_valid_physical_data_asset():
         "integrity_requirements": "high",
         "availability_requirements": "medium",
         "stored_in": ["ta-005"],
-        "tags": ["medical", "paper"]
+        "tags": ["medical", "paper"],
     }
-    
+
     errors = validator.validate(valid_asset, "data_asset")
     assert len(errors) == 0
     assert validator.is_valid(valid_asset, "data_asset") is True
@@ -60,11 +60,8 @@ def test_validate_valid_physical_data_asset():
 def test_validate_invalid_data_asset_missing_required():
     """Test validating an invalid data asset with missing required fields."""
     # Missing required fields 'type', 'medium', and 'classification'
-    invalid_asset = {
-        "id": "data-003",
-        "name": "Configuration Files"
-    }
-    
+    invalid_asset = {"id": "data-003", "name": "Configuration Files"}
+
     errors = validator.validate(invalid_asset, "data_asset")
     assert len(errors) > 0
     assert validator.is_valid(invalid_asset, "data_asset") is False
@@ -78,35 +75,35 @@ def test_validate_invalid_data_asset_invalid_enum():
         "name": "Financial Records",
         "type": "financial",  # Not in enum
         "medium": "digital",
-        "classification": "confidential"
+        "classification": "confidential",
     }
-    
+
     errors = validator.validate(invalid_asset, "data_asset")
     assert len(errors) > 0
     assert validator.is_valid(invalid_asset, "data_asset") is False
-    
+
     # Invalid value for 'medium'
     invalid_asset = {
         "id": "data-005",
         "name": "Financial Records",
         "type": "pfi",
         "medium": "cloud",  # Not in enum
-        "classification": "confidential"
+        "classification": "confidential",
     }
-    
+
     errors = validator.validate(invalid_asset, "data_asset")
     assert len(errors) > 0
     assert validator.is_valid(invalid_asset, "data_asset") is False
-    
+
     # Invalid value for 'classification'
     invalid_asset = {
         "id": "data-006",
         "name": "Financial Records",
         "type": "pfi",
         "medium": "digital",
-        "classification": "ultra-secret"  # Not in enum
+        "classification": "ultra-secret",  # Not in enum
     }
-    
+
     errors = validator.validate(invalid_asset, "data_asset")
     assert len(errors) > 0
     assert validator.is_valid(invalid_asset, "data_asset") is False

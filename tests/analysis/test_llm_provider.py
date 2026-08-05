@@ -1,4 +1,5 @@
 """Tests for analysis.llm.provider — routing logic only, no LLM calls."""
+
 import pytest
 
 from analysis.llm.provider import _select_provider

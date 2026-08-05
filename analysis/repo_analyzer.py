@@ -32,7 +32,7 @@ def parse_github_url(url: str) -> tuple[str, str]:
     raise ValueError(f"Cannot parse GitHub URL: {url}")
 
 
-_SAFE_NAME_PATTERN = re.compile(r'^[a-zA-Z0-9._-]+$')
+_SAFE_NAME_PATTERN = re.compile(r"^[a-zA-Z0-9._-]+$")
 
 
 def _validate_github_names(owner: str, repo: str) -> None:
@@ -122,9 +122,7 @@ def _detect_technical_assets(
         seen_types.add("java")
 
     # Go app
-    if (
-        any(p.split("/")[-1] == "go.mod" for p in tree_paths) or "Go" in languages
-    ):
+    if any(p.split("/")[-1] == "go.mod" for p in tree_paths) or "Go" in languages:
         assets.append(
             {
                 "name": "Go Application",
@@ -155,10 +153,7 @@ def _detect_technical_assets(
         "knexfile",
     }
     if any(
-        any(
-            p.startswith(d) or p.split("/")[-1] == d.rstrip("/")
-            for d in db_indicators
-        )
+        any(p.startswith(d) or p.split("/")[-1] == d.rstrip("/") for d in db_indicators)
         for p in tree_paths
     ):
         assets.append(
@@ -182,10 +177,7 @@ def _detect_technical_assets(
     terraform_dirs = any(
         p.startswith("terraform/") or p.endswith(".tf") for p in tree_paths
     )
-    if (
-        any(p.split("/")[-1] in cloud_indicators for p in tree_paths)
-        or terraform_dirs
-    ):
+    if any(p.split("/")[-1] in cloud_indicators for p in tree_paths) or terraform_dirs:
         assets.append(
             {
                 "name": "Cloud Infrastructure",
@@ -417,8 +409,6 @@ def analyze_repo(repo_url: str) -> dict[str, Any]:
             "repo": repo,
             "default_branch": default_branch,
             "languages": languages,
-            "total_files": len(
-                [p for p in tree_paths if "/" in p or "." in p]
-            ),
+            "total_files": len([p for p in tree_paths if "/" in p or "." in p]),
         },
     }

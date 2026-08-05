@@ -1,4 +1,5 @@
 """Prompt builders for Phase 1: Extraction work units."""
+
 from __future__ import annotations
 
 import json

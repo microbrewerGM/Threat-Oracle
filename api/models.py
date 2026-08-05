@@ -1,10 +1,11 @@
 """Pydantic response models for OpenAPI documentation."""
+
 from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
 
-
 # --- Health ---
+
 
 class HealthResponse(BaseModel):
     status: str = Field(...)
@@ -17,6 +18,7 @@ class DbHealthResponse(BaseModel):
 
 
 # --- Graph ---
+
 
 class GraphStatsResponse(BaseModel):
     node_counts: Dict[str, int] = Field(..., description="Node count per label")
@@ -46,6 +48,7 @@ class SearchResponse(BaseModel):
 
 # --- Import ---
 
+
 class ImportResponse(BaseModel):
     source: str
     status: str
@@ -60,6 +63,7 @@ class ImportResponse(BaseModel):
 
 
 # --- Request Models ---
+
 
 class CreateModelRequest(BaseModel):
     name: str = Field(..., min_length=1, max_length=255)
@@ -103,8 +107,13 @@ class CreateDataAssetRequest(BaseModel):
 
 # --- Analysis ---
 
+
 class AnalyzeModelRequest(BaseModel):
-    tier: str = Field("tier_1", pattern=r"^tier_[012]$", description="Analysis tier: tier_0, tier_1, or tier_2")
+    tier: str = Field(
+        "tier_1",
+        pattern=r"^tier_[012]$",
+        description="Analysis tier: tier_0, tier_1, or tier_2",
+    )
 
 
 class AnalysisJobResponse(BaseModel):

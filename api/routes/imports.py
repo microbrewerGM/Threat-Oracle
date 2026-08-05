@@ -1,4 +1,5 @@
 """Import trigger endpoints for loading security knowledge bases."""
+
 import os
 from enum import Enum
 
@@ -14,7 +15,9 @@ from api.models import ImportResponse
 router = APIRouter(prefix="/api/v1/import", tags=["import"])
 limiter = Limiter(key_func=get_remote_address)
 
-DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "data")
+DATA_DIR = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "data"
+)
 
 
 class ImportSource(str, Enum):
@@ -44,7 +47,9 @@ def trigger_import(
         if source == ImportSource.cwe:
             xml_path = os.path.join(DATA_DIR, "cwec_v4.19.1.xml")
             if not os.path.exists(xml_path):
-                raise HTTPException(status_code=404, detail="CWE XML file not found in data/")
+                raise HTTPException(
+                    status_code=404, detail="CWE XML file not found in data/"
+                )
 
             from importers.cwe_importer import parse_cwe_xml, import_cwe_to_neo4j
 
@@ -60,12 +65,19 @@ def trigger_import(
         elif source == ImportSource.attack:
             json_path = os.path.join(DATA_DIR, "enterprise-attack.json")
             if not os.path.exists(json_path):
-                raise HTTPException(status_code=404, detail="ATT&CK JSON file not found in data/")
+                raise HTTPException(
+                    status_code=404, detail="ATT&CK JSON file not found in data/"
+                )
 
-            from importers.attack_importer import parse_attack_stix, import_attack_to_neo4j
+            from importers.attack_importer import (
+                parse_attack_stix,
+                import_attack_to_neo4j,
+            )
 
             objects, relationships = parse_attack_stix(json_path)
-            node_count, rel_count = import_attack_to_neo4j(driver, objects, relationships)
+            node_count, rel_count = import_attack_to_neo4j(
+                driver, objects, relationships
+            )
             return {
                 "source": "attack",
                 "status": "completed",
@@ -76,12 +88,16 @@ def trigger_import(
         elif source == ImportSource.capec:
             xml_path = os.path.join(DATA_DIR, "capec_latest.xml")
             if not os.path.exists(xml_path):
-                raise HTTPException(status_code=404, detail="CAPEC XML file not found in data/")
+                raise HTTPException(
+                    status_code=404, detail="CAPEC XML file not found in data/"
+                )
 
             from importers.capec_importer import parse_capec_xml, import_capec_to_neo4j
 
             patterns = parse_capec_xml(xml_path)
-            node_count, cwe_edges, attack_edges = import_capec_to_neo4j(driver, patterns)
+            node_count, cwe_edges, attack_edges = import_capec_to_neo4j(
+                driver, patterns
+            )
             return {
                 "source": "capec",
                 "status": "completed",

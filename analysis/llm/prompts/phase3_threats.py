@@ -1,4 +1,5 @@
 """Prompt builders for Phase 3: Threat analysis work units."""
+
 from __future__ import annotations
 
 import json
