@@ -136,7 +136,7 @@ def import_threats_to_neo4j(
 
         if cwe_edges:
             for i in range(0, len(cwe_edges), batch_size):
-                batch = cwe_edges[i : i + batch_size]
+                edge_batch = cwe_edges[i : i + batch_size]
                 result = session.run(
                     """
                     UNWIND $edges AS e
@@ -145,7 +145,7 @@ def import_threats_to_neo4j(
                     MERGE (t)-[:EXPLOITS]->(c)
                     RETURN count(*) AS cnt
                     """,
-                    edges=batch,
+                    edges=edge_batch,
                 )
                 total_rels += result.single()["cnt"]
 
@@ -157,7 +157,7 @@ def import_threats_to_neo4j(
 
         if attack_edges:
             for i in range(0, len(attack_edges), batch_size):
-                batch = attack_edges[i : i + batch_size]
+                edge_batch = attack_edges[i : i + batch_size]
                 result = session.run(
                     """
                     UNWIND $edges AS e
@@ -166,7 +166,7 @@ def import_threats_to_neo4j(
                     MERGE (t)-[:USES_TECHNIQUE]->(tech)
                     RETURN count(*) AS cnt
                     """,
-                    edges=batch,
+                    edges=edge_batch,
                 )
                 total_rels += result.single()["cnt"]
 
@@ -178,7 +178,7 @@ def import_threats_to_neo4j(
 
         if capec_edges:
             for i in range(0, len(capec_edges), batch_size):
-                batch = capec_edges[i : i + batch_size]
+                edge_batch = capec_edges[i : i + batch_size]
                 result = session.run(
                     """
                     UNWIND $edges AS e
@@ -187,7 +187,7 @@ def import_threats_to_neo4j(
                     MERGE (t)-[:LEVERAGES]->(c)
                     RETURN count(*) AS cnt
                     """,
-                    edges=batch,
+                    edges=edge_batch,
                 )
                 total_rels += result.single()["cnt"]
 

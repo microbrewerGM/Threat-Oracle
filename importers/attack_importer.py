@@ -194,14 +194,14 @@ def import_attack_to_neo4j(
                 )
 
             # Group by src_label + tgt_label combo for typed MATCH
-            combos = {}
+            combos: dict[tuple[str, str], list[dict[str, str]]] = {}
             for e in edges:
                 key = (e["src_label"], e["tgt_label"])
                 combos.setdefault(key, []).append(e)
 
             for (src_label, tgt_label), combo_edges in combos.items():
                 for i in range(0, len(combo_edges), batch_size):
-                    batch = combo_edges[i : i + batch_size]
+                    edge_batch = combo_edges[i : i + batch_size]
                     session.run(
                         f"""
                         UNWIND $edges AS e
@@ -209,7 +209,7 @@ def import_attack_to_neo4j(
                         MATCH (t:{tgt_label} {{attack_id: e.tgt_id}})
                         MERGE (s)-[:{neo4j_type}]->(t)
                         """,
-                        edges=batch,
+                        edges=edge_batch,
                     )
 
     return len(objects), len(relationships)
