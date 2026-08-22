@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- 2026-08-22: Project reboot — Threat Oracle now consumes findings from
+  [VVAH](https://github.com/visa/visa-vulnerability-agentic-harness) (Visa's
+  Apache-2.0 agentic SAST harness) as its analysis engine. This repo's scope
+  narrows to the graph/visualization and enterprise-analysis layer on top of
+  VVAH's Markdown/SARIF output. Prior-generation schema/importers/analysis
+  code is retained as reference, not deleted, but is being superseded.
+  Development is local-first (no AWS); cloud hosting (Cloudflare preferred)
+  is deferred to a later phase. See README.md "Project History".
+
 ### Added
 
 - Data asset schema definition for representing various types of information assets

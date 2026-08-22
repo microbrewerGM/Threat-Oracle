@@ -1,3 +1,7 @@
+# Reboot note (2026-08-22): Threat Oracle now targets a VVAH-fed pipeline.
+# This CI is slated to be supplemented by a separate sync workflow that pulls
+# approved content from the private threat-oracle-internal repo. Kept as-is
+# for now (still validates lint/tests during the rebuild).
 name: CI
 
 on:

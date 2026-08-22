@@ -1,5 +1,12 @@
 # Threat Oracle
 
+> **Project reboot in progress.** Threat Oracle is being rebuilt to consume
+> analysis output from [VVAH](https://github.com/visa/visa-vulnerability-agentic-harness)
+> (Visa's Apache-2.0 open-source agentic SAST harness) as its analysis engine.
+> This repo's scope going forward is the graph/visualization and analysis
+> layer on top of VVAH findings — not a from-scratch analysis engine. See
+> [Project History](#project-history) below.
+
 ## Introduction
 
 Threat modeling is a critical security practice that helps identify, communicate, and understand threats and mitigations
@@ -69,15 +76,39 @@ Threat Oracle maintains comprehensive documentation to guide development and usa
 - [**Interaction Log**](INTERACTION_LOG.md): Record of developer and LLM interactions
 - [**Original Vision**](threat_oracle_vision.md): Initial project vision
 
+## Project History
+
+Threat Oracle has gone through several prior architecture iterations, all
+attempting hand-built analysis engines (LLM-driven repo analysis, custom
+graph-rule risk detection, a companion AWS-based internal prototype). That
+prior-generation work — schema definitions, importers, the D3-based graph
+frontend, the FastAPI backend — remains in this repo as a foundation and is
+not deleted, but it is being superseded rather than extended as-is.
+
+The reboot's premise: analysis is a hard, ongoing research problem that VVAH
+already solves well (threat-modeled discovery, multi-lens adversarial
+verification, SARIF + CVSS/CWE-mapped findings). Threat Oracle's differentiated
+value is turning those findings into an explorable graph/digital-twin —
+visualization and enterprise-relevant analysis on top of VVAH output, not
+reinventing vulnerability discovery.
+
+Development is local-first (no AWS, no cloud dependencies) while the
+VVAH-integration and graph model are being redesigned. Cloud hosting
+(Cloudflare preferred) is a deliberately later-phase decision. Reboot task
+tracking lives in the project's status-tracking doc (see that repo's own
+README for the current pointer, if this file is checked out standalone).
+
 ## Current State
 
-Threat Oracle is in early development. Currently implemented features:
+Threat Oracle is being rebooted around a VVAH-fed analysis pipeline. Prior-generation, being superseded:
 
 - **Schema Definitions**: JSON Schema definitions for technical assets, trust boundaries, and data flows
 - **Schema Validator**: Utility for validating objects against these schemas
 - **Simple Web Interface**: React-based frontend with basic visualization capabilities
 - **Graph Visualization**: Interactive graph visualization of nodes and edges using D3.js
 - **Example Usage**: Demo script showing schema validation in action
+
+Reboot work in progress.
 
 ## Getting Started
 
