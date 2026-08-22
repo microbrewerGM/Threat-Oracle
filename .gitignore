@@ -130,3 +130,7 @@ CLAUDE.local.md
 
 # Scratch checkout used by sync-from-internal.yml
 _internal-sync-src/
+
+# local worktree scratch state and screenshots — never repo content
+.worktrees/
+*.png
