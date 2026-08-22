@@ -98,6 +98,12 @@ VVAH-integration and graph model are being redesigned. Cloud hosting
 tracking lives in the project's status-tracking doc (see that repo's own
 README for the current pointer, if this file is checked out standalone).
 
+Content here may periodically arrive via an automated pull request sourced
+from a curated, allowlisted branch (`public-release`) of the private
+`threat-oracle-internal` repo (see `.github/workflows/sync-from-internal.yml`).
+Nothing syncs automatically without a human first curating what's eligible on
+the private side — this workflow only opens a PR for review, never merges.
+
 ## Current State
 
 Threat Oracle is being rebooted around a VVAH-fed analysis pipeline. Prior-generation, being superseded:
