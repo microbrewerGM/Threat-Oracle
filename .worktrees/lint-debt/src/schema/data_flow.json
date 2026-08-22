@@ -1,0 +1,75 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Data Flow",
+  "description": "Schema for a data flow edge in the threat model graph",
+  "type": "object",
+  "required": ["id", "source_id", "target_id", "protocol"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for the data flow"
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-readable name of the data flow"
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed description of the data flow"
+    },
+    "source_id": {
+      "type": "string",
+      "description": "ID of the source technical asset"
+    },
+    "target_id": {
+      "type": "string",
+      "description": "ID of the target technical asset"
+    },
+    "protocol": {
+      "type": "string",
+      "enum": ["http", "https", "tcp", "udp", "ssh", "ftp", "sftp", "smtp", "sql", "other"],
+      "description": "Protocol used for the data flow"
+    },
+    "port": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 65535,
+      "description": "Port number used for the data flow"
+    },
+    "is_encrypted": {
+      "type": "boolean",
+      "description": "Whether the data flow is encrypted"
+    },
+    "authentication_method": {
+      "type": "string",
+      "enum": ["none", "basic", "token", "certificate", "oauth", "other"],
+      "description": "Authentication method used for the data flow"
+    },
+    "data_assets": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "IDs of data assets transferred in this flow"
+    },
+    "crosses_trust_boundary": {
+      "type": "boolean",
+      "description": "Whether the data flow crosses a trust boundary"
+    },
+    "trust_boundary_id": {
+      "type": "string",
+      "description": "ID of the trust boundary crossed (if applicable)"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tags for categorizing the data flow"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional metadata for the data flow"
+    }
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Technical Asset",
+  "description": "Schema for a technical asset node in the threat model graph",
+  "type": "object",
+  "required": ["id", "name", "type"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for the technical asset"
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-readable name of the technical asset"
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed description of the technical asset"
+    },
+    "type": {
+      "type": "string",
+      "enum": ["server", "application", "database", "container", "api", "service", "network_device", "other"],
+      "description": "Type of technical asset"
+    },
+    "owner": {
+      "type": "string",
+      "description": "Owner or responsible party for the technical asset"
+    },
+    "criticality": {
+      "type": "string",
+      "enum": ["low", "medium", "high", "critical"],
+      "description": "Criticality level of the technical asset"
+    },
+    "technology_stack": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of technologies used in this asset"
+    },
+    "version": {
+      "type": "string",
+      "description": "Version of the technical asset"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tags for categorizing the technical asset"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional metadata for the technical asset"
+    }
+  }
+}

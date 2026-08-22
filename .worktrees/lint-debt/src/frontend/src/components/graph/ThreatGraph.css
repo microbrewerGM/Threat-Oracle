@@ -1,0 +1,190 @@
+/* -----------------------------------------------------------------------
+ * ThreatGraph.css — Dark-themed D3 force-directed graph styles
+ * ----------------------------------------------------------------------- */
+
+.threat-graph-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  background-color: var(--graph-bg);
+}
+
+.threat-graph-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* --- Node shapes --- */
+
+.node-shape {
+  cursor: pointer;
+  stroke-width: 1.5;
+  stroke-opacity: 0.8;
+  transition: stroke-opacity 0.15s ease;
+}
+
+.node-shape:hover {
+  stroke-opacity: 1;
+  stroke-width: 2.5;
+  filter: brightness(1.2);
+}
+
+/* --- Node labels --- */
+
+.node-label {
+  fill: var(--graph-text, #E6EDF3);
+  font-size: 11px;
+  font-family: var(--font-family, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif);
+  pointer-events: none;
+  user-select: none;
+  text-anchor: middle;
+}
+
+/* --- Data flow links --- */
+
+.data-flow-link {
+  stroke: var(--graph-muted, #8B949E);
+  stroke-opacity: 0.6;
+  fill: none;
+  cursor: pointer;
+  transition: stroke-opacity 0.15s ease;
+}
+
+.data-flow-link:hover {
+  stroke-opacity: 1;
+}
+
+/* --- Edge labels --- */
+
+.edge-label {
+  fill: var(--graph-muted, #8B949E);
+  font-size: 9px;
+  font-family: var(--font-family, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif);
+  pointer-events: none;
+  user-select: none;
+  text-anchor: middle;
+}
+
+/* --- Arrowhead markers --- */
+
+.arrowhead-marker {
+  fill: var(--graph-muted, #8B949E);
+}
+
+/* --- Zoom reset button --- */
+
+.threat-graph-reset-zoom {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  background: var(--graph-surface, #161B22);
+  color: var(--graph-text, #E6EDF3);
+  border: 1px solid var(--graph-border, #30363D);
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.15s ease;
+  z-index: 10;
+}
+
+.threat-graph-reset-zoom:hover {
+  opacity: 1;
+  background: var(--graph-card, #1C2128);
+}
+
+/* --- Trust boundary hulls --- */
+
+.trust-hull-path {
+  fill-opacity: 0.08;
+  stroke-opacity: 0.5;
+  stroke-width: 1.5;
+  stroke-dasharray: 6 3;
+  pointer-events: none;
+}
+
+.trust-hull-label {
+  fill: var(--graph-text, #E6EDF3);
+  font-size: 11px;
+  font-family: var(--font-family, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif);
+  text-anchor: middle;
+  pointer-events: none;
+  user-select: none;
+}
+
+.trust-hull-label-bg {
+  pointer-events: none;
+}
+
+/* --- Threat glow rings (Phase 3) --- */
+
+.threat-glow-ring {
+  fill: none;
+  pointer-events: none;
+  opacity: 0.9;
+}
+
+/* --- Threat count badge (Phase 3) --- */
+
+.threat-badge-group {
+  cursor: pointer;
+}
+
+.threat-badge-circle {
+  stroke-width: 1.5;
+}
+
+.threat-badge-text {
+  fill: white;
+  font-size: 10px;
+  font-weight: 700;
+  text-anchor: middle;
+  dominant-baseline: central;
+  pointer-events: none;
+}
+
+/* --- Animated data flow lines (Phase 4) --- */
+
+.animated-flow {
+  stroke-dasharray: 8 4;
+  animation: flow 1s linear infinite;
+}
+
+@keyframes flow {
+  to {
+    stroke-dashoffset: -12;
+  }
+}
+
+/* --- Selection highlighting (Phase 4) --- */
+
+.node-shape.selected {
+  stroke-width: 3;
+  stroke-opacity: 1;
+  filter: brightness(1.3);
+}
+
+.node-shape.dimmed {
+  opacity: 0.3;
+}
+
+.data-flow-link.selected {
+  stroke-opacity: 1;
+  stroke-width: 3;
+  stroke: var(--graph-accent-cyan, #00DFFF);
+}
+
+.data-flow-link.dimmed {
+  stroke-opacity: 0.15;
+}
+
+/* --- Risk heatmap circles (Phase 3) --- */
+
+.risk-heatmap-circle {
+  fill-opacity: 0.6;
+  stroke: none;
+  pointer-events: none;
+}

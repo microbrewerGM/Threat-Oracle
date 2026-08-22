@@ -1,0 +1,245 @@
+/**
+ * Threat Oracle API client.
+ *
+ * Calls are proxied through Vite dev server (/api → localhost:8000).
+ * In production, the API base URL should be configured via env var.
+ */
+
+const API_BASE = '/api/v1';
+
+interface GraphNode {
+  _labels: string[];
+  name?: string;
+  description?: string;
+  cwe_id?: string;
+  attack_id?: string;
+  capec_id?: string;
+  [key: string]: unknown;
+}
+
+interface GraphStatsResponse {
+  node_counts: Record<string, number>;
+  total_nodes: number;
+  relationship_counts: Record<string, number>;
+  total_relationships: number;
+}
+
+interface NodesResponse {
+  nodes: GraphNode[];
+  skip: number;
+  limit: number;
+}
+
+interface NodeDetailResponse {
+  node: GraphNode;
+  relationships: {
+    outgoing: Array<{ type: string; target: Record<string, unknown>; target_labels: string[] }>;
+    incoming: Array<{ type: string; source: Record<string, unknown>; source_labels: string[] }>;
+  };
+}
+
+interface SearchResponse {
+  query: string;
+  results: GraphNode[];
+  count: number;
+}
+
+interface ImportResponse {
+  source: string;
+  status: string;
+  nodes_imported: number;
+  relationships_imported?: number;
+  cwe_relationships?: number;
+  attack_relationships?: number;
+}
+
+interface HealthResponse {
+  status: string;
+  database?: string;
+  error?: string;
+}
+
+async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
+  const response = await fetch(path, {
+    credentials: 'same-origin',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Requested-With': 'XMLHttpRequest',
+      ...options?.headers,
+    },
+  });
+
+  if (!response.ok) {
+    const userMessage = response.status >= 500
+      ? 'An internal error occurred. Please try again later.'
+      : `Request failed (${response.status})`;
+    throw new Error(userMessage);
+  }
+
+  return response.json();
+}
+
+interface ModelNode {
+  model_id: string;
+  name: string;
+  description: string;
+  version: string;
+  repo_url: string;
+  created: string;
+  updated: string;
+}
+
+interface ModelDetailResponse {
+  model: ModelNode;
+  technical_assets: Array<Record<string, unknown>>;
+  trust_boundaries: Array<Record<string, unknown>>;
+  data_flows: Array<Record<string, unknown>>;
+  data_assets: Array<Record<string, unknown>>;
+}
+
+interface ModelsListResponse {
+  models: ModelNode[];
+  skip: number;
+  limit: number;
+}
+
+export const threatOracleAPI = {
+  // Health
+  health: () => apiFetch<HealthResponse>('/health'),
+  healthDb: () => apiFetch<HealthResponse>('/health/db'),
+
+  // Graph queries
+  graphStats: () => apiFetch<GraphStatsResponse>(`${API_BASE}/graph/stats`),
+
+  listNodes: (params?: { label?: string; search?: string; skip?: number; limit?: number }) => {
+    const searchParams = new URLSearchParams();
+    if (params?.label) searchParams.set('label', params.label);
+    if (params?.search) searchParams.set('search', params.search);
+    if (params?.skip !== undefined) searchParams.set('skip', String(params.skip));
+    if (params?.limit !== undefined) searchParams.set('limit', String(params.limit));
+    const qs = searchParams.toString();
+    return apiFetch<NodesResponse>(`${API_BASE}/graph/nodes${qs ? `?${qs}` : ''}`);
+  },
+
+  getNode: (nodeId: string) =>
+    apiFetch<NodeDetailResponse>(`${API_BASE}/graph/nodes/${encodeURIComponent(nodeId)}`),
+
+  searchGraph: (query: string, limit?: number) => {
+    const searchParams = new URLSearchParams({ q: query });
+    if (limit !== undefined) searchParams.set('limit', String(limit));
+    return apiFetch<SearchResponse>(`${API_BASE}/graph/search?${searchParams}`);
+  },
+
+  // Import triggers
+  triggerImport: (source: 'cwe' | 'attack' | 'capec') =>
+    apiFetch<ImportResponse>(`${API_BASE}/import/trigger/${source}`, { method: 'POST' }),
+
+  // Models CRUD
+  listModels: (params?: { skip?: number; limit?: number }) => {
+    const searchParams = new URLSearchParams();
+    if (params?.skip !== undefined) searchParams.set('skip', String(params.skip));
+    if (params?.limit !== undefined) searchParams.set('limit', String(params.limit));
+    const qs = searchParams.toString();
+    return apiFetch<ModelsListResponse>(`${API_BASE}/models${qs ? `?${qs}` : ''}`);
+  },
+
+  getModel: (modelId: string) =>
+    apiFetch<ModelDetailResponse>(`${API_BASE}/models/${encodeURIComponent(modelId)}`),
+
+  createModel: (data: { name: string; description?: string; version?: string; repo_url?: string }) =>
+    apiFetch<ModelNode>(`${API_BASE}/models`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  updateModel: (modelId: string, data: { name?: string; description?: string; version?: string; repo_url?: string }) =>
+    apiFetch<ModelNode>(`${API_BASE}/models/${encodeURIComponent(modelId)}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+
+  deleteModel: (modelId: string) =>
+    apiFetch<{ status: string; model_id: string }>(`${API_BASE}/models/${encodeURIComponent(modelId)}`, {
+      method: 'DELETE',
+    }),
+
+  // Analysis
+  triggerAnalysis: (modelId: string, tier: string, llmHeaders: Record<string, string>) =>
+    apiFetch<AnalysisJobResponse>(`${API_BASE}/models/${encodeURIComponent(modelId)}/analyze`, {
+      method: 'POST',
+      body: JSON.stringify({ tier }),
+      headers: llmHeaders,
+    }),
+
+  getAnalysisStatus: (modelId: string, jobId: string) =>
+    apiFetch<AnalysisStatusResponse>(`${API_BASE}/models/${encodeURIComponent(modelId)}/analyze/${encodeURIComponent(jobId)}`),
+
+  listThreats: (modelId: string) =>
+    apiFetch<ThreatsListResponse>(`${API_BASE}/models/${encodeURIComponent(modelId)}/threats`),
+};
+
+// Analysis interfaces
+interface AnalysisJobResponse {
+  job_id: string;
+  model_id: string;
+  status: string;
+  message: string;
+}
+
+interface AnalysisStatusResponse {
+  job_id: string;
+  model_id: string;
+  tier: string;
+  status: string;
+  progress_pct: number;
+  current_phase: number | null;
+  units_completed: number;
+  units_total: number;
+  threats_found: number;
+  error: string | null;
+  started_at: string | null;
+  completed_at: string | null;
+}
+
+interface ThreatItem {
+  threat_id: string;
+  title: string;
+  stride_category: string;
+  severity: string;
+  likelihood: string;
+  risk_score: number;
+  attack_vector: string;
+  description: string;
+  remediation: string;
+  confidence: number;
+  cwe_ids: string[];
+  capec_ids: string[];
+  attack_technique_ids: string[];
+  affected_assets: string[];
+  analysis_tier: string;
+  job_id: string;
+}
+
+interface ThreatsListResponse {
+  model_id: string;
+  threats: ThreatItem[];
+  total: number;
+}
+
+export type {
+  GraphNode,
+  GraphStatsResponse,
+  NodesResponse,
+  NodeDetailResponse,
+  SearchResponse,
+  ImportResponse,
+  HealthResponse,
+  ModelNode,
+  ModelDetailResponse,
+  ModelsListResponse,
+  AnalysisJobResponse,
+  AnalysisStatusResponse,
+  ThreatItem,
+  ThreatsListResponse,
+};
