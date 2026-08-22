@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- 2026-08-22: Project reboot — Threat Oracle now consumes findings from
+  [VVAH](https://github.com/visa/visa-vulnerability-agentic-harness) (Visa's
+  Apache-2.0 agentic SAST harness) as its analysis engine. This repo's scope
+  narrows to the graph/visualization and enterprise-analysis layer on top of
+  VVAH's Markdown/SARIF output. Prior-generation schema/importers/analysis
+  code is retained as reference, not deleted, but is being superseded.
+  Development is local-first (no AWS); cloud hosting (Cloudflare preferred)
+  is deferred to a later phase. See README.md "Project History".
+- 2026-08-22: Added `.github/workflows/sync-from-internal.yml` — pulls
+  allowlisted content from threat-oracle-internal's curated `public-release`
+  branch and opens a PR here. Not yet active: needs the `INTERNAL_REPO_READ_PAT`
+  secret configured on this repo (manual, see threat-oracle-internal's
+  SYNC_SETUP.md).
+
 ### Added
 
 - Data asset schema definition for representing various types of information assets

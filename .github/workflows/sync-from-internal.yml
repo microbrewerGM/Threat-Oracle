@@ -1,0 +1,120 @@
+name: Sync from threat-oracle-internal
+
+# Pulls allowlisted content from the private threat-oracle-internal repo's
+# curated `public-release` branch and opens a PR here. Nothing lands
+# automatically — a human has already curated `public-release` on the
+# private side, and this workflow only proposes the result via PR (no
+# auto-merge). Runs on this repo's free public-repo Actions minutes.
+#
+# Requires a repo secret INTERNAL_REPO_READ_PAT: a fine-grained PAT scoped
+# to ONLY microbrewerGM/threat-oracle-internal, "Contents: Read-only".
+# See threat-oracle-internal's SYNC_SETUP.md for exact setup steps.
+
+on:
+  repository_dispatch:
+    types: [internal-sync]
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Threat-Oracle
+        uses: actions/checkout@v4
+        with:
+          ref: develop
+
+      - name: Checkout threat-oracle-internal (public-release, allowlisted content only)
+        env:
+          INTERNAL_REPO_READ_PAT: ${{ secrets.INTERNAL_REPO_READ_PAT }}
+        run: |
+          set -euo pipefail
+          if [ -z "${INTERNAL_REPO_READ_PAT:-}" ]; then
+            echo "INTERNAL_REPO_READ_PAT is not set — skipping sync (secret not configured yet)."
+            exit 0
+          fi
+          rm -rf _internal-sync-src
+          git clone --depth 1 --branch public-release \
+            "https://x-access-token:${INTERNAL_REPO_READ_PAT}@github.com/microbrewerGM/threat-oracle-internal.git" \
+            _internal-sync-src
+
+      - name: Copy allowlisted paths
+        run: |
+          set -euo pipefail
+          if [ ! -d _internal-sync-src ]; then
+            echo "No source checkout (secret missing or clone skipped) — nothing to do."
+            exit 0
+          fi
+          ALLOWLIST="_internal-sync-src/sync/public-allowlist.yaml"
+          if [ ! -f "$ALLOWLIST" ]; then
+            echo "No sync/public-allowlist.yaml found in public-release — nothing to do."
+            rm -rf _internal-sync-src
+            exit 0
+          fi
+
+          # Minimal parse: lines under an `allow:` key, formatted as "  - path/to/thing".
+          # Blank/comment lines and anything before `allow:` are ignored.
+          mapfile -t PATHS < <(awk '
+            /^allow:/ { inlist=1; next }
+            inlist && /^[[:space:]]*-[[:space:]]*/ {
+              sub(/^[[:space:]]*-[[:space:]]*/, "");
+              gsub(/[[:space:]]+$/, "");
+              if (length($0) > 0) print;
+              next
+            }
+            inlist && /^[^[:space:]]/ { inlist=0 }
+          ' "$ALLOWLIST")
+
+          if [ "${#PATHS[@]}" -eq 0 ]; then
+            echo "Allowlist present but empty — nothing to do."
+            rm -rf _internal-sync-src
+            exit 0
+          fi
+
+          for p in "${PATHS[@]}"; do
+            src="_internal-sync-src/${p}"
+            if [ ! -e "$src" ]; then
+              echo "Allowlisted path not found in source, skipping: $p"
+              continue
+            fi
+            mkdir -p "$(dirname "$p")"
+            rsync -a --delete "$src" "$p" 2>/dev/null || cp -r "$src" "$p"
+          done
+
+          rm -rf _internal-sync-src
+
+      - name: Detect changes
+        id: diff
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Open sync PR
+        if: steps.diff.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          BRANCH="sync/from-internal-${GITHUB_RUN_NUMBER}"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BRANCH"
+          git add -A
+          git commit -m "sync: pull allowlisted content from threat-oracle-internal (public-release)"
+          git push origin "$BRANCH"
+          gh pr create \
+            --base develop \
+            --head "$BRANCH" \
+            --title "Sync from threat-oracle-internal (public-release)" \
+            --body "Automated sync of allowlisted paths from the private repo's curated \`public-release\` branch (see \`sync/public-allowlist.yaml\` there). Review before merging — nothing here auto-merges."
+
+      - name: No changes
+        if: steps.diff.outputs.changed == 'false'
+        run: echo "No allowlisted content changed — nothing to sync."
